@@ -11,6 +11,22 @@ create table gustus.usuarios
     senha varchar(100) not null
 );
 
+--adicionar, alterar e excluir--
+--add
+insert into gustus.usuarios 
+(usuario, email, senha)
+values 
+('Mariana', 'mariana@email.com', '123456');
+
+--alter
+update gustus.usuarios
+set senha = 'novaSenha123'
+where idUsuario = 1;
+
+--delete
+delete from gustus.usuarios
+where idUsuario = 1;
+
 ---------------------------------------------
 
 create table gustus.pratos
@@ -21,6 +37,12 @@ create table gustus.pratos
     linkReceita varchar(max)
 );
 
+--pagina inicial todos os produtos--
+
+--pagina do produto com favoritar, adicionar e remover da wishlist e experimentar--
+
+--pesquisar pratos--
+
 ---------------------------------------------
 
 create table gustus.favoritos
@@ -29,6 +51,14 @@ create table gustus.favoritos
     idUsuario int not null foreign key references gustus.usuarios(idUsuario),
     idPrato int not null foreign key references gustus.pratos(idPrato)
 );
+
+--um usuario so pode ter 2 favoritos--
+select count(*) 
+from gustus.favoritos 
+where idUsuario = @idUsuario;
+
+
+--pagina favoritos do usuario--
 
 ---------------------------------------------
 
@@ -40,6 +70,11 @@ create table gustus.degustados
     nota int check (nota between 1 and 5),
     descricao text
 );
+
+--pagina avaliar--
+
+
+--pagina degustados do usuario--
 
 select 
     u.usuario,
@@ -60,5 +95,7 @@ create table gustus.wishlist
     idUsuario int not null foreign key references gustus.usuarios(idUsuario),
     idPrato int not null foreign key references gustus.pratos(idPrato)
 );
+
+--pagina wishlist do usuario--
 
 ---------------------------------------------
