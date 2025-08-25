@@ -31,14 +31,36 @@ app.get("/familiares", async (req, res) => {
     }
 });
 
-app.post("/cadastrar" , async (req, res) =>{
+app.post("/cadastrar" , async (req, res) => {
     try{
-        
+
     }
     catch(erro){
         
     }
 })
+
+//login
+app.post("/login" , async (req, res)=> {
+
+})
+
+//ver favoritos
+app.get("/ver-favoritos" , async (req, res) => {
+
+})
+
+//adicionar favoritos
+//remover favoritos
+//adicionar na wishlist
+//ver a wishlist
+//remover da wishlist
+//adicionar a degustados
+//ver degustados
+//pesquisar comidas
+//adicionar avaliação
+
+//ver receita
 
 app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
