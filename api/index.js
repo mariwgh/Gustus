@@ -33,7 +33,7 @@ app.get("/familiares", async (req, res) => {
 
 app.post("/cadastrar" , async (req, res) =>{
     try{
-
+        
     }
     catch(erro){
         
