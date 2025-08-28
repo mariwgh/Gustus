@@ -5,6 +5,7 @@ select * from gustus.favoritos
 select * from gustus.degustados
 select * from gustus.wishlist
 
+--------------------------------------------
 
 create schema gustus;
 
@@ -24,7 +25,7 @@ insert into gustus.usuarios
 values
 ('Mariana', 'mariana@email.com', '123456'),
 ('Joao', 'joao@email.com', 'senha123'),
-('Ana', 'ana@email.com', 'segredo321');
+('Rafaelly', 'rafaelly@email.com', 'segredo321');
 
 
 --adicionar, alterar e excluir--
@@ -49,23 +50,34 @@ create table gustus.pratos
 (
     idPrato int primary key identity(1,1),
     prato varchar(100) unique not null,
+	foto varchar(max) not null,  -- link para a foto
     descricao text,
     linkReceita varchar(max)
 );
 
+
 --inserts
-insert into gustus.pratos (prato, descricao, linkReceita) values
-('Risoto de Camarão', 'Prato italiano cremoso com camarões frescos.', 'https://www.tudogostoso.com.br/receita/185493-risoto-de-camarao-sem-frescura.html'),
-('Ratatouille', 'Receita francesa com legumes assados.', 'https://www.tudogostoso.com.br/receita/135302-ratatouille.html'),
-('File Mignon', 'Corte nobre de carne ao molho madeira.', 'https://www.tudogostoso.com.br/categorias/1116-file-mignon'),
-('Açaí', 'Sobremesa brasileira servida gelada.', 'https://www.tudogostoso.com.br/receita/296086-acai.html');
+insert into gustus.pratos 
+(prato, foto, descricao, linkReceita) 
+values
+('Risoto de Camarão', 'https://raw.githubusercontent.com/mariwgh/Gustus/refs/heads/main/imagens/risoto-de-camarao.png', 'Prato italiano cremoso com camarões frescos.', 'https://www.tudogostoso.com.br/receita/185493-risoto-de-camarao-sem-frescura.html'),
+('Ratatouille', 'https://raw.githubusercontent.com/mariwgh/Gustus/main/imagens/ratatouille.png', 'Receita francesa com legumes assados.', 'https://www.tudogostoso.com.br/receita/135302-ratatouille.html'),
+('File Mignon', 'https://raw.githubusercontent.com/mariwgh/Gustus/main/imagens/file-mignon.png', 'Corte nobre de carne ao molho madeira.', 'https://www.tudogostoso.com.br/categorias/1116-file-mignon'),
+('Açaí', 'https://raw.githubusercontent.com/mariwgh/Gustus/refs/heads/main/imagens/acai.png', 'Sobremesa brasileira servida gelada.', 'https://www.tudogostoso.com.br/receita/296086-acai.html'),
+('Carne ao molho', 'https://raw.githubusercontent.com/mariwgh/Gustus/refs/heads/main/imagens/carne-ao-molho.png', 'Iscas de carne bovina ao molho temperado.', 'https://www.tudogostoso.com.br/receita/131095-carne-ao-molho-simples-e-e-saboroso.html'),
+('Lasanha à Bolonhesa', 'https://raw.githubusercontent.com/mariwgh/Gustus/refs/heads/main/imagens/lasanha-a-bolonhesa.png', 'Massa em camadas com molho à bolonhesa e queijo gratinado.', 'https://www.tudogostoso.com.br/receita/876-lasanha-de-carne-moida.html'),
+('Brigadeiro', 'https://raw.githubusercontent.com/mariwgh/Gustus/refs/heads/main/imagens/brigadeiro.png', 'Doce brasileiro feito com leite condensado, chocolate e granulado.', 'https://www.tudogostoso.com.br/receita/114-brigadeiro.html'),
+('Sushi', 'https://raw.githubusercontent.com/mariwgh/Gustus/refs/heads/main/imagens/sushi.png', 'Prato japonês com arroz temperado e peixe cru.', 'https://www.tudogostoso.com.br/receita/37091-sushi.html');
 
 
 --pagina inicial todos os produtos--
+select * from gustus.pratos
 
---pagina do produto com favoritar, adicionar e remover da wishlist e experimentar--
+--pagina do produto com favoritar, adicionar e remover da wishlist e experimentar (inserts)--
+select * from gustus.pratos where idPrato = 1
 
 --pesquisar pratos--
+select * from gustus.pratos where prato like '%risoto%'
 
 ---------------------------------------------
 
@@ -87,18 +99,28 @@ insert into gustus.favoritos (idUsuario, idPrato) values
 (2, 2),
 (2, 3);
 
--- Ana favoritou apenas Risoto
+-- Rafaelly favoritou apenas Risoto
 insert into gustus.favoritos (idUsuario, idPrato) values
 (3, 1);
 
 
 --um usuario so pode ter 2 favoritos--
-select count(*) 
+select count(*) as quantosFavoritos
 from gustus.favoritos 
-where idUsuario = @idUsuario;
+where idUsuario = 1;
 
 
 --pagina favoritos do usuario--
+
+select 
+    p.idPrato,
+    p.prato,
+    p.foto,
+    p.descricao,
+    p.linkReceita
+from gustus.pratos as p
+inner join gustus.favoritos as f on p.idPrato = f.idPrato
+where f.idUsuario = 1;
 
 ---------------------------------------------
 
@@ -120,13 +142,13 @@ insert into gustus.degustados (idUsuario, idPrato, nota, descricao) values
 insert into gustus.degustados (idUsuario, idPrato, nota, descricao) values
 (2, 1, 4, 'Bom, mas poderia ter mais camarão.');
 
--- Ana degustou Açaí
+-- Rafaelly degustou Açaí
 insert into gustus.degustados (idUsuario, idPrato, nota, descricao) values
 (3, 4, 5, 'Perfeito para dias quentes!');
 
 
 --pagina avaliar--
-
+--(insert)
 
 --pagina degustados do usuario--
 
@@ -139,7 +161,7 @@ select
 from gustus.degustados d
 inner join gustus.usuarios u on u.idUsuario = d.idUsuario
 inner join gustus.pratos p on p.idPrato = d.idPrato
-where u.idUsuario = @idUsuario;
+where u.idUsuario = 1;
 
 ---------------------------------------------
 
@@ -150,6 +172,7 @@ create table gustus.wishlist
     idPrato int not null foreign key references gustus.pratos(idPrato)
 );
 
+
 --inserts
 -- Mariana quer experimentar File Mignon
 insert into gustus.wishlist (idUsuario, idPrato) values
@@ -159,11 +182,21 @@ insert into gustus.wishlist (idUsuario, idPrato) values
 insert into gustus.wishlist (idUsuario, idPrato) values
 (2, 4);
 
--- Ana quer experimentar Ratatouille
+-- Rafaelly quer experimentar Ratatouille
 insert into gustus.wishlist (idUsuario, idPrato) values
 (3, 2);
 
 
 --pagina wishlist do usuario--
+
+select 
+    p.idPrato,
+    p.prato,
+    p.foto,
+    p.descricao,
+    p.linkReceita
+from gustus.pratos as p
+inner join gustus.wishlist as w on p.idPrato = w.idPrato
+where w.idUsuario = 1;
 
 ---------------------------------------------
