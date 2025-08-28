@@ -62,12 +62,12 @@ insert into gustus.pratos
 values
 ('Risoto de Camarão', 'https://picsum.photos/200/risoto', 'Prato italiano cremoso com camarões frescos.', 'https://www.tudogostoso.com.br/receita/185493-risoto-de-camarao-sem-frescura.html'),
 ('Ratatouille', 'https://picsum.photos/200/ratatouille', 'Receita francesa com legumes assados.', 'https://www.tudogostoso.com.br/receita/135302-ratatouille.html'),
-('File Mignon', 'https://picsum.photos/200/filemignon', 'Corte nobre de carne ao molho madeira.', 'https://www.tudogostoso.com.br/categorias/1116-file-mignon'),
+('File Mignon', 'https://raw.githubusercontent.com/mariwgh/Gustus/main/imagens/file-mignon.png', 'Corte nobre de carne ao molho madeira.', 'https://www.tudogostoso.com.br/categorias/1116-file-mignon'),
 ('Açaí', 'https://picsum.photos/200/acai', 'Sobremesa brasileira servida gelada.', 'https://www.tudogostoso.com.br/receita/296086-acai.html'),
+('Carne ao molho', 'https://picsum.photos/200/pizza', 'Iscas de carne bovina ao molho temperado.', 'https://www.tudogostoso.com.br/receita/131095-carne-ao-molho-simples-e-e-saboroso.html'),
 ('Lasanha à Bolonhesa', 'https://picsum.photos/200/lasanha', 'Massa em camadas com molho à bolonhesa e queijo gratinado.', 'https://www.tudogostoso.com.br/receita/876-lasanha-de-carne-moida.html'),
 ('Brigadeiro', 'https://picsum.photos/200/brigadeiro', 'Doce brasileiro feito com leite condensado, chocolate e granulado.', 'https://www.tudogostoso.com.br/receita/114-brigadeiro.html'),
-('Sushi', 'https://picsum.photos/200/sushi', 'Prato japonês com arroz temperado e peixe cru.', 'https://www.tudogostoso.com.br/receita/37091-sushi.html'),
-('Pizza Margherita', 'https://picsum.photos/200/pizza', 'Pizza tradicional italiana com molho de tomate, mussarela e manjericão.', 'https://www.tudogostoso.com.br/receita/91718-pizza-marguerita-super-facil.html');
+('Sushi', 'https://picsum.photos/200/sushi', 'Prato japonês com arroz temperado e peixe cru.', 'https://www.tudogostoso.com.br/receita/37091-sushi.html');
 
 
 --pagina inicial todos os produtos--
