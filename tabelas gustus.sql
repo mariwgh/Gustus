@@ -5,6 +5,7 @@ select * from gustus.favoritos
 select * from gustus.degustados
 select * from gustus.wishlist
 
+--------------------------------------------
 
 create schema gustus;
 
@@ -24,7 +25,7 @@ insert into gustus.usuarios
 values
 ('Mariana', 'mariana@email.com', '123456'),
 ('Joao', 'joao@email.com', 'senha123'),
-('Ana', 'ana@email.com', 'segredo321');
+('Rafaelly', 'rafaelly@email.com', 'segredo321');
 
 
 --adicionar, alterar e excluir--
@@ -49,16 +50,25 @@ create table gustus.pratos
 (
     idPrato int primary key identity(1,1),
     prato varchar(100) unique not null,
+	foto varchar(max) not null,  -- link para a foto
     descricao text,
     linkReceita varchar(max)
 );
+
+drop table gustus.pratos;
 
 --inserts
 insert into gustus.pratos (prato, descricao, linkReceita) values
 ('Risoto de Camarão', 'Prato italiano cremoso com camarões frescos.', 'https://www.tudogostoso.com.br/receita/185493-risoto-de-camarao-sem-frescura.html'),
 ('Ratatouille', 'Receita francesa com legumes assados.', 'https://www.tudogostoso.com.br/receita/135302-ratatouille.html'),
 ('File Mignon', 'Corte nobre de carne ao molho madeira.', 'https://www.tudogostoso.com.br/categorias/1116-file-mignon'),
-('Açaí', 'Sobremesa brasileira servida gelada.', 'https://www.tudogostoso.com.br/receita/296086-acai.html');
+('Açaí', 'Sobremesa brasileira servida gelada.', 'https://www.tudogostoso.com.br/receita/296086-acai.html'),
+
+('Lasanha à Bolonhesa', 'Massa em camadas com molho à bolonhesa e queijo gratinado.', 'https://www.tudogostoso.com.br/receita/876-lasanha-de-carne-moida.html'),
+('Brigadeiro', 'Doce brasileiro feito com leite condensado, chocolate e granulado.', 'https://www.tudogostoso.com.br/receita/114-brigadeiro.html'),
+('Sushi', 'Prato japonês com arroz temperado e peixe cru.', 'https://www.tudogostoso.com.br/receita/37091-sushi.html'),
+('Pizza Margherita', 'Pizza tradicional italiana com molho de tomate, mussarela e manjericão.', 'https://www.tudogostoso.com.br/receita/91718-pizza-marguerita-super-facil.html');
+
 
 
 --pagina inicial todos os produtos--
