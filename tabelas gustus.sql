@@ -55,20 +55,19 @@ create table gustus.pratos
     linkReceita varchar(max)
 );
 
-drop table gustus.pratos;
 
 --inserts
-insert into gustus.pratos (prato, descricao, linkReceita) values
-('Risoto de Camarão', 'Prato italiano cremoso com camarões frescos.', 'https://www.tudogostoso.com.br/receita/185493-risoto-de-camarao-sem-frescura.html'),
-('Ratatouille', 'Receita francesa com legumes assados.', 'https://www.tudogostoso.com.br/receita/135302-ratatouille.html'),
-('File Mignon', 'Corte nobre de carne ao molho madeira.', 'https://www.tudogostoso.com.br/categorias/1116-file-mignon'),
-('Açaí', 'Sobremesa brasileira servida gelada.', 'https://www.tudogostoso.com.br/receita/296086-acai.html'),
-
-('Lasanha à Bolonhesa', 'Massa em camadas com molho à bolonhesa e queijo gratinado.', 'https://www.tudogostoso.com.br/receita/876-lasanha-de-carne-moida.html'),
-('Brigadeiro', 'Doce brasileiro feito com leite condensado, chocolate e granulado.', 'https://www.tudogostoso.com.br/receita/114-brigadeiro.html'),
-('Sushi', 'Prato japonês com arroz temperado e peixe cru.', 'https://www.tudogostoso.com.br/receita/37091-sushi.html'),
-('Pizza Margherita', 'Pizza tradicional italiana com molho de tomate, mussarela e manjericão.', 'https://www.tudogostoso.com.br/receita/91718-pizza-marguerita-super-facil.html');
-
+insert into gustus.pratos 
+(prato, foto, descricao, linkReceita) 
+values
+('Risoto de Camarão', 'https://picsum.photos/200/risoto', 'Prato italiano cremoso com camarões frescos.', 'https://www.tudogostoso.com.br/receita/185493-risoto-de-camarao-sem-frescura.html'),
+('Ratatouille', 'https://picsum.photos/200/ratatouille', 'Receita francesa com legumes assados.', 'https://www.tudogostoso.com.br/receita/135302-ratatouille.html'),
+('File Mignon', 'https://picsum.photos/200/filemignon', 'Corte nobre de carne ao molho madeira.', 'https://www.tudogostoso.com.br/categorias/1116-file-mignon'),
+('Açaí', 'https://picsum.photos/200/acai', 'Sobremesa brasileira servida gelada.', 'https://www.tudogostoso.com.br/receita/296086-acai.html'),
+('Lasanha à Bolonhesa', 'https://picsum.photos/200/lasanha', 'Massa em camadas com molho à bolonhesa e queijo gratinado.', 'https://www.tudogostoso.com.br/receita/876-lasanha-de-carne-moida.html'),
+('Brigadeiro', 'https://picsum.photos/200/brigadeiro', 'Doce brasileiro feito com leite condensado, chocolate e granulado.', 'https://www.tudogostoso.com.br/receita/114-brigadeiro.html'),
+('Sushi', 'https://picsum.photos/200/sushi', 'Prato japonês com arroz temperado e peixe cru.', 'https://www.tudogostoso.com.br/receita/37091-sushi.html'),
+('Pizza Margherita', 'https://picsum.photos/200/pizza', 'Pizza tradicional italiana com molho de tomate, mussarela e manjericão.', 'https://www.tudogostoso.com.br/receita/91718-pizza-marguerita-super-facil.html');
 
 
 --pagina inicial todos os produtos--
@@ -85,6 +84,7 @@ create table gustus.favoritos
     idUsuario int not null foreign key references gustus.usuarios(idUsuario),
     idPrato int not null foreign key references gustus.pratos(idPrato)
 );
+drop table gustus.favoritos;
 
 --inserts
 -- Mariana favoritou Risoto e Açaí
@@ -120,6 +120,7 @@ create table gustus.degustados
     nota int check (nota between 1 and 5),
     descricao text
 );
+drop table gustus.degustados;
 
 --inserts
 -- Mariana degustou Ratatouille e avaliou
@@ -159,6 +160,8 @@ create table gustus.wishlist
     idUsuario int not null foreign key references gustus.usuarios(idUsuario),
     idPrato int not null foreign key references gustus.pratos(idPrato)
 );
+
+drop table gustus.wishlist;
 
 --inserts
 -- Mariana quer experimentar File Mignon
