@@ -151,7 +151,7 @@ app.post("/favoritar" , verificarToken , async (req , res)=>{
         res.sendStatus(500)
     }
 })
-
+ 
 //remover favoritos
 //adicionar na wishlist
 //ver a wishlist
