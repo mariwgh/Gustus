@@ -1,5 +1,8 @@
 const express = require("express");
 const sql = require("mssql");
+const jwt = require("jsonwebtoken");        //isso será usado para manter o login feito
+const SECRET_KEY = "loveMyGirlfriend";      //essa "senha" será usada para ??? mas é necessária
+
 
 const app = express();
 const PORT = 3000;
@@ -35,6 +38,21 @@ app.get("/familiares", async (req, res) => {
         res.status(500).send("Erro ao buscar clientes: " + err);
     }
 });
+
+//antes de fzr qualquer funcionalidade é necessário verificar se o token ainda é correspondente
+function verificarToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];     //formato: "Bearer TOKEN"
+
+  if (!token) return res.sendStatus(401); // não autorizado
+
+  jwt.verify(token, SECRET_KEY, (err, user) => {
+    if (err) return res.sendStatus(403); // token inválido
+    req.user = user; // guarda o usuário no request
+    next();
+  });
+}
+
 
 //cadastrar
 app.post("/cadastrar" , async (req, res) => {
@@ -82,6 +100,8 @@ app.get("/login" , async (req, res)=> {
 
                 if (password.recordset[0] == senha){
                     res.sendStatus(200) //login ok
+                    const token = jwt.sign({ email: email }, SECRET_KEY, { expiresIn: '1h' });  //mantém o login guardado por 1h
+                    return res.json({token})    //oq isso faz?
                 }
                 else{
                     res.sendStatus(401) //login deu erro
@@ -107,6 +127,31 @@ app.get("/ver-favoritos" , async (req, res) => {
 })
 
 //adicionar favoritos
+app.post("/favoritar" , verificarToken , async (req , res)=>{
+    let email = req.user.email      //vem do token
+    let idComida = req.query.idPrato        //tem que fazer um jeito que pega o id do que o usuário está visualizando (não sei como)
+    try{
+        if (!idComida) {
+            return res.status(400).json({ mensagem: "ID do prato não informado" });
+        }
+        let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${email}`
+        //res.json()
+        if (idUserSQL.recordset.length === 0) {
+            return res.status(404).json({ mensagem: "Usuário não encontrado" });
+        }
+
+        let idUser = idUserSQL.recordset[0].idUsuario
+
+        await sql.query`insert into gustus.favoritos (idUsuario, idPrato) values (${idUser}, ${idComida})`
+        res.sendStatus(200)       //deu certo
+    }
+
+    catch(erro){
+        console.log(erro.message)
+        res.sendStatus(500)
+    }
+})
+
 //remover favoritos
 //adicionar na wishlist
 //ver a wishlist
