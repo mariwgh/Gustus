@@ -115,24 +115,24 @@ app.post("/login", async (req, res) => {
 });
 
 //ver favoritos (sem alterações)
-app.get("/ver-favoritos" , verificarToken, async (req, res) => {
-    let emailUser = req.user.email
-    try{
-        let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${emailUser}`
+app.get("/ver-favoritos", verificarToken, async (req, res) => {
+    let emailUser = req.user.email
+    try {
+        let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${emailUser}`
 
-        if (idUserSQL.recordset.length === 0) {
-            return res.status(404).json({ mensagem: "Usuário não encontrado" });
-        }
+        if (idUserSQL.recordset.length === 0) {
+            return res.status(404).json({ mensagem: "Usuário não encontrado" });
+        }
 
-        let idUser = idUserSQL.recordset[0].idUsuario
-        let result = await sql.query`select * from gustus.favoritos where idUsuario = ${idUser}`
-        return res.json(result.recordset)
-    }
+        let idUser = idUserSQL.recordset[0].idUsuario
+        let result = await sql.query`select * from gustus.favoritos where idUsuario = ${idUser}`
+        return res.json(result.recordset)
+    }
 
-    catch(erro){           
-        console.log(erro.message)
-        return res.sendStatus(500)      //erro interno
-    }
+    catch (erro) {
+        console.log(erro.message)
+        return res.sendStatus(500)      //erro interno
+    }
 })
 
 //adicionar favoritos
@@ -145,7 +145,7 @@ app.post("/add-favoritos", verificarToken, async (req, res) => {
             return res.status(400).json({ mensagem: "ID do prato não informado" });
         }
         let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${email}`;
-        
+
         if (idUserSQL.recordset.length === 0) {
             return res.status(404).json({ mensagem: "Usuário não encontrado" });
         }
@@ -170,7 +170,7 @@ app.delete("/delete-favoritos", verificarToken, async (req, res) => {
             return res.status(400).json({ mensagem: "ID do prato não informado" });
         }
         let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${email}`;
-        
+
         if (idUserSQL.recordset.length === 0) {
             return res.status(404).json({ mensagem: "Usuário não encontrado" });
         }
@@ -196,7 +196,7 @@ app.post("/add-wishlist", verificarToken, async (req, res) => {
             return res.status(400).json({ mensagem: "ID do prato não informado" });
         }
         let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${email}`;
-        
+
         if (idUserSQL.recordset.length === 0) {
             return res.status(404).json({ mensagem: "Usuário não encontrado" });
         }
@@ -211,22 +211,22 @@ app.post("/add-wishlist", verificarToken, async (req, res) => {
 });
 
 //ver a wishlist (sem alterações)
-app.get("/ver-wishlist" , verificarToken, async (req, res) => {
-    let emailUser = req.user.email
-    try{
-        let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${emailUser}`
-        if (idUserSQL.recordset.length === 0) {
-            return res.status(404).json({ mensagem: "Usuário não encontrado" });
-        }
-        let idUser = idUserSQL.recordset[0].idUsuario
-        let result = await sql.query`select * from gustus.wishlist where idUsuario = ${idUser}`
-        return res.json(result.recordset)
-    }
+app.get("/ver-wishlist", verificarToken, async (req, res) => {
+    let emailUser = req.user.email
+    try {
+        let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${emailUser}`
+        if (idUserSQL.recordset.length === 0) {
+            return res.status(404).json({ mensagem: "Usuário não encontrado" });
+        }
+        let idUser = idUserSQL.recordset[0].idUsuario
+        let result = await sql.query`select * from gustus.wishlist where idUsuario = ${idUser}`
+        return res.json(result.recordset)
+    }
 
-    catch(erro){
-        console.log(erro.message)
-        return res.sendStatus(500)      //erro interno
-    }
+    catch (erro) {
+        console.log(erro.message)
+        return res.sendStatus(500)      //erro interno
+    }
 })
 
 //remover da wishlist
@@ -239,7 +239,7 @@ app.delete("/delete-wishlist", verificarToken, async (req, res) => {
             return res.status(400).json({ mensagem: "ID do prato não informado" });
         }
         let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${email}`;
-        
+
         if (idUserSQL.recordset.length === 0) {
             return res.status(404).json({ mensagem: "Usuário não encontrado" });
         }
@@ -264,7 +264,7 @@ app.post("/add-degustar", verificarToken, async (req, res) => {
             return res.status(400).json({ mensagem: "ID do prato não informado" });
         }
         let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${email}`;
-        
+
         if (idUserSQL.recordset.length === 0) {
             return res.status(404).json({ mensagem: "Usuário não encontrado" });
         }
@@ -279,22 +279,22 @@ app.post("/add-degustar", verificarToken, async (req, res) => {
 });
 
 //ver degustados (sem alterações)
-app.get("/ver-degustar" , verificarToken,  async (req, res) => {
-    let emailUser = req.user.email
-    try{
-        let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${emailUser}`
-        //res.json()
-        if (idUserSQL.recordset.length === 0) {
-            return res.status(404).json({ mensagem: "Usuário não encontrado" });
-        }
-        let idUser = idUserSQL.recordset[0].idUsuario
-        let result = await sql.query`select * from gustus.degustados where idUsuario = ${idUser}`
-        return res.json(result.recordset)
-    }
-    catch(erro){
-        console.log(erro.message)
-        return res.sendStatus(500)      //erro interno
-    }
+app.get("/ver-degustar", verificarToken, async (req, res) => {
+    let emailUser = req.user.email
+    try {
+        let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${emailUser}`
+        //res.json()
+        if (idUserSQL.recordset.length === 0) {
+            return res.status(404).json({ mensagem: "Usuário não encontrado" });
+        }
+        let idUser = idUserSQL.recordset[0].idUsuario
+        let result = await sql.query`select * from gustus.degustados where idUsuario = ${idUser}`
+        return res.json(result.recordset)
+    }
+    catch (erro) {
+        console.log(erro.message)
+        return res.sendStatus(500)      //erro interno
+    }
 })
 
 //pesquisar comidas
@@ -322,7 +322,7 @@ app.post("/avaliar", verificarToken, async (req, res) => {
             return res.status(400).json({ mensagem: "ID do prato não informado" });
         }
         let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${emailUser}`;
-        
+
         if (idUserSQL.recordset.length === 0) {
             return res.status(404).json({ mensagem: "Usuário não encontrado" });
         }
@@ -342,12 +342,12 @@ app.post("/avaliar", verificarToken, async (req, res) => {
 
 //ver receita
 app.get("/ver-receita", async (req, res) => {
-    const {comida} = req.body       //nome do prato
-    try{
+    const { comida } = req.body       //nome do prato
+    try {
         let result = await sql.query`select linkReceita from gustus.pratos where prato = ${comida}`
         res.json(result.recordset)
     }
-    catch(erro){
+    catch (erro) {
         console.log(erro.message)
         res.sendStatus(500)
     }
