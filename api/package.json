@@ -11,6 +11,7 @@
   "dependencies": {
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "mssql": "^11.0.1"
+    "mssql": "^11.0.1",
+    "pg": "^8.16.3"
   }
 }

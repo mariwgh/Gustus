@@ -1,0 +1,370 @@
+const express = require("express");
+const sql = require("mssql");
+const jwt = require("jsonwebtoken");
+const SECRET_KEY = "loveMyGirlfriend";
+
+const app = express();
+const PORT = 3000;
+
+// NOVO: Middleware essencial para o Express conseguir ler o req.body em JSON
+app.use(express.json());
+
+function validarEmail(email) {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+}
+
+// Configuração do banco
+const config = {
+    user: "BD24140",
+    password: "BD24140",
+    server: "regulus.cotuca.unicamp.br",
+    database: "BD24140",
+    options: {
+        encrypt: true,
+        trustServerCertificate: true
+    }
+};
+
+// Testando a conexão
+sql.connect(config)
+    .then(() => console.log("Conectado ao SQL Server ✅"))
+    .catch(err => console.error("Erro de conexão ❌:", err));
+
+// Rota de exemplo (sem alterações)
+app.get("/familiares", async (req, res) => {
+    try {
+        let result = await sql.query`select * from familiamari.familia`;
+        res.json(result.recordset);
+    } catch (err) {
+        res.status(500).send("Erro ao buscar clientes: " + err);
+    }
+});
+
+// Middleware de verificação de token (sem alterações)
+function verificarToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) return res.sendStatus(401);
+
+    jwt.verify(token, SECRET_KEY, (err, user) => {
+        if (err) return res.sendStatus(403);
+        req.user = user;
+        next();
+    });
+}
+
+
+//cadastrar
+app.post("/cadastrar", async (req, res) => {
+    try {
+        // ALTERADO: Trocado req.query por req.body
+        const { email, senha, user } = req.body;
+
+        if (validarEmail(email)) {
+            let emailExiste = await sql.query`select * from gustus.usuarios where email = ${email}`;
+
+            if (emailExiste.recordset.length > 0) {
+                res.status(409).json({ mensagem: "E-mail já cadastrado." }); // É bom enviar uma mensagem
+            } else {
+                await sql.query`insert into gustus.usuarios (usuario, email, senha) values (${user}, ${email}, ${senha})`;
+                res.status(201).json({ mensagem: "Usuário criado com sucesso." });
+            }
+        } else {
+            res.status(400).json({ mensagem: "Formato de e-mail inválido." });
+        }
+
+    } catch (erro) {
+        console.log(erro.message);
+        res.status(500).json({ mensagem: "Erro interno no servidor." });
+    }
+});
+
+
+//login
+// ALTERADO: Método GET para POST, pois é mais seguro enviar credenciais no body.
+app.post("/login", async (req, res) => {
+    // ALTERADO: Trocado req.query por req.body
+    const { email, senha } = req.body;
+
+    if (!validarEmail(email)) {
+        return res.status(400).json({ sucesso: false, mensagem: "Formato de e-mail inválido" });
+    }
+
+    try {
+        let result = await sql.query`select * from gustus.usuarios where email = ${email}`;
+
+        if (result.recordset.length > 0) {
+            // CORREÇÃO: A comparação da senha estava incorreta.
+            const usuario = result.recordset[0];
+            if (usuario.senha === senha) { // Comparando a senha do banco com a senha enviada
+                const token = jwt.sign({ email: email }, SECRET_KEY, { expiresIn: '1h' });
+                // CORREÇÃO: Enviando o status 200 junto com o token no JSON.
+                return res.status(200).json({ token: token });
+            } else {
+                res.status(401).json({ mensagem: "Senha incorreta." });
+            }
+        } else {
+            res.status(404).json({ mensagem: "Usuário não encontrado." });
+        }
+    } catch (erro) {
+        console.log(erro.message);
+        res.status(500).json({ mensagem: "Erro interno no servidor." });
+    }
+});
+
+//ver favoritos (sem alterações)
+app.get("/ver-favoritos", verificarToken, async (req, res) => {
+    let emailUser = req.user.email
+    try {
+        let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${emailUser}`
+
+        if (idUserSQL.recordset.length === 0) {
+            return res.status(404).json({ mensagem: "Usuário não encontrado" });
+        }
+
+        let idUser = idUserSQL.recordset[0].idUsuario
+        let result = await sql.query`select * from gustus.favoritos where idUsuario = ${idUser}`
+        return res.json(result.recordset)
+    }
+
+    catch (erro) {
+        console.log(erro.message)
+        return res.sendStatus(500)      //erro interno
+    }
+})
+
+//adicionar favoritos
+app.post("/add-favoritos", verificarToken, async (req, res) => {
+    let email = req.user.email;
+    // ALTERADO: Trocado req.query por req.body
+    const { idPrato } = req.body;
+    try {
+        if (!idPrato) {
+            return res.status(400).json({ mensagem: "ID do prato não informado" });
+        }
+        let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${email}`;
+
+        if (idUserSQL.recordset.length === 0) {
+            return res.status(404).json({ mensagem: "Usuário não encontrado" });
+        }
+
+        let idUser = idUserSQL.recordset[0].idUsuario;
+
+        await sql.query`insert into gustus.favoritos (idUsuario, idPrato) values (${idUser}, ${idPrato})`;
+        res.status(200).json({ mensagem: "Adicionado aos favoritos." });
+    } catch (erro) {
+        console.log(erro.message);
+        res.sendStatus(500);
+    }
+});
+
+//remover favoritos
+app.delete("/delete-favoritos", verificarToken, async (req, res) => {
+    let email = req.user.email;
+    // ALTERADO: Trocado req.query por req.body
+    const { idPrato } = req.body;
+    try {
+        if (!idPrato) {
+            return res.status(400).json({ mensagem: "ID do prato não informado" });
+        }
+        let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${email}`;
+
+        if (idUserSQL.recordset.length === 0) {
+            return res.status(404).json({ mensagem: "Usuário não encontrado" });
+        }
+
+        let idUser = idUserSQL.recordset[0].idUsuario;
+
+        await sql.query`delete from gustus.favoritos where idUsuario = ${idUser} and idPrato = ${idPrato}`;
+        res.status(200).json({ mensagem: "Removido dos favoritos." });
+    } catch (erro) {
+        console.log(erro.message);
+        res.sendStatus(500);
+    }
+});
+
+//adicionar na wishlist
+// CORREÇÃO: Faltava uma "/" na rota.
+app.post("/add-wishlist", verificarToken, async (req, res) => {
+    let email = req.user.email;
+    // ALTERADO: Trocado req.query por req.body
+    const { idPrato } = req.body;
+    try {
+        if (!idPrato) {
+            return res.status(400).json({ mensagem: "ID do prato não informado" });
+        }
+        let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${email}`;
+
+        if (idUserSQL.recordset.length === 0) {
+            return res.status(404).json({ mensagem: "Usuário não encontrado" });
+        }
+
+        let idUser = idUserSQL.recordset[0].idUsuario;
+        await sql.query`insert into gustus.wishlist (idUsuario, idPrato) values (${idUser}, ${idPrato})`;
+        res.status(200).json({ mensagem: "Adicionado à wishlist." });
+    } catch (erro) {
+        console.log(erro.message);
+        res.sendStatus(500);
+    }
+});
+
+//ver a wishlist (sem alterações)
+app.get("/ver-wishlist", verificarToken, async (req, res) => {
+    let emailUser = req.user.email
+    try {
+        let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${emailUser}`
+        if (idUserSQL.recordset.length === 0) {
+            return res.status(404).json({ mensagem: "Usuário não encontrado" });
+        }
+        let idUser = idUserSQL.recordset[0].idUsuario
+        let result = await sql.query`select * from gustus.wishlist where idUsuario = ${idUser}`
+        return res.json(result.recordset)
+    }
+
+    catch (erro) {
+        console.log(erro.message)
+        return res.sendStatus(500)      //erro interno
+    }
+})
+
+//remover da wishlist
+app.delete("/delete-wishlist", verificarToken, async (req, res) => {
+    let email = req.user.email;
+    // ALTERADO: Trocado req.query por req.body
+    const { idPrato } = req.body;
+    try {
+        if (!idPrato) {
+            return res.status(400).json({ mensagem: "ID do prato não informado" });
+        }
+        let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${email}`;
+
+        if (idUserSQL.recordset.length === 0) {
+            return res.status(404).json({ mensagem: "Usuário não encontrado" });
+        }
+
+        let idUser = idUserSQL.recordset[0].idUsuario;
+
+        await sql.query`delete from gustus.wishlist where idUsuario = ${idUser} and idPrato = ${idPrato}`;
+        res.status(200).json({ mensagem: "Removido da wishlist." });
+    } catch (erro) {
+        console.log(erro.message);
+        res.sendStatus(500);
+    }
+});
+
+//adicionar a degustados
+app.post("/add-degustar", verificarToken, async (req, res) => {
+    let email = req.user.email;
+    // ALTERADO: Trocado req.query por req.body
+    const { idPrato, nota, descricao } = req.body;
+    try {
+        if (!idPrato) {
+            return res.status(400).json({ mensagem: "ID do prato não informado" });
+        }
+        let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${email}`;
+
+        if (idUserSQL.recordset.length === 0) {
+            return res.status(404).json({ mensagem: "Usuário não encontrado" });
+        }
+
+        let idUser = idUserSQL.recordset[0].idUsuario;
+        await sql.query`insert into gustus.degustados (idUsuario, idPrato, nota, descricao) values (${idUser}, ${idPrato}, ${nota}, ${descricao})`;
+        res.status(201).json({ mensagem: "Prato degustado adicionado." });
+    } catch (erro) {
+        console.log(erro.message);
+        res.sendStatus(500);
+    }
+});
+
+//ver degustados (sem alterações)
+app.get("/ver-degustar", verificarToken, async (req, res) => {
+    let emailUser = req.user.email
+    try {
+        let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${emailUser}`
+        //res.json()
+        if (idUserSQL.recordset.length === 0) {
+            return res.status(404).json({ mensagem: "Usuário não encontrado" });
+        }
+        let idUser = idUserSQL.recordset[0].idUsuario
+        let result = await sql.query`select * from gustus.degustados where idUsuario = ${idUser}`
+        return res.json(result.recordset)
+    }
+    catch (erro) {
+        console.log(erro.message)
+        return res.sendStatus(500)      //erro interno
+    }
+})
+
+//pesquisar comidas
+// NOTA: Esta rota foi MANTIDA com req.query de propósito.
+// Para buscas e filtros (GET), o padrão e a melhor prática é usar query parameters.
+app.get("/pesquisar", verificarToken, async (req, res) => {
+    const { prato } = req.query; // Mantido como query
+    try {
+        let result = await sql.query`select * from gustus.pratos where prato = ${prato}`;
+        res.json(result.recordset);
+    } catch (error) {
+        console.log(error.message); // Corrigido o nome da variável de erro
+        res.sendStatus(500);
+    }
+});
+
+//adicionar/atualizar avaliação
+app.post("/avaliar", verificarToken, async (req, res) => {
+    let emailUser = req.user.email;
+    // ALTERADO: Trocado req.query por req.body
+    const { idPrato, nota, descricao } = req.body;
+
+    try {
+        if (!idPrato) {
+            return res.status(400).json({ mensagem: "ID do prato não informado" });
+        }
+        let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${emailUser}`;
+
+        if (idUserSQL.recordset.length === 0) {
+            return res.status(404).json({ mensagem: "Usuário não encontrado" });
+        }
+
+        let idUser = idUserSQL.recordset[0].idUsuario;
+
+        // CORREÇÃO: A query SQL estava errada. INSERT não usa WHERE.
+        // A ação correta aqui é um UPDATE, já que o prato foi adicionado em "/add-degustar".
+        await sql.query`UPDATE gustus.degustados SET nota = ${nota}, descricao = ${descricao} WHERE idUsuario = ${idUser} AND idPrato = ${idPrato}`;
+        res.status(200).json({ mensagem: "Avaliação atualizada com sucesso." });
+    } catch (erro) {
+        console.log(erro.message);
+        res.sendStatus(500);
+    }
+});
+
+
+//ver receita
+app.get("/ver-receita", async (req, res) => {
+    const { comida } = req.body       //nome do prato
+    try {
+        let result = await sql.query`select linkReceita from gustus.pratos where prato = ${comida}`
+        res.json(result.recordset)
+    }
+    catch (erro) {
+        console.log(erro.message)
+        res.sendStatus(500)
+    }
+    //devolver o link somente
+    //só depois (no flutter) eu vou fzr abrir no chrome
+});
+
+app.get("/usuarios" ,async(req,res)=>{
+    try {
+        let result = await sql.query`select * from gustus.usuarios`
+        res.json(result.recordset)
+    } catch (error) {
+        console.log(erro.message)
+        res.sendStatus(500)
+    }
+})
+
+app.listen(PORT, () => {
+    console.log(`Servidor rodando em http://localhost:${PORT}`);
+});
