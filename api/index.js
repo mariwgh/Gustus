@@ -1,12 +1,11 @@
 const express = require("express");
-const sql = require("mssql");
 const jwt = require("jsonwebtoken");
+const { Pool } = require('pg'); // Usando a biblioteca do PostgreSQL
 const SECRET_KEY = "loveMyGirlfriend";
 
 const app = express();
 const PORT = 3000;
 
-// NOVO: Middleware essencial para o Express conseguir ler o req.body em JSON
 app.use(express.json());
 
 function validarEmail(email) {
@@ -14,34 +13,28 @@ function validarEmail(email) {
     return regex.test(email);
 }
 
-// Configuração do banco
-const config = {
-    user: "BD24140",
-    password: "BD24140",
-    server: "regulus.cotuca.unicamp.br",
-    database: "BD24140",
-    options: {
-        encrypt: true,
-        trustServerCertificate: true
-    }
-};
-
-// Testando a conexão
-sql.connect(config)
-    .then(() => console.log("Conectado ao SQL Server ✅"))
-    .catch(err => console.error("Erro de conexão ❌:", err));
-
-// Rota de exemplo (sem alterações)
-app.get("/familiares", async (req, res) => {
-    try {
-        let result = await sql.query`select * from familiamari.familia`;
-        res.json(result.recordset);
-    } catch (err) {
-        res.status(500).send("Erro ao buscar clientes: " + err);
+// Configuração do Pool de conexões do PostgreSQL
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
     }
 });
 
-// Middleware de verificação de token (sem alterações)
+console.log("Pool de conexões com PostgreSQL configurado ✅");
+
+// Rota de exemplo
+app.get("/familiares", async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM familiamari.familia');
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Erro ao buscar dados: " + err.message);
+    }
+});
+
+// Middleware de verificação de token
 function verificarToken(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -55,37 +48,32 @@ function verificarToken(req, res, next) {
     });
 }
 
-
 //cadastrar
 app.post("/cadastrar", async (req, res) => {
+    const { email, senha, user } = req.body;
+
+    if (!validarEmail(email)) {
+        return res.status(400).json({ mensagem: "Formato de e-mail inválido." });
+    }
+
     try {
-        // ALTERADO: Trocado req.query por req.body
-        const { email, senha, user } = req.body;
+        const emailExisteResult = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
 
-        if (validarEmail(email)) {
-            let emailExiste = await sql.query`select * from gustus.usuarios where email = ${email}`;
-
-            if (emailExiste.recordset.length > 0) {
-                res.status(409).json({ mensagem: "E-mail já cadastrado." }); // É bom enviar uma mensagem
-            } else {
-                await sql.query`insert into gustus.usuarios (usuario, email, senha) values (${user}, ${email}, ${senha})`;
-                res.status(201).json({ mensagem: "Usuário criado com sucesso." });
-            }
-        } else {
-            res.status(400).json({ mensagem: "Formato de e-mail inválido." });
+        if (emailExisteResult.rows.length > 0) {
+            return res.status(409).json({ mensagem: "E-mail já cadastrado." });
         }
 
+        await pool.query('INSERT INTO usuarios (usuario, email, senha) VALUES ($1, $2, $3)', [user, email, senha]);
+        res.status(201).json({ mensagem: "Usuário criado com sucesso." });
+
     } catch (erro) {
-        console.log(erro.message);
+        console.error(erro.message);
         res.status(500).json({ mensagem: "Erro interno no servidor." });
     }
 });
 
-
 //login
-// ALTERADO: Método GET para POST, pois é mais seguro enviar credenciais no body.
 app.post("/login", async (req, res) => {
-    // ALTERADO: Trocado req.query por req.body
     const { email, senha } = req.body;
 
     if (!validarEmail(email)) {
@@ -93,267 +81,242 @@ app.post("/login", async (req, res) => {
     }
 
     try {
-        let result = await sql.query`select * from gustus.usuarios where email = ${email}`;
+        const result = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
 
-        if (result.recordset.length > 0) {
-            // CORREÇÃO: A comparação da senha estava incorreta.
-            const usuario = result.recordset[0];
-            if (usuario.senha === senha) { // Comparando a senha do banco com a senha enviada
+        if (result.rows.length > 0) {
+            const usuario = result.rows[0];
+            if (usuario.senha === senha) {
                 const token = jwt.sign({ email: email }, SECRET_KEY, { expiresIn: '1h' });
-                // CORREÇÃO: Enviando o status 200 junto com o token no JSON.
                 return res.status(200).json({ token: token });
             } else {
-                res.status(401).json({ mensagem: "Senha incorreta." });
+                return res.status(401).json({ mensagem: "Senha incorreta." });
             }
         } else {
-            res.status(404).json({ mensagem: "Usuário não encontrado." });
+            return res.status(404).json({ mensagem: "Usuário não encontrado." });
         }
     } catch (erro) {
-        console.log(erro.message);
+        console.error(erro.message);
         res.status(500).json({ mensagem: "Erro interno no servidor." });
     }
 });
 
-//ver favoritos (sem alterações)
-app.get("/ver-favoritos", verificarToken, async (req, res) => {
-    let emailUser = req.user.email
-    try {
-        let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${emailUser}`
+// Função auxiliar para obter ID do usuário a partir do email (evita repetição de código)
+async function getUserIdByEmail(email) {
+    const userResult = await pool.query('SELECT idUsuario FROM usuarios WHERE email = $1', [email]);
+    if (userResult.rows.length === 0) {
+        return null;
+    }
+    // Lembre-se que o PostgreSQL geralmente retorna nomes de colunas em minúsculo.
+    return userResult.rows[0].idusuario;
+}
 
-        if (idUserSQL.recordset.length === 0) {
+
+//ver favoritos
+app.get("/ver-favoritos", verificarToken, async (req, res) => {
+    try {
+        const idUser = await getUserIdByEmail(req.user.email);
+        if (!idUser) {
             return res.status(404).json({ mensagem: "Usuário não encontrado" });
         }
 
-        let idUser = idUserSQL.recordset[0].idUsuario
-        let result = await sql.query`select * from gustus.favoritos where idUsuario = ${idUser}`
-        return res.json(result.recordset)
-    }
+        const result = await pool.query('SELECT * FROM favoritos WHERE idUsuario = $1', [idUser]);
+        return res.json(result.rows);
 
-    catch (erro) {
-        console.log(erro.message)
-        return res.sendStatus(500)      //erro interno
+    } catch (erro) {
+        console.error(erro.message);
+        return res.status(500).json({ mensagem: "Erro interno no servidor." });
     }
-})
+});
 
 //adicionar favoritos
 app.post("/add-favoritos", verificarToken, async (req, res) => {
-    let email = req.user.email;
-    // ALTERADO: Trocado req.query por req.body
     const { idPrato } = req.body;
     try {
         if (!idPrato) {
             return res.status(400).json({ mensagem: "ID do prato não informado" });
         }
-        let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${email}`;
-
-        if (idUserSQL.recordset.length === 0) {
+        const idUser = await getUserIdByEmail(req.user.email);
+        if (!idUser) {
             return res.status(404).json({ mensagem: "Usuário não encontrado" });
         }
 
-        let idUser = idUserSQL.recordset[0].idUsuario;
-
-        await sql.query`insert into gustus.favoritos (idUsuario, idPrato) values (${idUser}, ${idPrato})`;
+        await pool.query('INSERT INTO favoritos (idUsuario, idPrato) VALUES ($1, $2)', [idUser, idPrato]);
         res.status(200).json({ mensagem: "Adicionado aos favoritos." });
     } catch (erro) {
-        console.log(erro.message);
-        res.sendStatus(500);
+        console.error(erro.message);
+        res.status(500).json({ mensagem: "Erro interno no servidor." });
     }
 });
 
 //remover favoritos
 app.delete("/delete-favoritos", verificarToken, async (req, res) => {
-    let email = req.user.email;
-    // ALTERADO: Trocado req.query por req.body
     const { idPrato } = req.body;
     try {
         if (!idPrato) {
             return res.status(400).json({ mensagem: "ID do prato não informado" });
         }
-        let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${email}`;
-
-        if (idUserSQL.recordset.length === 0) {
+        const idUser = await getUserIdByEmail(req.user.email);
+        if (!idUser) {
             return res.status(404).json({ mensagem: "Usuário não encontrado" });
         }
 
-        let idUser = idUserSQL.recordset[0].idUsuario;
-
-        await sql.query`delete from gustus.favoritos where idUsuario = ${idUser} and idPrato = ${idPrato}`;
+        await pool.query('DELETE FROM favoritos WHERE idUsuario = $1 AND idPrato = $2', [idUser, idPrato]);
         res.status(200).json({ mensagem: "Removido dos favoritos." });
     } catch (erro) {
-        console.log(erro.message);
-        res.sendStatus(500);
+        console.error(erro.message);
+        res.status(500).json({ mensagem: "Erro interno no servidor." });
     }
 });
 
 //adicionar na wishlist
-// CORREÇÃO: Faltava uma "/" na rota.
 app.post("/add-wishlist", verificarToken, async (req, res) => {
-    let email = req.user.email;
-    // ALTERADO: Trocado req.query por req.body
     const { idPrato } = req.body;
     try {
         if (!idPrato) {
             return res.status(400).json({ mensagem: "ID do prato não informado" });
         }
-        let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${email}`;
-
-        if (idUserSQL.recordset.length === 0) {
+        const idUser = await getUserIdByEmail(req.user.email);
+        if (!idUser) {
             return res.status(404).json({ mensagem: "Usuário não encontrado" });
         }
 
-        let idUser = idUserSQL.recordset[0].idUsuario;
-        await sql.query`insert into gustus.wishlist (idUsuario, idPrato) values (${idUser}, ${idPrato})`;
+        await pool.query('INSERT INTO wishlist (idUsuario, idPrato) VALUES ($1, $2)', [idUser, idPrato]);
         res.status(200).json({ mensagem: "Adicionado à wishlist." });
     } catch (erro) {
-        console.log(erro.message);
-        res.sendStatus(500);
+        console.error(erro.message);
+        res.status(500).json({ mensagem: "Erro interno no servidor." });
     }
 });
 
-//ver a wishlist (sem alterações)
+//ver a wishlist
 app.get("/ver-wishlist", verificarToken, async (req, res) => {
-    let emailUser = req.user.email
     try {
-        let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${emailUser}`
-        if (idUserSQL.recordset.length === 0) {
+        const idUser = await getUserIdByEmail(req.user.email);
+        if (!idUser) {
             return res.status(404).json({ mensagem: "Usuário não encontrado" });
         }
-        let idUser = idUserSQL.recordset[0].idUsuario
-        let result = await sql.query`select * from gustus.wishlist where idUsuario = ${idUser}`
-        return res.json(result.recordset)
-    }
 
-    catch (erro) {
-        console.log(erro.message)
-        return res.sendStatus(500)      //erro interno
+        const result = await pool.query('SELECT * FROM wishlist WHERE idUsuario = $1', [idUser]);
+        return res.json(result.rows);
+    } catch (erro) {
+        console.error(erro.message);
+        return res.status(500).json({ mensagem: "Erro interno no servidor." });
     }
-})
+});
 
 //remover da wishlist
 app.delete("/delete-wishlist", verificarToken, async (req, res) => {
-    let email = req.user.email;
-    // ALTERADO: Trocado req.query por req.body
     const { idPrato } = req.body;
     try {
         if (!idPrato) {
             return res.status(400).json({ mensagem: "ID do prato não informado" });
         }
-        let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${email}`;
-
-        if (idUserSQL.recordset.length === 0) {
+        const idUser = await getUserIdByEmail(req.user.email);
+        if (!idUser) {
             return res.status(404).json({ mensagem: "Usuário não encontrado" });
         }
 
-        let idUser = idUserSQL.recordset[0].idUsuario;
-
-        await sql.query`delete from gustus.wishlist where idUsuario = ${idUser} and idPrato = ${idPrato}`;
+        await pool.query('DELETE FROM wishlist WHERE idUsuario = $1 AND idPrato = $2', [idUser, idPrato]);
         res.status(200).json({ mensagem: "Removido da wishlist." });
     } catch (erro) {
-        console.log(erro.message);
-        res.sendStatus(500);
+        console.error(erro.message);
+        res.status(500).json({ mensagem: "Erro interno no servidor." });
     }
 });
 
 //adicionar a degustados
 app.post("/add-degustar", verificarToken, async (req, res) => {
-    let email = req.user.email;
-    // ALTERADO: Trocado req.query por req.body
     const { idPrato, nota, descricao } = req.body;
     try {
         if (!idPrato) {
             return res.status(400).json({ mensagem: "ID do prato não informado" });
         }
-        let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${email}`;
-
-        if (idUserSQL.recordset.length === 0) {
+        const idUser = await getUserIdByEmail(req.user.email);
+        if (!idUser) {
             return res.status(404).json({ mensagem: "Usuário não encontrado" });
         }
 
-        let idUser = idUserSQL.recordset[0].idUsuario;
-        await sql.query`insert into gustus.degustados (idUsuario, idPrato, nota, descricao) values (${idUser}, ${idPrato}, ${nota}, ${descricao})`;
+        await pool.query('INSERT INTO degustados (idUsuario, idPrato, nota, descricao) VALUES ($1, $2, $3, $4)', [idUser, idPrato, nota, descricao]);
         res.status(201).json({ mensagem: "Prato degustado adicionado." });
     } catch (erro) {
-        console.log(erro.message);
-        res.sendStatus(500);
+        console.error(erro.message);
+        res.status(500).json({ mensagem: "Erro interno no servidor." });
     }
 });
 
-//ver degustados (sem alterações)
+//ver degustados
 app.get("/ver-degustar", verificarToken, async (req, res) => {
-    let emailUser = req.user.email
     try {
-        let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${emailUser}`
-        //res.json()
-        if (idUserSQL.recordset.length === 0) {
+        const idUser = await getUserIdByEmail(req.user.email);
+        if (!idUser) {
             return res.status(404).json({ mensagem: "Usuário não encontrado" });
         }
-        let idUser = idUserSQL.recordset[0].idUsuario
-        let result = await sql.query`select * from gustus.degustados where idUsuario = ${idUser}`
-        return res.json(result.recordset)
+
+        const result = await pool.query('SELECT * FROM degustados WHERE idUsuario = $1', [idUser]);
+        return res.json(result.rows);
+    } catch (erro) {
+        console.error(erro.message);
+        return res.status(500).json({ mensagem: "Erro interno no servidor." });
     }
-    catch (erro) {
-        console.log(erro.message)
-        return res.sendStatus(500)      //erro interno
-    }
-})
+});
 
 //pesquisar comidas
-// NOTA: Esta rota foi MANTIDA com req.query de propósito.
-// Para buscas e filtros (GET), o padrão e a melhor prática é usar query parameters.
 app.get("/pesquisar", verificarToken, async (req, res) => {
-    const { prato } = req.query; // Mantido como query
+    const { prato } = req.query;
     try {
-        let result = await sql.query`select * from gustus.pratos where prato = ${prato}`;
-        res.json(result.recordset);
+        const result = await pool.query('SELECT * FROM pratos WHERE prato ILIKE $1', [`%${prato}%`]);
+        res.json(result.rows);
     } catch (error) {
-        console.log(error.message); // Corrigido o nome da variável de erro
-        res.sendStatus(500);
+        console.error(error.message);
+        res.status(500).json({ mensagem: "Erro interno no servidor." });
     }
 });
 
 //adicionar/atualizar avaliação
 app.post("/avaliar", verificarToken, async (req, res) => {
-    let emailUser = req.user.email;
-    // ALTERADO: Trocado req.query por req.body
     const { idPrato, nota, descricao } = req.body;
-
     try {
         if (!idPrato) {
             return res.status(400).json({ mensagem: "ID do prato não informado" });
         }
-        let idUserSQL = await sql.query`select idUsuario from gustus.usuarios where email=${emailUser}`;
-
-        if (idUserSQL.recordset.length === 0) {
+        const idUser = await getUserIdByEmail(req.user.email);
+        if (!idUser) {
             return res.status(404).json({ mensagem: "Usuário não encontrado" });
         }
 
-        let idUser = idUserSQL.recordset[0].idUsuario;
-
-        // CORREÇÃO: A query SQL estava errada. INSERT não usa WHERE.
-        // A ação correta aqui é um UPDATE, já que o prato foi adicionado em "/add-degustar".
-        await sql.query`UPDATE gustus.degustados SET nota = ${nota}, descricao = ${descricao} WHERE idUsuario = ${idUser} AND idPrato = ${idPrato}`;
+        await pool.query('UPDATE degustados SET nota = $1, descricao = $2 WHERE idUsuario = $3 AND idPrato = $4', [nota, descricao, idUser, idPrato]);
         res.status(200).json({ mensagem: "Avaliação atualizada com sucesso." });
     } catch (erro) {
-        console.log(erro.message);
-        res.sendStatus(500);
+        console.error(erro.message);
+        res.status(500).json({ mensagem: "Erro interno no servidor." });
     }
 });
-
 
 //ver receita
 app.get("/ver-receita", async (req, res) => {
-    const { comida } = req.body       //nome do prato
+    const { comida } = req.query;
     try {
-        let result = await sql.query`select linkReceita from gustus.pratos where prato = ${comida}`
-        res.json(result.recordset)
+        if (!comida) {
+            return res.status(400).json({ mensagem: "Nome da comida não informado" });
+        }
+        const result = await pool.query('SELECT linkReceita FROM pratos WHERE prato = $1', [comida]);
+        res.json(result.rows);
     }
     catch (erro) {
-        console.log(erro.message)
-        res.sendStatus(500)
+        console.error(erro.message);
+        res.status(500).json({ mensagem: "Erro interno no servidor." });
     }
-    //devolver o link somente
-    //só depois (no flutter) eu vou fzr abrir no chrome
 });
+
+app.get("/usuarios", async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM usuarios');
+        res.json(result.rows);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ mensagem: "Erro interno no servidor." });
+    }
+})
 
 app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
