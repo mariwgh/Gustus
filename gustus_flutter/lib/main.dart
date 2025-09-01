@@ -189,10 +189,106 @@ class BaseInicial extends StatelessWidget {
                 ),
               
               ],
-            ) 
+            ),
           ),
+
+          Positioned(
+            top: 80, // distância do topo
+            left: 0,
+            right: 0,
+            child: child,
+          ),
+          
+          //SizedBox(height: 50),
+
+          //child
+
         ],
       ),
+    );
+  }
+}
+
+class MostraProdutos extends StatelessWidget {
+  // Aqui você poderia receber uma lista de produtos futuramente
+  final List<Map<String, String>> produtos;
+
+  const MostraProdutos({Key? key, this.produtos = const []}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // Se não tiver produtos (API não pronta), usamos alguns de exemplo
+    final listaProdutos = produtos.isNotEmpty ? produtos: [
+      {
+        "nome": "Risoto de camarão",
+        "imagem":
+            "https://raw.githubusercontent.com/mariwgh/Gustus/refs/heads/main/imagens/risoto-de-camarao.png",
+      },
+      {
+        "nome": "Ratatouille",
+        "imagem":
+            "https://raw.githubusercontent.com/mariwgh/Gustus/refs/heads/main/imagens/ratatouille.png",
+      },
+      {
+        "nome": "Sushi",
+        "imagem":
+            "https://raw.githubusercontent.com/mariwgh/Gustus/refs/heads/main/imagens/sushi.png",
+      },
+    ];
+
+    return GridView.builder(
+      padding: const EdgeInsets.all(16),
+      shrinkWrap: true,              // importante quando está dentro de outra coluna
+      physics: const NeverScrollableScrollPhysics(), // para não conflitar com scroll externo
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,          // duas colunas
+        mainAxisSpacing: 16,
+        crossAxisSpacing: 16,
+        childAspectRatio: 1,        // mantém quadrado
+      ),
+      itemCount: listaProdutos.length,
+      itemBuilder: (context, index) {
+        final produto = listaProdutos[index];
+
+        return Container(
+          padding: const EdgeInsets.all(20.0),
+          decoration: BoxDecoration(
+            color: const Color.fromRGBO(255, 255, 255, 0.4),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.3),
+                blurRadius: 5,
+                offset: const Offset(1, 5),
+              ),
+            ],
+          ),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Positioned(
+                top: -40,
+                right: -40,
+                child: Image.network(
+                  produto["imagem"]!,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomLeft,
+                child: Text(
+                  produto["nome"]!,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -551,12 +647,11 @@ class TelaInicial extends StatelessWidget {
   Widget build(BuildContext context) {
     // TelaBloqueio retorna um Scaffold, que fornece a estrutura básica.
     return BaseInicial(
-      child: Column(
-
-      ),
+      child: MostraProdutos(),
     );
   }
 }
+
 
 class TelaPesquisar extends StatelessWidget {
   @override
