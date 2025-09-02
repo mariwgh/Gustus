@@ -273,7 +273,7 @@ app.get("/pesquisar", verificarToken, async (req, res) => {
 });
 
 //adicionar/atualizar avaliação
-app.post("/avaliar", verificarToken, async (req, res) => {
+app.post("/avaliar", verificarToken, async (req, res) => {      //tem que verificar se esse idPrato está nos degustados
     const { idPrato, nota, descricao } = req.body;
     try {
         if (!idPrato) {
