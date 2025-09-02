@@ -705,82 +705,84 @@ class TelaProduto extends StatelessWidget{
     }
   }
 
-  @override
+ @override
   Widget build(BuildContext context) {
     final largura = MediaQuery.of(context).size.width;
 
     return BaseInicial(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Stack(
-          clipBehavior: Clip.none, // permite que a imagem saia do Stack
+        child: Column(
           children: [
-            Text(
-              nome,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            Positioned(
-              top: -30,   // sobe a imagem para fora da coluna
-              left: -20,    // posiciona horizontalmente
-              child: Image.network(
-                imagem,
-                width: largura,
-                fit: BoxFit.cover,
-              ),
-            ),
-            const SizedBox(height: 20),
-            
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                padding: const EdgeInsets.all(15),
-                decoration: const BoxDecoration(
-                  color: Color.fromRGBO(255, 255, 255, 0.4),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
+            Stack(
+              clipBehavior: Clip.none, // permite que a imagem saia do Stack
+              children: [
+                Container(
+                  width: largura,
+                  height: largura * 0.7, // Altura da imagem para um bom aspecto
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: NetworkImage(imagem),
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-                child: Column (
-                  children: [
-                    Text(
-                      descricao,
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                      ),
+                Positioned(
+                  top: 20,
+                  left: 20,
+                  child: Text(
+                    nome,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
                     ),
-
-                    ElevatedButton(
-                      onPressed: () {
-                        abrirPaginaWeb(linkReceita);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromRGBO(188, 192, 198, 1),
-                        minimumSize: const Size(double.infinity, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                      child: const Text("Receita"),
-                    ),
-                  ]
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(15),
+              decoration: const BoxDecoration(
+                color: Color.fromRGBO(255, 255, 255, 0.4),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
                 ),
               ),
-              //const SizedBox(height: 20),
-            )
-          ]
+              child: Column (
+                children: [
+                  Text(
+                    descricao,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      abrirPaginaWeb(linkReceita);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromRGBO(188, 192, 198, 1),
+                      minimumSize: const Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    child: const Text("Receita"),
+                  ),
+                ]
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
+
 
 
 class TelaPesquisar extends StatefulWidget {
@@ -902,5 +904,4 @@ class TelaDegustados extends StatelessWidget {
 }
 
 
-//tela produto
 //tela avaliar
