@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // Este é o primeiro método que o projeto executa.
 void main() {
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// Widget reutilizável para o fundo e o container central.
+// widgets reutilizável 
 class BaseBloqueio extends StatelessWidget {
   final Widget child;
 
@@ -192,10 +193,8 @@ class BaseInicial extends StatelessWidget {
             ),
           ),
 
-          Positioned(
-            top: 80, // distância do topo
-            left: 0,
-            right: 0,
+          Positioned.fill(
+            top: 80,
             child: child,
           ),
           
@@ -211,82 +210,110 @@ class BaseInicial extends StatelessWidget {
 
 class MostraProdutos extends StatelessWidget {
   // Aqui você poderia receber uma lista de produtos futuramente
-  final List<Map<String, String>> produtos;
+  final List<Map<String, String>> produtos; // parametr0
 
   const MostraProdutos({Key? key, this.produtos = const []}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     // Se não tiver produtos (API não pronta), usamos alguns de exemplo
-    final listaProdutos = produtos.isNotEmpty ? produtos: [
+    final listaProdutos = [
       {
         "nome": "Risoto de camarão",
-        "imagem":
-            "https://raw.githubusercontent.com/mariwgh/Gustus/refs/heads/main/imagens/risoto-de-camarao.png",
+        "imagem": "https://raw.githubusercontent.com/mariwgh/Gustus/refs/heads/main/imagens/risoto-de-camarao.png",
+        "descricao": "Esse prato popular tem suas raízes na história do risoto italiano, que surgiu na região da Lombardia durante o século XI, influenciado pelos sarracenos.",
+        "linkReceita": "https://www.tudogostoso.com.br/receita/185493-risoto-de-camarao-sem-frescura.html"
       },
       {
         "nome": "Ratatouille",
-        "imagem":
-            "https://raw.githubusercontent.com/mariwgh/Gustus/refs/heads/main/imagens/ratatouille.png",
+        "imagem": "https://raw.githubusercontent.com/mariwgh/Gustus/refs/heads/main/imagens/ratatouille.png",
+        "descricao": "Esse prato popular tem suas raízes na história do risoto italiano, que surgiu na região da Lombardia durante o século XI, influenciado pelos sarracenos.",
+        "linkReceita": "https://www.tudogostoso.com.br/receita/185493-risoto-de-camarao-sem-frescura.html"
       },
       {
         "nome": "Sushi",
-        "imagem":
-            "https://raw.githubusercontent.com/mariwgh/Gustus/refs/heads/main/imagens/sushi.png",
+        "imagem": "https://raw.githubusercontent.com/mariwgh/Gustus/refs/heads/main/imagens/sushi.png",
+        "descricao": "Esse prato popular tem suas raízes na história do risoto italiano, que surgiu na região da Lombardia durante o século XI, influenciado pelos sarracenos.",
+        "linkReceita": "https://www.tudogostoso.com.br/receita/185493-risoto-de-camarao-sem-frescura.html"
       },
     ];
 
     return GridView.builder(
-      padding: const EdgeInsets.all(16),
-      shrinkWrap: true,              // importante quando está dentro de outra coluna
-      physics: const NeverScrollableScrollPhysics(), // para não conflitar com scroll externo
+      padding: const EdgeInsets.all(50),
+      shrinkWrap: true,                               // importante quando está dentro de outra coluna
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,          // duas colunas
-        mainAxisSpacing: 16,
-        crossAxisSpacing: 16,
+        mainAxisSpacing: 150,
+        crossAxisSpacing: 150,
         childAspectRatio: 1,        // mantém quadrado
       ),
       itemCount: listaProdutos.length,
       itemBuilder: (context, index) {
         final produto = listaProdutos[index];
 
-        return Container(
-          padding: const EdgeInsets.all(20.0),
-          decoration: BoxDecoration(
-            color: const Color.fromRGBO(255, 255, 255, 0.4),
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.3),
-                blurRadius: 5,
-                offset: const Offset(1, 5),
-              ),
-            ],
-          ),
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Positioned(
-                top: -40,
-                right: -40,
-                child: Image.network(
-                  produto["imagem"]!,
-                  fit: BoxFit.cover,
+        return GestureDetector(
+          onTap: () {
+            // Navega para a TelaProduto passando os dados
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => TelaProduto(
+                  nome: produto["nome"]!,
+                  imagem: produto["imagem"]!,
+                  descricao: produto["descricao"]!,
+                  linkReceita: produto["linkReceita"]!,
                 ),
               ),
-              Align(
-                alignment: Alignment.bottomLeft,
-                child: Text(
-                  produto["nome"]!,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+            );
+          },
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final largura = constraints.maxWidth;
+              final altura = constraints.maxHeight;
+
+              return Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromRGBO(255, 255, 255, 0.4),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 5,
+                      offset: const Offset(1, 5),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Positioned(
+                      top: -altura * 0.15,    // 15% saindo pra cima
+                      right: -largura * 0.15, // 15% saindo pro lado
+                      child: Image.network(
+                        produto["imagem"]!,
+                        width: largura * 0.4, // metade do container
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(largura * 0.05), // 5% de padding
+                        child: Text(
+                          produto["nome"]!,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: largura * 0.08, // fonte proporcional
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          )
         );
       },
     );
@@ -648,22 +675,154 @@ class TelaInicial extends StatelessWidget {
     // TelaBloqueio retorna um Scaffold, que fornece a estrutura básica.
     return BaseInicial(
       child: MostraProdutos(),
+      //child: MostraProdutos(produtos: [],),
     );
   }
 }
 
 
-class TelaPesquisar extends StatelessWidget {
+class TelaProduto extends StatelessWidget{
+  final String nome;
+  final String imagem;
+  final String descricao;
+  final String linkReceita;
+
+  const TelaProduto({Key? key, required this.nome, required this.imagem, required this.descricao, required this.linkReceita}) : super(key: key);
+
+  void abrirPaginaWeb(String url) async {
+    final Uri uri = Uri.parse(url);
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(
+          uri,
+          mode: LaunchMode.externalApplication, // abre no navegador
+        );
+      } else {
+        throw 'Não foi possível abrir $url';
+      }
+    } catch (e) {
+      print('Erro ao tentar abrir o URL: $e'); // Imprime o erro no console
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final largura = MediaQuery.of(context).size.width;
+
+    return BaseInicial(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Stack(
+          clipBehavior: Clip.none, // permite que a imagem saia do Stack
+          children: [
+            Text(
+              nome,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            Positioned(
+              top: -30,   // sobe a imagem para fora da coluna
+              left: -20,    // posiciona horizontalmente
+              child: Image.network(
+                imagem,
+                width: largura,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(height: 20),
+            
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                padding: const EdgeInsets.all(15),
+                decoration: const BoxDecoration(
+                  color: Color.fromRGBO(255, 255, 255, 0.4),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                ),
+                child: Column (
+                  children: [
+                    Text(
+                      descricao,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                      ),
+                    ),
+
+                    ElevatedButton(
+                      onPressed: () {
+                        abrirPaginaWeb(linkReceita);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromRGBO(188, 192, 198, 1),
+                        minimumSize: const Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                      child: const Text("Receita"),
+                    ),
+                  ]
+                ),
+              ),
+              //const SizedBox(height: 20),
+            )
+          ]
+        ),
+      ),
+    );
+  }
+}
+
+
+class TelaPesquisar extends StatefulWidget {
+  @override
+  State<TelaPesquisar> createState() => _TelaPesquisarState();
+}
+
+class _TelaPesquisarState extends State<TelaPesquisar> {
+  final TextEditingController _pesquisaController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     // TelaBloqueio retorna um Scaffold, que fornece a estrutura básica.
     return BaseInicial(
       child: Column(
-
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(15),
+            child: TextField(
+              controller: _pesquisaController,
+              decoration: InputDecoration(
+                hintText: "Pesquisar",
+                prefixIcon: Icon(Icons.search, color: const Color.fromARGB(255, 0, 0, 1)),
+                filled: true,
+                fillColor: Colors.white.withOpacity(0.2),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              style: TextStyle(color: const Color.fromARGB(255, 0, 0, 1)),
+            ),
+          ),
+          Expanded(
+            child: MostraProdutos(), // faz o GridView ocupar o resto da tela
+          ),
+        ],
       ),
     );
   }
 }
+
 
 class TelaConta extends StatelessWidget {
   @override
@@ -677,6 +836,7 @@ class TelaConta extends StatelessWidget {
   }
 }
 
+
 class TelaConfiguracoes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -689,7 +849,58 @@ class TelaConfiguracoes extends StatelessWidget {
   }
 }
 
+
+class TelaWishlist extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // TelaBloqueio retorna um Scaffold, que fornece a estrutura básica.
+    return BaseInicial(
+      child: Column(
+        children: [
+          Text(
+            "Wishlist",
+            style: TextStyle(
+              fontSize: 40,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 25),
+
+          MostraProdutos(),
+          //child: MostraProdutos(produtos: [],),]
+        ]
+      )
+    );
+  }
+}
+
+
+class TelaDegustados extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // TelaBloqueio retorna um Scaffold, que fornece a estrutura básica.
+    return BaseInicial(
+      child: Column(
+        children: [
+          Text(
+            "Degustados",
+            style: TextStyle(
+              fontSize: 40,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 25),
+
+          MostraProdutos(),
+          //child: MostraProdutos(produtos: [],),]
+        ]
+      )
+    );
+  }
+}
+
+
 //tela produto
-//tela wishlist
-//tela degustados
 //tela avaliar
