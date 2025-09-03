@@ -716,33 +716,65 @@ class TelaProduto extends StatelessWidget{
             Stack(
               clipBehavior: Clip.none, // permite que a imagem saia do Stack
               children: [
-                Container(
-                  width: largura,
-                  height: largura * 0.7, // Altura da imagem para um bom aspecto
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage(imagem),
-                      fit: BoxFit.cover,
-                    ),
+                
+                Padding(
+                  padding: EdgeInsetsGeometry.all(20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween, // espaça os elementos
+                    children: [
+                      Positioned(
+                        top: 20,
+                        left: 20,
+                        child: Text(
+                          nome,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+
+                      Positioned(
+                        top: 20,
+                        right: 30,
+                        child: IconButton(
+                          onPressed: () {},
+                          icon: const Icon(
+                            Icons.favorite_border, // coração vazio
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                        ),
+                      ),
+                    ]
                   ),
                 ),
-                Positioned(
-                  top: 20,
-                  left: 20,
-                  child: Text(
-                    nome,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
+                  
+                Align(
+                  alignment: Alignment.centerRight, // joga para a direita
+                  child: FractionalTranslation(
+                    translation: const Offset(0.3, 0.3), // metade para fora
+                    child: Container(
+                      width: largura * 0.7,
+                      height: largura * 0.7, // Altura da imagem para um bom aspecto
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: NetworkImage(imagem),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 20),
+
             Container(
-              padding: const EdgeInsets.all(15),
+              height: MediaQuery.of(context).size.height * 0.5, // metade da tela
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
               decoration: const BoxDecoration(
                 color: Color.fromRGBO(255, 255, 255, 0.4),
                 borderRadius: BorderRadius.only(
@@ -759,20 +791,64 @@ class TelaProduto extends StatelessWidget{
                       fontSize: 16,
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 25),
+
                   ElevatedButton(
                     onPressed: () {
                       abrirPaginaWeb(linkReceita);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromRGBO(188, 192, 198, 1),
+                      backgroundColor: Colors.transparent, // fundo transparente
+                      foregroundColor: Colors.black,       // cor do texto e ícone
                       minimumSize: const Size(double.infinity, 50),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
+                        side: const BorderSide(color: Colors.black), // borda preta
                       ),
+                      elevation: 0, // remove sombra
                     ),
-                    child: const Text("Receita"),
+                    child: const Text("Receita",),
                   ),
+                  const SizedBox(height: 15),
+
+                  Row(
+                    children: [
+                      Expanded(child: ElevatedButton(
+                        onPressed: () {
+                          abrirPaginaWeb(linkReceita);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent, // fundo transparente
+                          foregroundColor: Colors.black,       // cor do texto e ícone
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            side: const BorderSide(color: Colors.black), // borda preta
+                          ),
+                          elevation: 0, // remove sombra
+                        ),
+                        child: const Text("Wishlist/Remover",),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+
+                      Expanded(child: ElevatedButton(
+                        onPressed: () {
+                          abrirPaginaWeb(linkReceita);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent, // fundo transparente
+                          foregroundColor: Colors.black,       // cor do texto e ícone
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            side: const BorderSide(color: Colors.black), // borda preta
+                          ),
+                          elevation: 0, // remove sombra
+                        ),
+                        child: const Text("Degustar",),
+                        ),
+                      ),
+                    ],
+                  )
                 ]
               ),
             ),
