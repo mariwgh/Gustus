@@ -681,13 +681,24 @@ class TelaInicial extends StatelessWidget {
 }
 
 
-class TelaProduto extends StatelessWidget{
+class TelaProduto extends StatefulWidget {
   final String nome;
   final String imagem;
   final String descricao;
   final String linkReceita;
 
   const TelaProduto({Key? key, required this.nome, required this.imagem, required this.descricao, required this.linkReceita}) : super(key: key);
+
+  @override
+  State<TelaProduto> createState() => _TelaProduto();
+}
+
+class _TelaProduto extends State<TelaProduto>{
+
+  void _adicionarOuRemoverFavoritos() {
+    final String usuario;
+    widget.nome;
+  }
 
   void abrirPaginaWeb(String url) async {
     final Uri uri = Uri.parse(url);
@@ -703,6 +714,11 @@ class TelaProduto extends StatelessWidget{
     } catch (e) {
       print('Erro ao tentar abrir o URL: $e'); // Imprime o erro no console
     }
+  }
+
+  void _removerOuAdicionarWishlist() {
+    final String usuario;
+    widget.nome;
   }
 
  @override
@@ -726,7 +742,7 @@ class TelaProduto extends StatelessWidget{
                         top: 20,
                         left: 20,
                         child: Text(
-                          nome,
+                          widget.nome,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 28,
@@ -735,18 +751,23 @@ class TelaProduto extends StatelessWidget{
                         ),
                       ),
 
-                      Positioned(
-                        top: 20,
-                        right: 30,
-                        child: IconButton(
-                          onPressed: () {},
-                          icon: const Icon(
-                            Icons.favorite_border, // coração vazio
-                            color: Colors.white,
-                            size: 28,
+                      GestureDetector(
+                        onTap: () {
+                          _adicionarOuRemoverFavoritos();
+                        },
+                        child: Positioned(
+                          top: 20,
+                          right: 30,
+                          child: IconButton(
+                            onPressed: () {},
+                            icon: const Icon(
+                              Icons.favorite_border, // coração vazio
+                              color: Colors.white,
+                              size: 28,
+                            ),
                           ),
                         ),
-                      ),
+                      )
                     ]
                   ),
                 ),
@@ -760,7 +781,7 @@ class TelaProduto extends StatelessWidget{
                       height: largura * 0.7, // Altura da imagem para um bom aspecto
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: NetworkImage(imagem),
+                          image: NetworkImage(widget.imagem),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -785,7 +806,7 @@ class TelaProduto extends StatelessWidget{
               child: Column (
                 children: [
                   Text(
-                    descricao,
+                    widget.descricao,
                     style: const TextStyle(
                       color: Colors.black,
                       fontSize: 16,
@@ -795,7 +816,7 @@ class TelaProduto extends StatelessWidget{
 
                   ElevatedButton(
                     onPressed: () {
-                      abrirPaginaWeb(linkReceita);
+                      abrirPaginaWeb(widget.linkReceita);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent, // fundo transparente
@@ -815,7 +836,7 @@ class TelaProduto extends StatelessWidget{
                     children: [
                       Expanded(child: ElevatedButton(
                         onPressed: () {
-                          abrirPaginaWeb(linkReceita);
+                          _removerOuAdicionarWishlist();
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.transparent, // fundo transparente
@@ -918,7 +939,7 @@ class TelaConta extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
-                    "Usuário",
+                    "Conta",
                     style: TextStyle(
                       fontSize: 40,
                       fontWeight: FontWeight.bold,
@@ -1069,6 +1090,14 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
     super.dispose();
   }
 
+  _sairConta() {
+
+  }
+
+  _excluirConta() {
+
+  }
+
   // função que será chamada quando o botão "Cadastrar" for pressionado e definira as variaveis
   void _salvarUsuario() {
     final String usuario = _userController.text;
@@ -1152,6 +1181,11 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
             //botao sair
             ElevatedButton(
               onPressed: () {
+                _sairConta();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TelaBloqueio()),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.transparent, // fundo transparente
@@ -1170,6 +1204,11 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
             //botao excluir conta
             ElevatedButton(
               onPressed: () {
+                _excluirConta();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TelaBloqueio()),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.transparent, // fundo transparente
