@@ -860,7 +860,6 @@ class TelaProduto extends StatelessWidget{
 }
 
 
-
 class TelaPesquisar extends StatefulWidget {
   @override
   State<TelaPesquisar> createState() => _TelaPesquisarState();
@@ -907,21 +906,306 @@ class TelaConta extends StatelessWidget {
   Widget build(BuildContext context) {
     // TelaBloqueio retorna um Scaffold, que fornece a estrutura básica.
     return BaseInicial(
-      child: Column(
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsetsGeometry.all(15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    "Usuário",
+                    style: TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 25),
 
+            Padding(
+              padding: EdgeInsetsGeometry.all(20),
+              child: Column(
+                children: [
+                  //favoritos
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 96, 106, 121), // cor de fundo
+                      border: Border(
+                        top: BorderSide(color: Colors.white, width: 2),
+                        bottom: BorderSide(color: Colors.white, width: 2),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Text(
+                          "Favoritos",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  MostraProdutos(),
+                  const SizedBox(height: 25),
+                
+                  //wishlist
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => TelaWishlist())
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 96, 106, 121), // cor de fundo
+                        border: Border(
+                          top: BorderSide(color: Colors.white, width: 2),
+                          bottom: BorderSide(color: Colors.white, width: 2),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Text(
+                            "Wishlist",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const Spacer(), // empurra o ícone para a direita
+                          const Icon(
+                            Icons.arrow_forward_ios, // seta horizontal
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  MostraProdutos(),
+                  const SizedBox(height: 25),
+
+                  //degustados
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => TelaDegustados())
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 96, 106, 121), // cor de fundo
+                        border: Border(
+                          top: BorderSide(color: Colors.white, width: 2),
+                          bottom: BorderSide(color: Colors.white, width: 2),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Text(
+                            "Degustados",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const Spacer(), // empurra o ícone para a direita
+                          const Icon(
+                            Icons.arrow_forward_ios, // seta horizontal
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  MostraProdutos(),
+                ],
+              )
+            ),
+          ]
+        ),
       ),
     );
   }
 }
 
 
-class TelaConfiguracoes extends StatelessWidget {
+class TelaConfiguracoes extends StatefulWidget {
+  @override
+  State<TelaConfiguracoes> createState() => _TelaConfiguracoes();
+}
+
+class _TelaConfiguracoes extends State<TelaConfiguracoes> {
+  // declarando controladores para pegar o texto de cada campo.
+  final TextEditingController _userController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  // limpa os controladores quando a tela é chamada
+  @override
+  void dispose() {
+    _userController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  // função que será chamada quando o botão "Cadastrar" for pressionado e definira as variaveis
+  void _salvarUsuario() {
+    final String usuario = _userController.text;
+    final String email = _emailController.text;
+    final String senha = _passwordController.text;
+    //ai aqui ele chama outra funcao q manda as variaveis p banco de dado
+  }
+
   @override
   Widget build(BuildContext context) {
     // TelaBloqueio retorna um Scaffold, que fornece a estrutura básica.
-    return BaseBloqueio(
-      child: Column(
+    return BaseInicial(
+      child: BaseBloqueio(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,             // ocupa o mínimo de espaço vertical.
 
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [ 
+                Text(
+                  "Configurações",
+                  style: TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ]
+            ),
+            const SizedBox(height: 20),
+
+            TextField(
+              controller: _userController,
+              decoration: InputDecoration(
+                labelText: "User",
+                labelStyle: TextStyle(color: Colors.white),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                ),
+              ),
+              style: TextStyle(color: Colors.white),
+            ),
+            const SizedBox(height: 15),
+
+            TextField(
+              controller: _emailController,
+              decoration: InputDecoration(
+                labelText: "E-mail",
+                labelStyle: TextStyle(color: Colors.white),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                ),
+              ),
+              style: TextStyle(color: Colors.white),
+            ),
+            const SizedBox(height: 15),
+
+            TextField(
+              controller: _passwordController,
+              decoration: InputDecoration(
+                labelText: "Password",
+                labelStyle: TextStyle(color: Colors.white),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                ),
+              ),
+              style: TextStyle(color: Colors.white),
+            ),
+            const SizedBox(height: 25),
+
+            //botao sair
+            ElevatedButton(
+              onPressed: () {
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent, // fundo transparente
+                foregroundColor: const Color.fromARGB(255, 255, 255, 255),       // cor do texto e ícone
+                minimumSize: const Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  side: const BorderSide(color: Color.fromARGB(255, 255, 255, 255)), // borda preta
+                ),
+                elevation: 0, // remove sombra
+              ),
+              child: const Text("Sair",),
+            ),
+            const SizedBox(height: 15),
+
+            //botao excluir conta
+            ElevatedButton(
+              onPressed: () {
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent, // fundo transparente
+                foregroundColor: const Color.fromARGB(255, 255, 255, 255),       // cor do texto e ícone
+                minimumSize: const Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  side: const BorderSide(color: Color.fromARGB(255, 255, 255, 255)), // borda preta
+                ),
+                elevation: 0, // remove sombra
+              ),
+              child: const Text("Excluir conta",),
+            ),
+            const SizedBox(height: 15),
+
+            // botao de salvar
+            ElevatedButton(
+              onPressed: () {
+                _salvarUsuario();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TelaInicial()),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromRGBO(188, 192, 198, 1),
+                foregroundColor: Colors.black,
+                minimumSize: const Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                shadowColor: Colors.black.withOpacity(0.1),
+                elevation: 5,
+              ),
+              child: const Text("Salvar"),
+            ),
+            const SizedBox(height: 15),
+          ],
+        ),
       ),
     );
   }
@@ -935,12 +1219,20 @@ class TelaWishlist extends StatelessWidget {
     return BaseInicial(
       child: Column(
         children: [
-          Text(
-            "Wishlist",
-            style: TextStyle(
-              fontSize: 40,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+          Padding(
+            padding: EdgeInsetsGeometry.all(15),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [ 
+                Text(
+                  "Wishlist",
+                  style: TextStyle(
+                    fontSize: 40,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 25),
@@ -961,12 +1253,20 @@ class TelaDegustados extends StatelessWidget {
     return BaseInicial(
       child: Column(
         children: [
-          Text(
-            "Degustados",
-            style: TextStyle(
-              fontSize: 40,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+          Padding(
+            padding: EdgeInsetsGeometry.all(15),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [ 
+                Text(
+                  "Degustados",
+                  style: TextStyle(
+                    fontSize: 40,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 25),
