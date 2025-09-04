@@ -833,7 +833,10 @@ class TelaProduto extends StatelessWidget{
 
                       Expanded(child: ElevatedButton(
                         onPressed: () {
-                          abrirPaginaWeb(linkReceita);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => TelaAvaliar())
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.transparent, // fundo transparente
@@ -1280,4 +1283,120 @@ class TelaDegustados extends StatelessWidget {
 }
 
 
-//tela avaliar
+class TelaAvaliar extends StatefulWidget {
+  @override
+  State<TelaAvaliar> createState() => _TelaAvaliar();
+}
+
+class _TelaAvaliar extends State<TelaAvaliar> {
+  // declarando controladores para pegar o texto de cada campo.
+  final TextEditingController _userController = TextEditingController();
+  final TextEditingController _notaController = TextEditingController();
+  final TextEditingController _descricaoController = TextEditingController();
+  int estrelasSelecionadas = 0; // adicionar como variável da State
+
+  // limpa os controladores quando a tela é chamada
+  @override
+  void dispose() {
+    _userController.dispose();
+    _notaController.dispose();
+    _descricaoController.dispose();
+    super.dispose();
+  }
+
+  // função que será chamada quando o botão "Cadastrar" for pressionado e definira as variaveis
+  void _salvarAvaliacao() {
+    final String usuario = _userController.text;
+    final String nota = _notaController.text;
+    final String descricao = _descricaoController.text;
+    //ai aqui ele chama outra funcao q manda as variaveis p banco de dado
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // TelaBloqueio retorna um Scaffold, que fornece a estrutura básica.
+    return BaseInicial(
+      child: BaseBloqueio(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,             // ocupa o mínimo de espaço vertical.
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [ 
+                Text(
+                  "Degustar",
+                  style: TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ]
+            ),
+            const SizedBox(height: 20),
+
+            //nota
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(5, (index) {
+                return IconButton(
+                  onPressed: () {
+                    setState(() {
+                      estrelasSelecionadas = index + 1;  // define quantas estrelas estão selecionadas
+                      _notaController.text = estrelasSelecionadas.toString(); // atualiza o TextField
+                    });
+                  },
+                  icon: Icon(
+                    index < estrelasSelecionadas ? Icons.star : Icons.star_border,
+                    color: const Color.fromARGB(255, 255, 255, 255), // cor da estrela cheia
+                    size: 36,
+                  ),
+                );
+              }),
+            ),
+            const SizedBox(height: 15),
+
+            TextField(
+              controller: _descricaoController,
+              decoration: InputDecoration(
+                labelText: "Descrição",
+                labelStyle: TextStyle(color: Colors.white),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                ),
+              ),
+              style: TextStyle(color: Colors.white),
+            ),
+            const SizedBox(height: 25),
+
+            // botao de salvar
+            ElevatedButton(
+              onPressed: () {
+                _salvarAvaliacao();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TelaInicial()),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromRGBO(188, 192, 198, 1),
+                foregroundColor: Colors.black,
+                minimumSize: const Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                shadowColor: Colors.black.withOpacity(0.1),
+                elevation: 5,
+              ),
+              child: const Text("Degustado"),
+            ),
+            const SizedBox(height: 15),
+          ],
+        ),
+      ),
+    );
+  }
+}
