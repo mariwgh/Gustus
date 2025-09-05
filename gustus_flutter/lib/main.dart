@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher.dart'; //pacote para abrir links
 
-// Este é o primeiro método que o projeto executa.
+// main é o primeiro método que o projeto executa
 void main() {
-  // Inicia a aplicação com a classe MyApp.
+  // inicia a aplicação com a classe MyApp.
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  //construtor da classe
   const MyApp({super.key});
 
+  // construi um widget nesse contexto
   @override
   Widget build(BuildContext context) {
     // MaterialApp é o widget raiz que define o tema e a navegação.
@@ -19,8 +21,11 @@ class MyApp extends StatelessWidget {
 
 // widgets reutilizável 
 class BaseBloqueio extends StatelessWidget {
+  //final indica que a variável child só pode ser inicializada uma única vez e não pode ser alterado depois
+  //child pode ser qualquer outro widget do Flutter que será aninhado dentro de outro 
   final Widget child;
 
+  //construtor da classe e precisa necessariamente ter um child
   const BaseBloqueio({
     required this.child,
   });
@@ -31,36 +36,38 @@ class BaseBloqueio extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(30, 43, 64, 1.0),
 
+      //stack é um tipo de layout mais flexível
       body: Stack(
         children: [
-          // background com opacidade.
+          // imagem de fundo com opacidade.
           Opacity(
             opacity: 1, 
             child: Image.asset(
               "assets/fundo.png",
-              fit: BoxFit.cover,
+              fit: BoxFit.cover,        //vai encaixar na tela
               height: double.infinity,
               width: double.infinity,
             ),
           ),
 
-          // Centraliza o conteúdo (o Container) na tela.
+          // centraliza o conteúdo (o Container) na tela.
           Center(
             child: Container(
-              width: 300.0,
+              width: 300.0,                                         //nao tem unidade de medida nada aqui
               padding: const EdgeInsets.all(20.0),
               decoration: BoxDecoration(
-                color: const Color.fromRGBO(255, 255, 255, 0.4), // Fundo translúcido.
+                color: const Color.fromRGBO(255, 255, 255, 0.4),  // fundo translúcido.
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 5),
+                    blurRadius: 10,                                 //sombra desfocada
+                    offset: const Offset(0, 5),                     //direcao da sombra
                   ),
                 ],
               ),
-              child: child, // O child agora fica dentro do Container
+
+              child: child,           //virao aqui o resto da tela (child) como filho (child) do container
             ),
           )
         ],
@@ -78,7 +85,6 @@ class BaseInicial extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TelaBloqueio retorna um Scaffold, que fornece a estrutura básica.
     return Scaffold(
       backgroundColor: const Color.fromRGBO(30, 43, 64, 1),
 
@@ -103,6 +109,7 @@ class BaseInicial extends StatelessWidget {
 
                 //home
                 ElevatedButton(
+                  //quando pressionado navega para a tela inicial
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -110,14 +117,14 @@ class BaseInicial extends StatelessWidget {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    elevation: 0,
+                    backgroundColor: Colors.transparent,  // botao transparente
+                    shadowColor: Colors.transparent,      // botao sem sombra
+                    elevation: 0,                           // nao tem elevacao -> nao tem sombra
                   ),
-                  child: ClipRRect(
+                  child: ClipRRect(           //usado para recortar (ou "clipar") seu widget filho em um retângulo com cantos arredondados
                     child: Image.asset(
                       "assets/home.png", 
-                      height: MediaQuery.of(context).size.height * 0.05,
+                      height: MediaQuery.of(context).size.height * 0.05,  // a altura é 5% da media do tamanho da altura da tela
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -188,20 +195,15 @@ class BaseInicial extends StatelessWidget {
                     ),
                   ),
                 ),
-              
               ],
             ),
           ),
 
+          // o resto do conteudo sera posicionado completamente p preencherr a tela com uma distancia de 80 do topo
           Positioned.fill(
             top: 80,
             child: child,
           ),
-          
-          //SizedBox(height: 50),
-
-          //child
-
         ],
       ),
     );
@@ -209,15 +211,16 @@ class BaseInicial extends StatelessWidget {
 }
 
 class MostraProdutos extends StatelessWidget {
-  // Aqui você poderia receber uma lista de produtos futuramente
-  final List<Map<String, String>> produtos; // parametr0
+  // aqui recebe uma lista de produtos futuramente
+  final List<Map<String, String>> produtos; // lista de 'maps' como parametro, ou seja cada elemento da lista tem um nome de tabela (string) com um dado (string), como no exemplo
 
+  // a lista sera dada como vazia se nada for passado
   const MostraProdutos({Key? key, this.produtos = const []}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // Se não tiver produtos (API não pronta), usamos alguns de exemplo
-    final listaProdutos = [
+    // exemplo de lista de produtos
+    final produtos = [
       {
         "nome": "Risoto de camarão",
         "imagem": "https://raw.githubusercontent.com/mariwgh/Gustus/refs/heads/main/imagens/risoto-de-camarao.png",
@@ -240,20 +243,21 @@ class MostraProdutos extends StatelessWidget {
 
     return GridView.builder(
       padding: const EdgeInsets.all(50),
-      shrinkWrap: true,                               // importante quando está dentro de outra coluna
+      shrinkWrap: true,                 // importante quando está dentro de outra coluna, pois dimensiona-se para o tamanho mínimo sem brigas com outros elementos
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,          // duas colunas
-        mainAxisSpacing: 150,
-        crossAxisSpacing: 150,
-        childAspectRatio: 1,        // mantém quadrado
+        crossAxisCount: 2,              // duas colunas
+        mainAxisSpacing: 150,           //espaco
+        crossAxisSpacing: 150,          //espaco
+        childAspectRatio: 1,            // mantém quadrado
       ),
-      itemCount: listaProdutos.length,
+      itemCount: produtos.length,  //quantos items terao na tabela
       itemBuilder: (context, index) {
-        final produto = listaProdutos[index];
+        final produto = produtos[index];   // percorre cada elemento da lista o transformando em produto
 
+        //cada produto é clicável, e quando clica, vai para a tela de seu produto com mais informacoes
         return GestureDetector(
           onTap: () {
-            // Navega para a TelaProduto passando os dados
+            // navega para a TelaProduto passando os dados (parametros) que serao mostrados
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -268,9 +272,10 @@ class MostraProdutos extends StatelessWidget {
           },
           child: LayoutBuilder(
             builder: (context, constraints) {
-              final largura = constraints.maxWidth;
+              final largura = constraints.maxWidth; //informa o tamanho máximo e mínimo de largura e altura que o widget pai permite para este LayoutBuilder
               final altura = constraints.maxHeight;
 
+              // a caixa que contem os dados de cada produto
               return Container(
                 decoration: BoxDecoration(
                   color: const Color.fromRGBO(255, 255, 255, 0.4),
@@ -286,25 +291,26 @@ class MostraProdutos extends StatelessWidget {
                 child: Stack(
                   clipBehavior: Clip.none,
                   children: [
+                    //imagem do produto em sua vez da lista
                     Positioned(
-                      top: -altura * 0.15,    // 15% saindo pra cima
-                      right: -largura * 0.15, // 15% saindo pro lado
-                      child: Image.network(
+                      top: -altura * 0.15,      // 15% saindo pra cima
+                      right: -largura * 0.15,   // 15% saindo pro lado
+                      child: Image.network(     //imagem da internet
                         produto["imagem"]!,
-                        width: largura * 0.4, // metade do container
+                        width: largura * 0.4,   // 40% do container
                         fit: BoxFit.cover,
                       ),
                     ),
                     Align(
-                      alignment: Alignment.bottomLeft,
+                      alignment: Alignment.bottomLeft,            //alinha para baixo a esquerda
                       child: Padding(
-                        padding: EdgeInsets.all(largura * 0.05), // 5% de padding
+                        padding: EdgeInsets.all(largura * 0.05),  // 5% de padding
                         child: Text(
                           produto["nome"]!,
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: largura * 0.08, // fonte proporcional
-                            fontWeight: FontWeight.bold,
+                            fontSize: largura * 0.08,             // fonte proporcional 8%
+                            fontWeight: FontWeight.bold,          //negrito
                           ),
                         ),
                       ),
@@ -324,23 +330,31 @@ class MostraProdutos extends StatelessWidget {
 class TelaBloqueio extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // TelaBloqueio retorna um Scaffold, que fornece a estrutura básica.
+    // TelaBloqueio retorna um Scaffold, que fornece a estrutura básica
     return BaseBloqueio(
       // texto e botoes
       child: Column(
-        mainAxisSize: MainAxisSize.min,             // ocupa o mínimo de espaço vertical.
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,               // ocupa o mínimo de espaço vertical.
+        mainAxisAlignment: MainAxisAlignment.center,  //alinha no centro
 
         children: [
-          const Text(
-            "Gustus",
-            style: TextStyle(
-              fontSize: 48,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+          Padding(
+            padding: EdgeInsets.all(5),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start, //usei row  so para poder colocar o texto a esquerda
+              children: [
+                const Text(
+                  "Gustus",
+                  style: TextStyle(
+                    fontSize: 48,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 25),
+          const SizedBox(height: 25),                 //espaco vertical entre um elemento e outro
 
           // botao de entrar
           ElevatedButton(
@@ -352,13 +366,13 @@ class TelaBloqueio extends StatelessWidget {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color.fromRGBO(188, 192, 198, 1),
-              foregroundColor: Colors.black,
+              foregroundColor: Colors.black,            //cor do texto e icone que estiverem dentro do btoao
               minimumSize: const Size(double.infinity, 50),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
               shadowColor: Colors.black.withOpacity(0.1),
-              elevation: 5,
+              elevation: 5,                               //elevacao de 5, forma uma sombra maior
             ),
             child: const Text("Entrar"),
           ),
@@ -392,13 +406,13 @@ class TelaBloqueio extends StatelessWidget {
 }
 
 
-class TelaCadastro extends StatefulWidget {
+class TelaCadastro extends StatefulWidget {                  // estado mutável dos campos que o usuario digita
   @override
-  State<TelaCadastro> createState() => _TelaCadastroState();
+  State<TelaCadastro> createState() => _TelaCadastroState(); //objeto de estado deve ser gerenciado para TelaCadastro
 }
 
 class _TelaCadastroState extends State<TelaCadastro> {
-  // declarando controladores para pegar o texto de cada campo.
+  // declarando controladores para pegar o texto de cada campo -> controlam e obtem o texto digitado em campos de entrada de texto
   final TextEditingController _userController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -417,38 +431,45 @@ class _TelaCadastroState extends State<TelaCadastro> {
     final String usuario = _userController.text;
     final String email = _emailController.text;
     final String senha = _passwordController.text;
-    //ai aqui ele chama outra funcao q manda as variaveis p banco de dado
+    // aqui ele chama outra funcao q manda as variaveis p banco de dados
   }
 
   @override
   Widget build(BuildContext context) {
-    // TelaBloqueio retorna um Scaffold, que fornece a estrutura básica.
+    // TelaBloqueio retorna um Scaffold, que fornece a estrutura básica
     return BaseBloqueio(
-      // texto e botoes
       child: Column(
-        mainAxisSize: MainAxisSize.min,             // ocupa o mínimo de espaço vertical.
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,               // ocupa o mínimo de espaço vertical.
+        mainAxisAlignment: MainAxisAlignment.center,  //alinha no centro
 
         children: [
-          const Text(
-            "Cadastro",
-            style: TextStyle(
-              fontSize: 40,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+          Padding(
+            padding: EdgeInsets.all(5),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start, //usei row  so para poder colocar o texto a esquerda
+              children: [
+                const Text(
+                  "Cadastro",
+                  style: TextStyle(
+                    fontSize: 40,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 20),
 
           TextField(
-            controller: _userController,
-            decoration: InputDecoration(
-              labelText: "User",
+            controller: _userController,                        //define a variavel que sera usada para ir para o bd
+            decoration: InputDecoration(                        //decoracao de lugar que digita
+              labelText: "User",                                //texto do campo para digitar
               labelStyle: TextStyle(color: Colors.white),
-              enabledBorder: UnderlineInputBorder(
+              enabledBorder: UnderlineInputBorder(              //a borda sera em baixo, como uma linha para escrever
                 borderSide: BorderSide(color: Colors.white),
               ),
-              focusedBorder: UnderlineInputBorder(
+              focusedBorder: UnderlineInputBorder(              //e quando o usuario clicar, essa borda sera assim (igual)
                 borderSide: BorderSide(color: Colors.white),
               ),
             ),
@@ -491,7 +512,7 @@ class _TelaCadastroState extends State<TelaCadastro> {
           // botao de cadastrar
           ElevatedButton(
             onPressed: () {
-              _cadastrarUsuario();
+              _cadastrarUsuario();                            //funcao que chamara a API
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => TelaInicial()),
@@ -511,6 +532,7 @@ class _TelaCadastroState extends State<TelaCadastro> {
           ),
           const SizedBox(height: 25),
 
+          // ja tem conta?
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -540,13 +562,13 @@ class _TelaCadastroState extends State<TelaCadastro> {
 }
 
 
-class TelaLogin extends StatefulWidget {
+class TelaLogin extends StatefulWidget {                  // estado mutável dos campos que o usuario digita
   @override
-  State<TelaLogin> createState() => _TelaLoginState();
+  State<TelaLogin> createState() => _TelaLoginState();    //objeto de estado deve ser gerenciado para TelaLogin
 }
 
 class _TelaLoginState extends State<TelaLogin> {
-  // declarando controladores para pegar o texto de cada campo.
+  // declarando controladores para pegar o texto de cada campo -> controlam e obtem o texto digitado em campos de entrada de texto
   final TextEditingController _userController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -558,11 +580,11 @@ class _TelaLoginState extends State<TelaLogin> {
     super.dispose();
   }
 
-  // função que será chamada quando o botão "Cadastrar" for pressionado e definira as variaveis
+  // função que será chamada quando o botão "Entrar" for pressionado e definira as variaveis
   void _verificarUsuario() {
     final String usuario = _userController.text;
     final String senha = _passwordController.text;
-    //ai aqui ele chama outra funcao q manda as variaveis p banco de dado
+    // aqui ele chama outra funcao q manda as variaveis p banco de dados
   }
 
   @override
@@ -571,29 +593,37 @@ class _TelaLoginState extends State<TelaLogin> {
     return BaseBloqueio(
       // texto e botoes
       child: Column(
-        mainAxisSize: MainAxisSize.min,             // ocupa o mínimo de espaço vertical.
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,               // ocupa o mínimo de espaço vertical.
+        mainAxisAlignment: MainAxisAlignment.center,  //alinha no centro
 
         children: [
-          const Text(
-            "Login",
-            style: TextStyle(
-              fontSize: 40,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+          Padding(
+            padding: EdgeInsets.all(5),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start, //usei row  so para poder colocar o texto a esquerda
+              children: [
+                const Text(
+                  "Login",
+                  style: TextStyle(
+                    fontSize: 40,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 20),
 
           TextField(
-            controller: _userController,
-            decoration: InputDecoration(
-              labelText: "User",
+            controller: _userController,                        //define a variavel que sera usada para ir para o bd
+            decoration: InputDecoration(                        //decoracao de lugar que digita
+              labelText: "User",                                //texto do campo para digitar
               labelStyle: TextStyle(color: Colors.white),
-              enabledBorder: UnderlineInputBorder(
+              enabledBorder: UnderlineInputBorder(              //a borda sera em baixo, como uma linha para escrever
                 borderSide: BorderSide(color: Colors.white),
               ),
-              focusedBorder: UnderlineInputBorder(
+              focusedBorder: UnderlineInputBorder(              //e quando o usuario clicar, essa borda sera assim (igual)
                 borderSide: BorderSide(color: Colors.white),
               ),
             ),
@@ -620,7 +650,7 @@ class _TelaLoginState extends State<TelaLogin> {
           // botao de entrar
           ElevatedButton(
             onPressed: () {
-              _verificarUsuario();
+              _verificarUsuario();                              //funcao que chamara a API
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => TelaInicial()),
@@ -640,6 +670,7 @@ class _TelaLoginState extends State<TelaLogin> {
           ),
           const SizedBox(height: 25),
 
+          // nao tem conta?
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -672,21 +703,22 @@ class _TelaLoginState extends State<TelaLogin> {
 class TelaInicial extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // TelaBloqueio retorna um Scaffold, que fornece a estrutura básica.
     return BaseInicial(
       child: MostraProdutos(),
-      //child: MostraProdutos(produtos: [],),
+      //child: MostraProdutos(produtos: [],), -> quando tiver a api, passar como parametro
     );
   }
 }
 
 
 class TelaProduto extends StatefulWidget {
+  // parametros necessarios para poder apresentar o produto
   final String nome;
   final String imagem;
   final String descricao;
   final String linkReceita;
 
+  //construtor que pede os parametros
   const TelaProduto({Key? key, required this.nome, required this.imagem, required this.descricao, required this.linkReceita}) : super(key: key);
 
   @override
@@ -695,9 +727,9 @@ class TelaProduto extends StatefulWidget {
 
 class _TelaProduto extends State<TelaProduto>{
 
-  void _adicionarOuRemoverFavoritos() {
+  void _adicionarOuRemoverFavoritos() {   // a implementar
     final String usuario;
-    widget.nome;
+    widget.nome;          //com widget pois o pega o parametro da classe q ele extende
   }
 
   void abrirPaginaWeb(String url) async {
@@ -708,17 +740,19 @@ class _TelaProduto extends State<TelaProduto>{
           uri,
           mode: LaunchMode.externalApplication, // abre no navegador
         );
-      } else {
+      } 
+      else {
         throw 'Não foi possível abrir $url';
       }
-    } catch (e) {
-      print('Erro ao tentar abrir o URL: $e'); // Imprime o erro no console
+    } 
+    catch (e) {
+      print('Erro ao tentar abrir o URL: $e'); // imprime o erro no console
     }
   }
 
-  void _removerOuAdicionarWishlist() {
+  void _removerOuAdicionarWishlist() {    // a implementar
     final String usuario;
-    widget.nome;
+    widget.nome;          //com widget pois o pega o parametro da classe q ele extende
   }
 
  @override
@@ -736,8 +770,9 @@ class _TelaProduto extends State<TelaProduto>{
                 Padding(
                   padding: EdgeInsetsGeometry.all(20),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween, // espaça os elementos
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,  // espaça os elementos
                     children: [
+                      // posiciona o nome do produto 
                       Positioned(
                         top: 20,
                         left: 20,
@@ -751,20 +786,18 @@ class _TelaProduto extends State<TelaProduto>{
                         ),
                       ),
 
-                      GestureDetector(
+                      // faz com que o coracao seja clicavel
+                      GestureDetector(            
                         onTap: () {
                           _adicionarOuRemoverFavoritos();
                         },
                         child: Positioned(
                           top: 20,
                           right: 30,
-                          child: IconButton(
-                            onPressed: () {},
-                            icon: const Icon(
-                              Icons.favorite_border, // coração vazio
-                              color: Colors.white,
-                              size: 28,
-                            ),
+                          child: Icon(
+                            Icons.favorite_border, // coração vazio
+                            color: Colors.white,
+                            size: 28,
                           ),
                         ),
                       )
@@ -772,13 +805,14 @@ class _TelaProduto extends State<TelaProduto>{
                   ),
                 ),
                   
+                // imagem do produto
                 Align(
-                  alignment: Alignment.centerRight, // joga para a direita
+                  alignment: Alignment.centerRight,       // joga para a direita
                   child: FractionalTranslation(
-                    translation: const Offset(0.3, 0.3), // metade para fora
+                    translation: const Offset(0.3, 0.3),  // metade para fora
                     child: Container(
                       width: largura * 0.7,
-                      height: largura * 0.7, // Altura da imagem para um bom aspecto
+                      height: largura * 0.7,              // altura da imagem para um bom aspecto
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image: NetworkImage(widget.imagem),
@@ -792,19 +826,21 @@ class _TelaProduto extends State<TelaProduto>{
             ),
             const SizedBox(height: 20),
 
+            // box/container cinza que fica em baixo com descricao e botoes
             Container(
-              height: MediaQuery.of(context).size.height * 0.5, // metade da tela
+              height: MediaQuery.of(context).size.height * 0.5,   // metade da tela
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: const BoxDecoration(
                 color: Color.fromRGBO(255, 255, 255, 0.4),
-                borderRadius: BorderRadius.only(
+                borderRadius: BorderRadius.only(                 // bordas somente em cima
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
                 ),
               ),
               child: Column (
                 children: [
+                  // descricao
                   Text(
                     widget.descricao,
                     style: const TextStyle(
@@ -814,44 +850,49 @@ class _TelaProduto extends State<TelaProduto>{
                   ),
                   const SizedBox(height: 25),
 
+                  // botao de receita
                   ElevatedButton(
                     onPressed: () {
                       abrirPaginaWeb(widget.linkReceita);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.transparent, // fundo transparente
-                      foregroundColor: Colors.black,       // cor do texto e ícone
+                      backgroundColor: Colors.transparent,            // fundo transparente
+                      foregroundColor: Colors.black,                  // cor do texto e ícone
                       minimumSize: const Size(double.infinity, 50),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
-                        side: const BorderSide(color: Colors.black), // borda preta
+                        side: const BorderSide(color: Colors.black),  // borda preta
                       ),
-                      elevation: 0, // remove sombra
+                      elevation: 0,                                     // remove sombra
                     ),
                     child: const Text("Receita",),
                   ),
                   const SizedBox(height: 15),
 
+                  // linha que fica os ultimos dois botoes
                   Row(
                     children: [
-                      Expanded(child: ElevatedButton(
-                        onPressed: () {
-                          _removerOuAdicionarWishlist();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent, // fundo transparente
-                          foregroundColor: Colors.black,       // cor do texto e ícone
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            side: const BorderSide(color: Colors.black), // borda preta
+                      //botao wishlist
+                      Expanded(                  // preenche o espaço disponível proporcionalmente
+                        child: ElevatedButton(
+                          onPressed: () {
+                            _removerOuAdicionarWishlist();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,            // fundo transparente
+                            foregroundColor: Colors.black,                  // cor do texto e ícone
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              side: const BorderSide(color: Colors.black),  // borda preta
+                            ),
+                            elevation: 0,                                     // remove sombra
                           ),
-                          elevation: 0, // remove sombra
-                        ),
-                        child: const Text("Wishlist/Remover",),
+                          child: const Text("Wishlist/Remover",),
                         ),
                       ),
                       const SizedBox(width: 10),
 
+                      // botao degustar que leva p tela de avaliar
                       Expanded(child: ElevatedButton(
                         onPressed: () {
                           Navigator.push(
@@ -860,13 +901,13 @@ class _TelaProduto extends State<TelaProduto>{
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent, // fundo transparente
-                          foregroundColor: Colors.black,       // cor do texto e ícone
+                          backgroundColor: Colors.transparent,            // fundo transparente
+                          foregroundColor: Colors.black,                  // cor do texto e ícone
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
-                            side: const BorderSide(color: Colors.black), // borda preta
+                            side: const BorderSide(color: Colors.black),  // borda preta
                           ),
-                          elevation: 0, // remove sombra
+                          elevation: 0,                                     // remove sombra
                         ),
                         child: const Text("Degustar",),
                         ),
@@ -894,29 +935,32 @@ class _TelaPesquisarState extends State<TelaPesquisar> {
 
   @override
   Widget build(BuildContext context) {
-    // TelaBloqueio retorna um Scaffold, que fornece a estrutura básica.
     return BaseInicial(
       child: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(15),
             child: TextField(
-              controller: _pesquisaController,
+              controller: _pesquisaController,          // para passarmos como parametro da lista de produtos
               decoration: InputDecoration(
-                hintText: "Pesquisar",
-                prefixIcon: Icon(Icons.search, color: const Color.fromARGB(255, 0, 0, 1)),
-                filled: true,
+                hintText: "Pesquisar",                  // texto que funciona como hint (dica) para sugerir o que o usuario deve escrever no campo input
+                prefixIcon: Icon(                       // icone de lupa do proprio flutter
+                  Icons.search, 
+                  color: const Color.fromARGB(255, 0, 0, 1)),
+                filled: true,                           // preenche com a cor absixo
                 fillColor: Colors.white.withOpacity(0.2),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(20),
                   borderSide: BorderSide.none,
                 ),
               ),
-              style: TextStyle(color: const Color.fromARGB(255, 0, 0, 1)),
+              style: TextStyle(
+                color: const Color.fromARGB(255, 0, 0, 1)
+              ),
             ),
           ),
-          Expanded(
-            child: MostraProdutos(), // faz o GridView ocupar o resto da tela
+          Expanded(                                     // faz o GridView de mostraProdutos ocupar o resto da tela
+            child: MostraProdutos(), 
           ),
         ],
       ),
@@ -928,7 +972,6 @@ class _TelaPesquisarState extends State<TelaPesquisar> {
 class TelaConta extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // TelaBloqueio retorna um Scaffold, que fornece a estrutura básica.
     return BaseInicial(
       child: SingleChildScrollView(
         child: Column(
@@ -959,13 +1002,13 @@ class TelaConta extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 96, 106, 121), // cor de fundo
+                      color: const Color.fromARGB(255, 96, 106, 121),       // cor de fundo do container
                       border: Border(
-                        top: BorderSide(color: Colors.white, width: 2),
+                        top: BorderSide(color: Colors.white, width: 2),     // temos borda so em cima e em baixo
                         bottom: BorderSide(color: Colors.white, width: 2),
                       ),
                     ),
-                    child: Row(
+                    child: Row(         // container fica como linha 
                       children: [
                         Text(
                           "Favoritos",
@@ -1008,9 +1051,9 @@ class TelaConta extends StatelessWidget {
                               color: Colors.white,
                             ),
                           ),
-                          const Spacer(), // empurra o ícone para a direita
+                          const Spacer(),               // empurra o ícone para a direita
                           const Icon(
-                            Icons.arrow_forward_ios, // seta horizontal
+                            Icons.arrow_forward_ios,    // seta horizontal
                             color: Colors.white,
                             size: 20,
                           ),
@@ -1048,9 +1091,9 @@ class TelaConta extends StatelessWidget {
                               color: Colors.white,
                             ),
                           ),
-                          const Spacer(), // empurra o ícone para a direita
+                          const Spacer(),             // empurra o ícone para a direita
                           const Icon(
-                            Icons.arrow_forward_ios, // seta horizontal
+                            Icons.arrow_forward_ios,  // seta horizontal
                             color: Colors.white,
                             size: 20,
                           ),
@@ -1091,24 +1134,23 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
   }
 
   _sairConta() {
-
+    // a implementar
   }
 
   _excluirConta() {
-
+    // a implementar
   }
 
-  // função que será chamada quando o botão "Cadastrar" for pressionado e definira as variaveis
+  // função que será chamada quando o botão "Salvar" for pressionado e definira as variaveis
   void _salvarUsuario() {
     final String usuario = _userController.text;
     final String email = _emailController.text;
     final String senha = _passwordController.text;
-    //ai aqui ele chama outra funcao q manda as variaveis p banco de dado
+    // aqui ele chama outra funcao q manda as variaveis p banco de dados
   }
 
   @override
   Widget build(BuildContext context) {
-    // TelaBloqueio retorna um Scaffold, que fornece a estrutura básica.
     return BaseInicial(
       child: BaseBloqueio(
         child: Column(
@@ -1188,14 +1230,14 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.transparent, // fundo transparente
-                foregroundColor: const Color.fromARGB(255, 255, 255, 255),       // cor do texto e ícone
+                backgroundColor: Colors.transparent,                                  // fundo transparente
+                foregroundColor: const Color.fromARGB(255, 255, 255, 255),            // cor do texto e ícone
                 minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
-                  side: const BorderSide(color: Color.fromARGB(255, 255, 255, 255)), // borda preta
+                  side: const BorderSide(color: Color.fromARGB(255, 255, 255, 255)),  // borda preta
                 ),
-                elevation: 0, // remove sombra
+                elevation: 0,                                                           // remove sombra
               ),
               child: const Text("Sair",),
             ),
@@ -1211,14 +1253,14 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.transparent, // fundo transparente
-                foregroundColor: const Color.fromARGB(255, 255, 255, 255),       // cor do texto e ícone
+                backgroundColor: Colors.transparent, 
+                foregroundColor: const Color.fromARGB(255, 255, 255, 255),  
                 minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
-                  side: const BorderSide(color: Color.fromARGB(255, 255, 255, 255)), // borda preta
+                  side: const BorderSide(color: Color.fromARGB(255, 255, 255, 255)), 
                 ),
-                elevation: 0, // remove sombra
+                elevation: 0,
               ),
               child: const Text("Excluir conta",),
             ),
@@ -1257,7 +1299,6 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
 class TelaWishlist extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // TelaBloqueio retorna um Scaffold, que fornece a estrutura básica.
     return BaseInicial(
       child: Column(
         children: [
@@ -1291,7 +1332,6 @@ class TelaWishlist extends StatelessWidget {
 class TelaDegustados extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // TelaBloqueio retorna um Scaffold, que fornece a estrutura básica.
     return BaseInicial(
       child: Column(
         children: [
@@ -1322,120 +1362,3 @@ class TelaDegustados extends StatelessWidget {
 }
 
 
-class TelaAvaliar extends StatefulWidget {
-  @override
-  State<TelaAvaliar> createState() => _TelaAvaliar();
-}
-
-class _TelaAvaliar extends State<TelaAvaliar> {
-  // declarando controladores para pegar o texto de cada campo.
-  final TextEditingController _userController = TextEditingController();
-  final TextEditingController _notaController = TextEditingController();
-  final TextEditingController _descricaoController = TextEditingController();
-  int estrelasSelecionadas = 0; // adicionar como variável da State
-
-  // limpa os controladores quando a tela é chamada
-  @override
-  void dispose() {
-    _userController.dispose();
-    _notaController.dispose();
-    _descricaoController.dispose();
-    super.dispose();
-  }
-
-  // função que será chamada quando o botão "Cadastrar" for pressionado e definira as variaveis
-  void _salvarAvaliacao() {
-    final String usuario = _userController.text;
-    final String nota = _notaController.text;
-    final String descricao = _descricaoController.text;
-    //ai aqui ele chama outra funcao q manda as variaveis p banco de dado
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // TelaBloqueio retorna um Scaffold, que fornece a estrutura básica.
-    return BaseInicial(
-      child: BaseBloqueio(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,             // ocupa o mínimo de espaço vertical.
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [ 
-                Text(
-                  "Degustar",
-                  style: TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ]
-            ),
-            const SizedBox(height: 20),
-
-            //nota
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(5, (index) {
-                return IconButton(
-                  onPressed: () {
-                    setState(() {
-                      estrelasSelecionadas = index + 1;  // define quantas estrelas estão selecionadas
-                      _notaController.text = estrelasSelecionadas.toString(); // atualiza o TextField
-                    });
-                  },
-                  icon: Icon(
-                    index < estrelasSelecionadas ? Icons.star : Icons.star_border,
-                    color: const Color.fromARGB(255, 255, 255, 255), // cor da estrela cheia
-                    size: 36,
-                  ),
-                );
-              }),
-            ),
-            const SizedBox(height: 15),
-
-            TextField(
-              controller: _descricaoController,
-              decoration: InputDecoration(
-                labelText: "Descrição",
-                labelStyle: TextStyle(color: Colors.white),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
-                ),
-              ),
-              style: TextStyle(color: Colors.white),
-            ),
-            const SizedBox(height: 25),
-
-            // botao de salvar
-            ElevatedButton(
-              onPressed: () {
-                _salvarAvaliacao();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => TelaInicial()),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromRGBO(188, 192, 198, 1),
-                foregroundColor: Colors.black,
-                minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                shadowColor: Colors.black.withOpacity(0.1),
-                elevation: 5,
-              ),
-              child: const Text("Degustado"),
-            ),
-            const SizedBox(height: 15),
-          ],
-        ),
-      ),
-    );
-  }
-}
