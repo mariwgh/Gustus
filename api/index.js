@@ -273,19 +273,42 @@ app.get("/pesquisar", verificarToken, async (req, res) => {
 });
 
 //adicionar/atualizar avaliação
-app.post("/avaliar", verificarToken, async (req, res) => {      //tem que verificar se esse idPrato está nos degustados
+app.post("/avaliar", verificarToken, async (req, res) => {
+    // 1. Pega os dados do corpo da requisição
     const { idPrato, nota, descricao } = req.body;
+
+    // 2. Validação básica de entrada
+    if (!idPrato || nota === undefined) {
+        return res.status(400).json({ mensagem: "Os campos 'idPrato' e 'nota' são obrigatórios." });
+    }
+
     try {
-        if (!idPrato) {
-            return res.status(400).json({ mensagem: "ID do prato não informado" });
-        }
+        // 3. Pega o ID do usuário a partir do token (email) PRIMEIRO
         const idUser = await getUserIdByEmail(req.user.email);
         if (!idUser) {
-            return res.status(404).json({ mensagem: "Usuário não encontrado" });
+            return res.status(404).json({ mensagem: "Usuário não encontrado." });
         }
 
-        await pool.query('UPDATE degustados SET nota = $1, descricao = $2 WHERE idUsuario = $3 AND idPrato = $4', [nota, descricao, idUser, idPrato]);
-        res.status(200).json({ mensagem: "Avaliação atualizada com sucesso." });
+        // 4. Verifica se o usuário REALMENTE degustou o prato
+        const pratoDegustado = await pool.query(
+            "SELECT * FROM degustados WHERE idUsuario = $1 AND idPrato = $2",
+            [idUser, idPrato]
+        );
+
+        // 5. Se o resultado da busca for zero, o prato não foi degustado por ele.
+        if (pratoDegustado.rows.length === 0) {
+            return res.status(403).json({ mensagem: "Você não pode avaliar um prato que ainda não foi degustado." });
+        }
+
+        // 6. Se passou pela verificação, atualiza a avaliação no banco de dados
+        await pool.query(
+            'UPDATE degustados SET nota = $1, descricao = $2 WHERE idUsuario = $3 AND idPrato = $4',
+            [nota, descricao, idUser, idPrato]
+        );
+
+        // 7. Envia a resposta de sucesso
+        res.status(200).json({ mensagem: "Avaliação registrada com sucesso!" });
+
     } catch (erro) {
         console.error(erro.message);
         res.status(500).json({ mensagem: "Erro interno no servidor." });
