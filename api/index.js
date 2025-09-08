@@ -7,7 +7,12 @@ const SECRET_KEY = "loveMyGirlfriend";
 const app = express();
 const PORT = 3000;
 
-app.use(cors())
+app.use(cors({
+  origin: '*', // Permite todas as origens
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Permite os métodos HTTP comuns
+  allowedHeaders: ['Content-Type', 'Authorization'], // Permite cabeçalhos comuns
+}));
+
 app.use(express.json());
 
 function validarEmail(email) {
