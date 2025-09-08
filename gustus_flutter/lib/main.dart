@@ -30,7 +30,7 @@ class MyWidget extends StatefulWidget {
 }
 
 class _MyWidgetState extends State<MyWidget> {
-  ServiceAPI? apiInstance;  // instância da api que vai carregar os dados
+  ConexaoAPI? apiInstance;  // instância da api que vai carregar os dados
   bool loading = true;      // indica se os dados estão sendo carregados
   String? error;            // armazena a mensagem de erro, se houver
 
@@ -49,7 +49,7 @@ class _MyWidgetState extends State<MyWidget> {
 
     try {
       // tenta criar a instância da api (busca os dados do backend)
-      apiInstance = await ServiceAPI.create();
+      apiInstance = await ConexaoAPI.getUsuarios();
 
       // limpa qualquer erro anterior
       error = null;

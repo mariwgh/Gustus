@@ -11,12 +11,12 @@ import 'favorito.dart';
 
 
 // api teste
-class ServiceAPI {
-  final List<Usuario> data;
+class ConexaoAPI<T> {
+  final List<T> data;
 
-  ServiceAPI(this.data);
+  ConexaoAPI(this.data);
 
-  static Future<ServiceAPI> create() async {
+  static Future<ConexaoAPI> getUsuarios() async {
     try {
       final response = await http.get(Uri.parse('https://gustus.onrender.com/usuarios'));
 
@@ -26,7 +26,7 @@ class ServiceAPI {
         // converte cada mapa em um objeto Usuario
         final usuarios = jsonData.map((e) => Usuario.fromJson(e)).toList();
 
-        return ServiceAPI(usuarios);
+        return ConexaoAPI(usuarios);
       } else {
         throw Exception('Falha ao carregar os dados. Status: ${response.statusCode}');
       }
