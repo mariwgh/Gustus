@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';  //pacote para abrir links
 import 'package:http/http.dart' as http;          // pacote para conexão com api
 import 'dart:convert';
+import 'conexaoAPI.dart';
 
 // main é o primeiro método que o projeto executa
 void main() {
@@ -29,52 +30,90 @@ class MyWidget extends StatefulWidget {
 }
 
 class _MyWidgetState extends State<MyWidget> {
-  List<dynamic> usuarios = [];
+  ServiceAPI? apiInstance;  // instância da api que vai carregar os dados
+  bool loading = true;      // indica se os dados estão sendo carregados
+  String? error;            // armazena a mensagem de erro, se houver
 
-  Future<void> fetchData() async {
+  // chamado automaticamente quando o widget é criado
+  @override
+  void initState() {
+    super.initState();
+    // inicializa a api e carrega os dados assim que o widget entra na tela
+    _initApi();
+  }
+
+  // função assíncrona para inicializar a api e tratar erros
+  Future<void> _initApi() async {
+    // atualiza o estado para mostrar o loading
+    setState(() => loading = true);
+
     try {
-      final response = await http.get(Uri.parse('https://gustus.onrender.com/usuarios'));
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
+      // tenta criar a instância da api (busca os dados do backend)
+      apiInstance = await ServiceAPI.create();
 
-        setState(() {
-          usuarios = data;
-        });
-      } else {
-        throw Exception('Failed to load data');
-      }
+      // limpa qualquer erro anterior
+      error = null;
     } catch (e) {
-      setState(() {
-        usuarios = [{'usuario': 'Error: $e'}];
-      });
+      // em caso de erro, imprime no console
+      print('erro ao carregar api: $e');
+
+      // armazena a mensagem de erro para exibir na tela
+      error = e.toString();
     }
+
+    // atualiza o estado para esconder o loading
+    setState(() => loading = false);
   }
 
   @override
   Widget build(BuildContext context) {
+    // enquanto os dados estão carregando,
+    if (loading) {
+      return Scaffold(
+        appBar: AppBar(title: Text("usuários")),
+        body: Center(child: CircularProgressIndicator()), // mostra um indicador de progresso
+      );
+    }
+
+    // quando o carregamento termina, pega os dados da api
+    final data = apiInstance!.data;
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Usuários"),
-      ),
+      appBar: AppBar(title: Text("usuários")),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          ElevatedButton(
-            onPressed: fetchData,
-            child: Text('Fetch Data'),
-          ),
-          SizedBox(height: 20),
-          Expanded(
-            child: ListView.builder(
-              itemCount: usuarios.length,
-              itemBuilder: (context, index) {
-                final u = usuarios[index];
-                return ListTile(
-                  title: Text(u['usuario'].toString()),
-                  subtitle: Text(u['email'].toString()),
-                );
-              },
+          // se houver erro, exibe na tela
+          if (error != null)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'erro: $error',
+                style: TextStyle(color: Colors.red),
+              ),
             ),
+
+          // botão para recarregar os dados da api
+          ElevatedButton(
+            onPressed: _initApi,
+            child: Text('fetch data'),
+          ),
+
+          SizedBox(height: 20),
+
+          // lista de usuários ou mensagem caso esteja vazia
+          Expanded(
+            child: data.isEmpty
+            ? Center(child: Text('nenhum dado encontrado'))
+            : ListView.builder(
+                itemCount: data.length,       //tamanho da lista
+                itemBuilder: (context, index) {
+                  final u = data[index];      // cada usuário da lista
+                  return ListTile(
+                    title: Text(u.usuario),  // nome do usuário
+                    subtitle: Text(u.email), // e-mail do usuário
+                  );
+                },
+              ),
           ),
         ],
       ),

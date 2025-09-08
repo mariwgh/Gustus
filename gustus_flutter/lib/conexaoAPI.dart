@@ -1,0 +1,37 @@
+import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';  //pacote para abrir links
+import 'package:http/http.dart' as http;          // pacote para conexão com api
+import 'dart:convert';
+
+import 'usuario.dart';
+import 'prato.dart';
+import 'wishlist.dart';
+import 'degustado.dart';
+import 'favorito.dart';
+
+
+// api teste
+class ServiceAPI {
+  final List<Usuario> data;
+
+  ServiceAPI(this.data);
+
+  static Future<ServiceAPI> create() async {
+    try {
+      final response = await http.get(Uri.parse('https://gustus.onrender.com/usuarios'));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonData = json.decode(response.body);
+
+        // converte cada mapa em um objeto Usuario
+        final usuarios = jsonData.map((e) => Usuario.fromJson(e)).toList();
+
+        return ServiceAPI(usuarios);
+      } else {
+        throw Exception('Falha ao carregar os dados. Status: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Erro ao conectar ou carregar dados: $e');
+    }
+  }
+}
