@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require('cors');
 const jwt = require("jsonwebtoken");
 const { Pool } = require('pg'); // Usando a biblioteca do PostgreSQL
 const SECRET_KEY = "loveMyGirlfriend";
@@ -6,6 +7,7 @@ const SECRET_KEY = "loveMyGirlfriend";
 const app = express();
 const PORT = 3000;
 
+app.use(cors())
 app.use(express.json());
 
 function validarEmail(email) {
@@ -21,7 +23,7 @@ const pool = new Pool({
     }
 });
 
-console.log("Pool de conexões com PostgreSQL configurado ✅");
+console.log("Pool de conexões com PostgreSQL configurado");
 
 // Rota de exemplo
 app.get("/familiares", async (req, res) => {

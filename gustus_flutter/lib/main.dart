@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart'; //pacote para abrir links
+import 'package:url_launcher/url_launcher.dart';  //pacote para abrir links
+import 'package:http/http.dart' as http;          // pacote para conexão com api
+import 'dart:convert';
 
 // main é o primeiro método que o projeto executa
 void main() {
@@ -15,9 +17,71 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // MaterialApp é o widget raiz que define o tema e a navegação.
-    return MaterialApp(home: TelaBloqueio());
+    return MaterialApp(home: MyWidget());
   }
 }
+
+
+// api teste
+class MyWidget extends StatefulWidget {
+  @override
+  _MyWidgetState createState() => _MyWidgetState();
+}
+
+class _MyWidgetState extends State<MyWidget> {
+  List<dynamic> usuarios = [];
+
+  Future<void> fetchData() async {
+    try {
+      final response = await http.get(Uri.parse('https://gustus.onrender.com/usuarios'));
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+
+        setState(() {
+          usuarios = data;
+        });
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+      setState(() {
+        usuarios = [{'usuario': 'Error: $e'}];
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Usuários"),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton(
+            onPressed: fetchData,
+            child: Text('Fetch Data'),
+          ),
+          SizedBox(height: 20),
+          Expanded(
+            child: ListView.builder(
+              itemCount: usuarios.length,
+              itemBuilder: (context, index) {
+                final u = usuarios[index];
+                return ListTile(
+                  title: Text(u['usuario'].toString()),
+                  subtitle: Text(u['email'].toString()),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 
 // widgets reutilizável 
 class BaseBloqueio extends StatelessWidget {
