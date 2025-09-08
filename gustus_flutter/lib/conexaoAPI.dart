@@ -16,6 +16,7 @@ class ConexaoAPI<T> {
 
   ConexaoAPI(this.data);
 
+  //get Usuarios de exemplo
   static Future<ConexaoAPI> getUsuarios() async {
     try {
       final response = await http.get(Uri.parse('https://gustus.onrender.com/usuarios'));
@@ -34,4 +35,26 @@ class ConexaoAPI<T> {
       throw Exception('Erro ao conectar ou carregar dados: $e');
     }
   }
+
+  //post login
+
+  //post cadastro
+
+  //get ver favoritos
+
+  //post add favoritos
+
+  //delete favoritos
+
+  //get ver wishlist
+
+  //post add wishlist
+
+  //delete wishlist
+
+  //get ver degustar
+
+  //post avaliar
+
+  //get ver receita
 }
