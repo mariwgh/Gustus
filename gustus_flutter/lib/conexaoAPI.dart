@@ -36,29 +36,30 @@ class ConexaoAPI<T> {
     }
   }
 
-  // entrar e cadastrar (post?)
+  // entrar -> rafaelly
+  // cadastrar -> rafaelly
 
-  // pegar todos os produtos*****
-  // pegar somente 1 produto*****
+  // pegar todos os produtos -> mariana
+  // pegar somente 1 produto -> mariana
 
-  // pegar favoritos de um certo usuário
-  // adicionar favoritos
-  // remover favoritos
+  // pegar favoritos de um certo usuário -> rafaelly
+  // adicionar favoritos -> rafaelly
+  // remover favoritos -> rafaelly
 
-  // pegar wishlist de um certo usuário
-  // adicionar wishlist
-  // remover wishlist
+  // pegar wishlist de um certo usuário -> mariana
+  // adicionar wishlist -> mariana
+  // remover wishlist -> mariana
 
-  // pegar degustados de um certo usuário
-  // adicionar degustados
+  // pegar degustados de um certo usuário -> mariana
+  // adicionar degustados -> mariana
 
-  // pesquisar
+  // pesquisar -> mariana
 
-  // avaliar
+  // avaliar -> rafaelly
 
-  // ver receita
+  // ver receita -> rafaelly
 
-  // alterar configurações*****
-  // excluir conta*****
+  // alterar configurações -> rafaelly
+  // excluir conta -> rafaelly
 
 }
