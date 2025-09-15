@@ -15,10 +15,6 @@ app.use(cors({
 
 app.use(express.json());
 
-function validarEmail(email) {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
-}
 
 // Configuração do Pool de conexões do PostgreSQL
 const pool = new Pool({
@@ -30,7 +26,8 @@ const pool = new Pool({
 
 console.log("Pool de conexões com PostgreSQL configurado");
 
-// Rota de exemplo
+
+// Rotas de exemplo
 app.get("/familiares", async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM familiamari.familia');
@@ -40,6 +37,18 @@ app.get("/familiares", async (req, res) => {
         res.status(500).send("Erro ao buscar dados: " + err.message);
     }
 });
+
+app.get("/usuarios", async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM usuarios');
+        res.json(result.rows);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ mensagem: "Erro interno no servidor." });
+    }
+})
+
+
 
 // Middleware de verificação de token
 function verificarToken(req, res, next) {
@@ -53,6 +62,21 @@ function verificarToken(req, res, next) {
         req.user = user;
         next();
     });
+}
+
+function validarEmail(email) {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+}
+
+// Função auxiliar para obter ID do usuário a partir do email (evita repetição de código)
+async function getUserIdByEmail(email) {
+    const userResult = await pool.query('SELECT idUsuario FROM usuarios WHERE email = $1', [email]);
+    if (userResult.rows.length === 0) {
+        return null;
+    }
+    // Lembre-se que o PostgreSQL geralmente retorna nomes de colunas em minúsculo.
+    return userResult.rows[0].idusuario;
 }
 
 //cadastrar
@@ -107,15 +131,31 @@ app.post("/login", async (req, res) => {
     }
 });
 
-// Função auxiliar para obter ID do usuário a partir do email (evita repetição de código)
-async function getUserIdByEmail(email) {
-    const userResult = await pool.query('SELECT idUsuario FROM usuarios WHERE email = $1', [email]);
-    if (userResult.rows.length === 0) {
-        return null;
+
+//pegar um produto de todos (pagina produto)
+app.get("/produtos", verificarToken, async (req, res) => {
+    const { prato } = req.query;
+    try {
+        const result = await pool.query('SELECT * FROM pratos WHERE prato ILIKE $1', [`%${prato}%`]);
+        res.json(result.rows);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ mensagem: "Erro interno no servidor." });
     }
-    // Lembre-se que o PostgreSQL geralmente retorna nomes de colunas em minúsculo.
-    return userResult.rows[0].idusuario;
-}
+});
+
+
+//pegar um produto de todos (pagina produto)
+app.get("/produto", verificarToken, async (req, res) => {
+    const { prato } = req.query;
+    try {
+        const result = await pool.query('SELECT * FROM pratos WHERE prato ILIKE $1', [`%${prato}%`]);
+        res.json(result.rows);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ mensagem: "Erro interno no servidor." });
+    }
+});
 
 
 //ver favoritos
@@ -175,6 +215,23 @@ app.delete("/delete-favoritos", verificarToken, async (req, res) => {
     }
 });
 
+
+//ver a wishlist
+app.get("/ver-wishlist", verificarToken, async (req, res) => {
+    try {
+        const idUser = await getUserIdByEmail(req.user.email);
+        if (!idUser) {
+            return res.status(404).json({ mensagem: "Usuário não encontrado" });
+        }
+
+        const result = await pool.query('SELECT * FROM wishlist WHERE idUsuario = $1', [idUser]);
+        return res.json(result.rows);
+    } catch (erro) {
+        console.error(erro.message);
+        return res.status(500).json({ mensagem: "Erro interno no servidor." });
+    }
+});
+
 //adicionar na wishlist
 app.post("/add-wishlist", verificarToken, async (req, res) => {
     const { idPrato } = req.body;
@@ -192,22 +249,6 @@ app.post("/add-wishlist", verificarToken, async (req, res) => {
     } catch (erro) {
         console.error(erro.message);
         res.status(500).json({ mensagem: "Erro interno no servidor." });
-    }
-});
-
-//ver a wishlist
-app.get("/ver-wishlist", verificarToken, async (req, res) => {
-    try {
-        const idUser = await getUserIdByEmail(req.user.email);
-        if (!idUser) {
-            return res.status(404).json({ mensagem: "Usuário não encontrado" });
-        }
-
-        const result = await pool.query('SELECT * FROM wishlist WHERE idUsuario = $1', [idUser]);
-        return res.json(result.rows);
-    } catch (erro) {
-        console.error(erro.message);
-        return res.status(500).json({ mensagem: "Erro interno no servidor." });
     }
 });
 
@@ -231,6 +272,23 @@ app.delete("/delete-wishlist", verificarToken, async (req, res) => {
     }
 });
 
+
+//ver degustados
+app.get("/ver-degustar", verificarToken, async (req, res) => {
+    try {
+        const idUser = await getUserIdByEmail(req.user.email);
+        if (!idUser) {
+            return res.status(404).json({ mensagem: "Usuário não encontrado" });
+        }
+
+        const result = await pool.query('SELECT * FROM degustados WHERE idUsuario = $1', [idUser]);
+        return res.json(result.rows);
+    } catch (erro) {
+        console.error(erro.message);
+        return res.status(500).json({ mensagem: "Erro interno no servidor." });
+    }
+});
+
 //adicionar a degustados
 app.post("/add-degustar", verificarToken, async (req, res) => {
     const { idPrato, nota, descricao } = req.body;
@@ -251,21 +309,6 @@ app.post("/add-degustar", verificarToken, async (req, res) => {
     }
 });
 
-//ver degustados
-app.get("/ver-degustar", verificarToken, async (req, res) => {
-    try {
-        const idUser = await getUserIdByEmail(req.user.email);
-        if (!idUser) {
-            return res.status(404).json({ mensagem: "Usuário não encontrado" });
-        }
-
-        const result = await pool.query('SELECT * FROM degustados WHERE idUsuario = $1', [idUser]);
-        return res.json(result.rows);
-    } catch (erro) {
-        console.error(erro.message);
-        return res.status(500).json({ mensagem: "Erro interno no servidor." });
-    }
-});
 
 //pesquisar comidas
 app.get("/pesquisar", verificarToken, async (req, res) => {
@@ -278,6 +321,7 @@ app.get("/pesquisar", verificarToken, async (req, res) => {
         res.status(500).json({ mensagem: "Erro interno no servidor." });
     }
 });
+
 
 //adicionar/atualizar avaliação
 app.post("/avaliar", verificarToken, async (req, res) => {
@@ -322,6 +366,7 @@ app.post("/avaliar", verificarToken, async (req, res) => {
     }
 });
 
+
 //ver receita
 app.get("/ver-receita", async (req, res) => {
     const { comida } = req.query;
@@ -338,15 +383,7 @@ app.get("/ver-receita", async (req, res) => {
     }
 });
 
-app.get("/usuarios", async (req, res) => {
-    try {
-        const result = await pool.query('SELECT * FROM usuarios');
-        res.json(result.rows);
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).json({ mensagem: "Erro interno no servidor." });
-    }
-})
+
 
 app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
