@@ -134,7 +134,6 @@ app.post("/login", async (req, res) => {
 
 //pegar um produto de todos (pagina produto)
 app.get("/produtos", verificarToken, async (req, res) => {
-    const { prato } = req.query;
     try {
         const result = await pool.query('SELECT * FROM pratos');
         res.json(result.rows);
