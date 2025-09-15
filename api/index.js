@@ -136,7 +136,7 @@ app.post("/login", async (req, res) => {
 app.get("/produtos", verificarToken, async (req, res) => {
     const { prato } = req.query;
     try {
-        const result = await pool.query('SELECT * FROM pratos WHERE prato ILIKE $1', [`%${prato}%`]);
+        const result = await pool.query('SELECT * FROM pratos');
         res.json(result.rows);
     } catch (error) {
         console.error(error.message);
@@ -378,6 +378,50 @@ app.get("/ver-receita", async (req, res) => {
         res.json(result.rows);
     }
     catch (erro) {
+        console.error(erro.message);
+        res.status(500).json({ mensagem: "Erro interno no servidor." });
+    }
+});
+
+
+//alterar configuracoes
+app.put("/atualizar-config", verificarToken, async (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ mensagem: "Os campos são obrigatórios." });
+    }
+
+    try {
+        const idUser = await getUserIdByEmail(req.user.email);
+        if (!idUser) {
+            return res.status(404).json({ mensagem: "Usuário não encontrado." });
+        }
+
+        await pool.query(
+            'UPDATE usuarios SET email = $1, password = $2 WHERE idUsuario = $3', [email, password, idUser]
+        );
+
+        res.status(200).json({ mensagem: "Conta atualizada registrada com sucesso!" });
+
+    } catch (erro) {
+        console.error(erro.message);
+        res.status(500).json({ mensagem: "Erro interno no servidor." });
+    }
+});
+
+
+//deletar conta
+app.delete("/delete-conta", verificarToken, async (req, res) => {
+    try {
+        const idUser = await getUserIdByEmail(req.user.email);
+        if (!idUser) {
+            return res.status(404).json({ mensagem: "Usuário não encontrado" });
+        }
+
+        await pool.query('DELETE FROM usuarios WHERE idUsuario = $1', [idUser]);
+        res.status(200).json({ mensagem: "Removido de Usuários." });
+    } catch (erro) {
         console.error(erro.message);
         res.status(500).json({ mensagem: "Erro interno no servidor." });
     }
