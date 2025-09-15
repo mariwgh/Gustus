@@ -36,25 +36,29 @@ class ConexaoAPI<T> {
     }
   }
 
-  //post login
+  // entrar e cadastrar (post?)
 
-  //post cadastro
+  // pegar todos os produtos*****
+  // pegar somente 1 produto*****
 
-  //get ver favoritos
+  // pegar favoritos de um certo usuário
+  // adicionar favoritos
+  // remover favoritos
 
-  //post add favoritos
+  // pegar wishlist de um certo usuário
+  // adicionar wishlist
+  // remover wishlist
 
-  //delete favoritos
+  // pegar degustados de um certo usuário
+  // adicionar degustados
 
-  //get ver wishlist
+  // pesquisar
 
-  //post add wishlist
+  // avaliar
 
-  //delete wishlist
+  // ver receita
 
-  //get ver degustar
+  // alterar configurações*****
+  // excluir conta*****
 
-  //post avaliar
-
-  //get ver receita
 }
