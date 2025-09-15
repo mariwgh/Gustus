@@ -412,8 +412,8 @@ app.put("/atualizar-config", verificarToken, async (req, res) => {
 //deletar conta
 app.delete("/delete-conta", verificarToken, async (req, res) => {
     try {
-        const {idUsuario} = req.query 
-        const idUser = await getUserIdByEmail(idUsuario);
+        const {email} = req.query 
+        const idUser = await getUserIdByEmail(email);
         if (!idUser) {
             return res.status(404).json({ mensagem: "Usuário não encontrado" });
         }
