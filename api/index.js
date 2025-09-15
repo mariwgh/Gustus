@@ -412,13 +412,19 @@ app.put("/atualizar-config", verificarToken, async (req, res) => {
 //deletar conta
 app.delete("/delete-conta", verificarToken, async (req, res) => {
     try {
-        const {email} = req.query 
-        const idUser = await getUserIdByEmail(email);
+        const idUser = await getUserIdByEmail(req.user.email);
         if (!idUser) {
             return res.status(404).json({ mensagem: "Usuário não encontrado" });
         }
 
+        await Promise.all([
+            pool.query('DELETE FROM favoritos WHERE idUsuario = $1', [idUser]),
+            pool.query('DELETE FROM wishlist WHERE idUsuario = $1', [idUser]),
+            pool.query('DELETE FROM degustados WHERE idUsuario = $1', [idUser])
+        ]);
+
         await pool.query('DELETE FROM usuarios WHERE idUsuario = $1', [idUser]);
+        
         res.status(200).json({ mensagem: "Removido de Usuários." });
     } catch (erro) {
         console.log(erro.message);
