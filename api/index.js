@@ -321,8 +321,7 @@ app.get("/pesquisar", verificarToken, async (req, res) => {
     }
 });
 
-
-//adicionar/atualizar avaliação
+//atualizar avaliação
 app.post("/avaliar", verificarToken, async (req, res) => {
     // 1. Pega os dados do corpo da requisição
     const { idPrato, nota, descricao } = req.body;
@@ -413,7 +412,8 @@ app.put("/atualizar-config", verificarToken, async (req, res) => {
 //deletar conta
 app.delete("/delete-conta", verificarToken, async (req, res) => {
     try {
-        const idUser = await getUserIdByEmail(req.query.email);
+        const {idUsuario} = req.query 
+        const idUser = await getUserIdByEmail(idUsuario);
         if (!idUser) {
             return res.status(404).json({ mensagem: "Usuário não encontrado" });
         }
