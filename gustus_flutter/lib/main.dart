@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // MaterialApp é o widget raiz que define o tema e a navegação.
-    return MaterialApp(home: MyWidget());
+    return MaterialApp(home: TelaBloqueio());
   }
 }
 
@@ -313,36 +313,25 @@ class BaseInicial extends StatelessWidget {
   }
 }
 
-class MostraProdutos extends StatelessWidget {
+
+class MostraProdutos extends StatefulWidget {
+  const MostraProdutos({super.key, required this.produtos});
+
   // aqui recebe uma lista de produtos futuramente
-  final List<Map<String, String>> produtos; // lista de 'maps' como parametro, ou seja cada elemento da lista tem um nome de tabela (string) com um dado (string), como no exemplo
+  final List<Map<String, String>> produtos;
+
+  @override
+  _MostraProdutosState createState() => _MostraProdutosState();
+}
+
+class _MostraProdutosState extends State<MostraProdutos> {
+  //_MostraProdutosState(this.produtos); // lista de 'maps' como parametro, ou seja cada elemento da lista tem um nome de tabela (string) com um dado (string), como no exemplo
 
   // a lista sera dada como vazia se nada for passado
-  const MostraProdutos({Key? key, this.produtos = const []}) : super(key: key);
+  //_MostraProdutosState({Key? key, this.produtos = const []}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // exemplo de lista de produtos
-    final produtos = [
-      {
-        "nome": "Risoto de camarão",
-        "imagem": "https://raw.githubusercontent.com/mariwgh/Gustus/refs/heads/main/imagens/risoto-de-camarao.png",
-        "descricao": "Esse prato popular tem suas raízes na história do risoto italiano, que surgiu na região da Lombardia durante o século XI, influenciado pelos sarracenos.",
-        "linkReceita": "https://www.tudogostoso.com.br/receita/185493-risoto-de-camarao-sem-frescura.html"
-      },
-      {
-        "nome": "Ratatouille",
-        "imagem": "https://raw.githubusercontent.com/mariwgh/Gustus/refs/heads/main/imagens/ratatouille.png",
-        "descricao": "Esse prato popular tem suas raízes na história do risoto italiano, que surgiu na região da Lombardia durante o século XI, influenciado pelos sarracenos.",
-        "linkReceita": "https://www.tudogostoso.com.br/receita/185493-risoto-de-camarao-sem-frescura.html"
-      },
-      {
-        "nome": "Sushi",
-        "imagem": "https://raw.githubusercontent.com/mariwgh/Gustus/refs/heads/main/imagens/sushi.png",
-        "descricao": "Esse prato popular tem suas raízes na história do risoto italiano, que surgiu na região da Lombardia durante o século XI, influenciado pelos sarracenos.",
-        "linkReceita": "https://www.tudogostoso.com.br/receita/185493-risoto-de-camarao-sem-frescura.html"
-      },
-    ];
 
     return GridView.builder(
       padding: const EdgeInsets.all(50),
@@ -353,9 +342,9 @@ class MostraProdutos extends StatelessWidget {
         crossAxisSpacing: 150,          //espaco
         childAspectRatio: 1,            // mantém quadrado
       ),
-      itemCount: produtos.length,  //quantos items terao na tabela
+      itemCount: widget.produtos.length,  //quantos items terao na tabela
       itemBuilder: (context, index) {
-        final produto = produtos[index];   // percorre cada elemento da lista o transformando em produto
+        final produto = widget.produtos[index];   // percorre cada elemento da lista o transformando em produto
 
         //cada produto é clicável, e quando clica, vai para a tela de seu produto com mais informacoes
         return GestureDetector(
@@ -803,11 +792,35 @@ class _TelaLoginState extends State<TelaLogin> {
 }
 
 
-class TelaInicial extends StatelessWidget {
+class TelaInicial extends StatefulWidget {
+  @override
+    State<TelaInicial> createState() => _TelaInicialState(); 
+}
+
+class _TelaInicialState extends State<TelaInicial> {
+  List<Map<String, String>> _produtos = [];
+
+  @override
+  void initState() {
+    super.initState();
+    // Chame a função que busca os produtos
+    // e atualize o estado
+    _fetchProdutos();
+  }
+
+  Future<void> _fetchProdutos() async {
+    final produtos = await ConexaoAPI.getProdutos();
+    if (mounted) {
+      setState(() {
+        _produtos = produtos as List<Map<String, String>>;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BaseInicial(
-      child: MostraProdutos(),
+      child: MostraProdutos(produtos: _produtos,),
       //child: MostraProdutos(produtos: [],), -> quando tiver a api, passar como parametro
     );
   }
@@ -1034,6 +1047,25 @@ class TelaPesquisar extends StatefulWidget {
 }
 
 class _TelaPesquisarState extends State<TelaPesquisar> {
+  List<Map<String, String>> _produtos = [];
+
+  @override
+  void initState() {
+    super.initState();
+    // Chame a função que busca os produtos
+    // e atualize o estado
+    _fetchProdutos();
+  }
+
+  Future<void> _fetchProdutos() async {
+    final produtos = await ConexaoAPI.getProdutos();
+    if (mounted) {
+      setState(() {
+        _produtos = produtos as List<Map<String, String>>;
+      });
+    }
+  }
+
   final TextEditingController _pesquisaController = TextEditingController();
 
   @override
@@ -1063,7 +1095,7 @@ class _TelaPesquisarState extends State<TelaPesquisar> {
             ),
           ),
           Expanded(                                     // faz o GridView de mostraProdutos ocupar o resto da tela
-            child: MostraProdutos(), 
+            child: MostraProdutos(produtos: _produtos), 
           ),
         ],
       ),
@@ -1124,7 +1156,7 @@ class TelaConta extends StatelessWidget {
                       ],
                     ),
                   ),
-                  MostraProdutos(),
+                  MostraProdutos(produtos: [],),
                   const SizedBox(height: 25),
                 
                   //wishlist
@@ -1164,7 +1196,7 @@ class TelaConta extends StatelessWidget {
                       ),
                     ),
                   ),
-                  MostraProdutos(),
+                  MostraProdutos( produtos: [],),
                   const SizedBox(height: 25),
 
                   //degustados
@@ -1204,7 +1236,7 @@ class TelaConta extends StatelessWidget {
                       ),
                     ),
                   ),
-                  MostraProdutos(),
+                  MostraProdutos(produtos: [],),
                 ],
               )
             ),
@@ -1423,8 +1455,7 @@ class TelaWishlist extends StatelessWidget {
           ),
           const SizedBox(height: 25),
 
-          MostraProdutos(),
-          //child: MostraProdutos(produtos: [],),]
+          MostraProdutos(produtos: [],),
         ]
       )
     );
@@ -1456,8 +1487,7 @@ class TelaDegustados extends StatelessWidget {
           ),
           const SizedBox(height: 25),
 
-          MostraProdutos(),
-          //child: MostraProdutos(produtos: [],),]
+          MostraProdutos(produtos: [],),
         ]
       )
     );

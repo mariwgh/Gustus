@@ -40,6 +40,25 @@ class ConexaoAPI<T> {
   // cadastrar -> rafaelly
 
   // pegar todos os produtos -> mariana
+  static Future<ConexaoAPI> getProdutos() async {
+    try {
+      final response = await http.get(Uri.parse('https://gustus.onrender.com/produtos'));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonData = json.decode(response.body);
+
+        // converte cada mapa em um objeto Usuario
+        final produtos = jsonData.map((e) => Prato.fromJson(e)).toList();
+
+        return ConexaoAPI(produtos);
+      } else {
+        throw Exception('Falha ao carregar os dados. Status: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Erro ao conectar ou carregar dados: $e');
+    }
+  }
+
   // pegar somente 1 produto -> mariana
 
   // pegar favoritos de um certo usuário -> rafaelly
