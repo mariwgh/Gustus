@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
+/*
 // api teste
 class MyWidget extends StatefulWidget {
   @override
@@ -120,7 +120,7 @@ class _MyWidgetState extends State<MyWidget> {
     );
   }
 }
-
+*/
 
 // widgets reutilizável 
 class BaseBloqueio extends StatelessWidget {
@@ -661,23 +661,49 @@ class TelaLogin extends StatefulWidget {                  // estado mutável dos
 
 class _TelaLoginState extends State<TelaLogin> {
   // declarando controladores para pegar o texto de cada campo -> controlam e obtem o texto digitado em campos de entrada de texto
-  final TextEditingController _userController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   // limpa os controladores quando a tela é chamada
   @override
   void dispose() {
-    _userController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
   // função que será chamada quando o botão "Entrar" for pressionado e definira as variaveis
-  void _verificarUsuario() {
-    final String usuario = _userController.text;
+  void _verificarUsuario() async {
+    final String email = _emailController.text;
     final String senha = _passwordController.text;
-    // aqui ele chama outra funcao q manda as variaveis p banco de dados
+
+    try {
+      // Chama a função postLogin da sua ConexaoAPI
+      final conexao = await ConexaoAPI.postLogin(email, senha);
+
+      // Se o login for bem-sucedido e o token for retornado...
+      if (conexao.token != null) {
+      } else {
+        // Se o token for nulo (login falhou), exibe uma mensagem de erro
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("E-mail ou senha incorretos.")),
+        );
+      }
+    } catch (e) {
+      // Se houver qualquer erro na conexão, exibe uma mensagem
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erro ao fazer login. Tente novamente.")),
+      );
+      print("Erro de login: $e");
+    }
   }
+
+  @override
+  void initState() {
+    super.initState();
+    // A chamada à API de produtos foi removida daqui, pois pertence a outra tela
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -708,7 +734,7 @@ class _TelaLoginState extends State<TelaLogin> {
           const SizedBox(height: 20),
 
           TextField(
-            controller: _userController,                        //define a variavel que sera usada para ir para o bd
+            controller: _emailController,                        //define a variavel que sera usada para ir para o bd
             decoration: InputDecoration(                        //decoracao de lugar que digita
               labelText: "User",                                //texto do campo para digitar
               labelStyle: TextStyle(color: Colors.white),

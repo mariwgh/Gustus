@@ -12,9 +12,15 @@ import 'favorito.dart';
 
 // api teste
 class ConexaoAPI<T> {
-  final List<T> data;
+  final List<T>? data;
+  final String? token;
 
-  ConexaoAPI(this.data);
+  ConexaoAPI(this.data, this.token);
+
+  // Este factory construtor é para a resposta de login (só tem token)
+  factory ConexaoAPI.fromJson(Map<String, dynamic> json) {
+    return ConexaoAPI(null, json['token']);
+  }
 
   //get Usuarios de exemplo
   static Future<ConexaoAPI> getUsuarios() async {
@@ -27,7 +33,7 @@ class ConexaoAPI<T> {
         // converte cada mapa em um objeto Usuario
         final usuarios = jsonData.map((e) => Usuario.fromJson(e)).toList();
 
-        return ConexaoAPI(usuarios);
+        return ConexaoAPI(usuarios, null);
       } else {
         throw Exception('Falha ao carregar os dados. Status: ${response.statusCode}');
       }
@@ -37,6 +43,29 @@ class ConexaoAPI<T> {
   }
 
   // entrar -> rafaelly
+  static Future<ConexaoAPI> postLogin(String email, String senha) async{
+    try{
+      final response = await http.post(
+        Uri.parse('https://gustus.onrender.com/login'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: json.encode(<String, String>{
+          'email': email,
+          'senha': senha,
+        }),
+      );
+      if (response.statusCode == 200){
+        return ConexaoAPI.fromJson(json.decode(response.body));
+      } else {
+        throw Exception('Falha ao carregar os dados. Status: ${response.statusCode}');
+      }
+    }
+    catch(erro){
+      throw Exception("Erro ao conectar ou ao carregar dados: $erro");
+    }
+  }
+
   // cadastrar -> rafaelly
 
   // pegar todos os produtos -> mariana
@@ -50,7 +79,7 @@ class ConexaoAPI<T> {
         // converte cada mapa em um objeto Usuario
         final produtos = jsonData.map((e) => Prato.fromJson(e)).toList();
 
-        return ConexaoAPI(produtos);
+        return ConexaoAPI(produtos, null);
       } else {
         throw Exception('Falha ao carregar os dados. Status: ${response.statusCode}');
       }
