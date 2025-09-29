@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gustus_flutter/prato.dart';
 import 'package:url_launcher/url_launcher.dart';  //pacote para abrir links
 import 'package:http/http.dart' as http;          // pacote para conexão com api
 import 'dart:convert';
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // MaterialApp é o widget raiz que define o tema e a navegação.
-    return MaterialApp(home: TelaBloqueio());
+    return MaterialApp(home: TelaBloqueio(), debugShowCheckedModeBanner: false);
   }
 }
 
@@ -317,8 +318,7 @@ class BaseInicial extends StatelessWidget {
 class MostraProdutos extends StatefulWidget {
   const MostraProdutos({super.key, required this.produtos});
 
-  // aqui recebe uma lista de produtos futuramente
-  final List<Map<String, String>> produtos;
+  final List<Prato> produtos;
 
   @override
   _MostraProdutosState createState() => _MostraProdutosState();
@@ -354,10 +354,10 @@ class _MostraProdutosState extends State<MostraProdutos> {
               context,
               MaterialPageRoute(
                 builder: (context) => TelaProduto(
-                  nome: produto["nome"]!,
-                  imagem: produto["imagem"]!,
-                  descricao: produto["descricao"]!,
-                  linkReceita: produto["linkReceita"]!,
+                  nome: produto.prato,
+                  imagem: produto.foto,
+                  descricao: produto.descricao,
+                  linkReceita: produto.linkReceita,
                 ),
               ),
             );
@@ -388,7 +388,7 @@ class _MostraProdutosState extends State<MostraProdutos> {
                       top: -altura * 0.15,      // 15% saindo pra cima
                       right: -largura * 0.15,   // 15% saindo pro lado
                       child: Image.network(     //imagem da internet
-                        produto["imagem"]!,
+                        produto.foto,
                         width: largura * 0.4,   // 40% do container
                         fit: BoxFit.cover,
                       ),
@@ -398,7 +398,7 @@ class _MostraProdutosState extends State<MostraProdutos> {
                       child: Padding(
                         padding: EdgeInsets.all(largura * 0.05),  // 5% de padding
                         child: Text(
-                          produto["nome"]!,
+                          produto.prato,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: largura * 0.08,             // fonte proporcional 8%
@@ -674,16 +674,22 @@ class _TelaLoginState extends State<TelaLogin> {
 
   // função que será chamada quando o botão "Entrar" for pressionado e definira as variaveis
   void _verificarUsuario() async {
-    final String email = _emailController.text;
-    final String senha = _passwordController.text;
+    String email = _emailController.text;
+    String senha = _passwordController.text;
 
     try {
       // Chama a função postLogin da sua ConexaoAPI
       final conexao = await ConexaoAPI.postLogin(email, senha);
 
-      // Se o login for bem-sucedido e o token for retornado...
-      if (conexao.token != null) {
-      } else {
+      if(conexao.token != null){
+        print(conexao.token);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => TelaInicial()),
+        );
+      }
+
+      else {
         // Se o token for nulo (login falhou), exibe uma mensagem de erro
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("E-mail ou senha incorretos.")),
@@ -701,9 +707,7 @@ class _TelaLoginState extends State<TelaLogin> {
   @override
   void initState() {
     super.initState();
-    // A chamada à API de produtos foi removida daqui, pois pertence a outra tela
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -736,7 +740,7 @@ class _TelaLoginState extends State<TelaLogin> {
           TextField(
             controller: _emailController,                        //define a variavel que sera usada para ir para o bd
             decoration: InputDecoration(                        //decoracao de lugar que digita
-              labelText: "User",                                //texto do campo para digitar
+              labelText: "E-mail",                                //texto do campo para digitar
               labelStyle: TextStyle(color: Colors.white),
               enabledBorder: UnderlineInputBorder(              //a borda sera em baixo, como uma linha para escrever
                 borderSide: BorderSide(color: Colors.white),
@@ -768,11 +772,7 @@ class _TelaLoginState extends State<TelaLogin> {
           // botao de entrar
           ElevatedButton(
             onPressed: () {
-              _verificarUsuario();                              //funcao que chamara a API
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => TelaInicial()),
-              );
+              _verificarUsuario();    
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color.fromRGBO(188, 192, 198, 1),
@@ -820,34 +820,83 @@ class _TelaLoginState extends State<TelaLogin> {
 
 class TelaInicial extends StatefulWidget {
   @override
-    State<TelaInicial> createState() => _TelaInicialState(); 
+  State<TelaInicial> createState() => _TelaInicialState(); 
 }
 
 class _TelaInicialState extends State<TelaInicial> {
-  List<Map<String, String>> _produtos = [];
+  List<Prato> _produtos = []; 
+  
+  // indicador de carregamento
+  bool _isLoading = true; 
+  String? _errorMessage; 
 
   @override
   void initState() {
     super.initState();
-    // Chame a função que busca os produtos
-    // e atualize o estado
-    _fetchProdutos();
+    // NÃO CHAME _fetchProdutos() DIRETAMENTE.
+    // CHAME A FUNÇÃO QUE VERIFICA O TOKEN PRIMEIRO
+    _checkTokenAndFetch(); 
+  }
+
+  // Novo método: Verifica o token antes de tentar buscar dados
+  Future<void> _checkTokenAndFetch() async {
+    // Tenta pegar o token global estático.
+    try{
+      final token = ConexaoAPI.getToken(); 
+      if (token == null) {
+        // Se a tela abriu sem token (sem ter feito login), exibe uma mensagem.
+        if (mounted) {
+            setState(() {
+              _isLoading = false;
+              //_errorMessage = "Por favor, faça o login para ver os produtos.";
+            });
+          }
+      }
+    }
+    catch(e){
+      _errorMessage = e.toString();
+      print(_errorMessage);
+    }
+   
+    // Se há token, procede com a busca de produtos
+    await _fetchProdutos(); 
+    return;
   }
 
   Future<void> _fetchProdutos() async {
-    final produtos = await ConexaoAPI.getProdutos();
-    if (mounted) {
-      setState(() {
-        _produtos = produtos as List<Map<String, String>>;
-      });
+    try {
+      // O resultado é do tipo ConexaoAPI<Prato>
+      final apiResponse = await ConexaoAPI.getProdutos(); 
+      
+      // Verifica se o widget ainda está montado antes de chamar setState
+      if (mounted) {
+        setState(() {
+          // Acesse a lista de Prato corretamente no campo 'data'
+          // Se o 'data' for nulo (ex: a API retornou lista vazia), use []
+          _produtos = apiResponse.data ?? []; 
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Erro ao carregar produtos: $e');
+      if (mounted) {
+         setState(() {
+            _isLoading = false;
+         });
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      // Mostra um indicador de carregamento enquanto espera
+      return Center(child: CircularProgressIndicator());
+    }
+    
+    // Se o carregamento terminou, exibe o conteúdo
     return BaseInicial(
-      child: MostraProdutos(produtos: _produtos,),
-      //child: MostraProdutos(produtos: [],), -> quando tiver a api, passar como parametro
+      child: MostraProdutos(produtos: _produtos), 
     );
   }
 }
@@ -1073,7 +1122,7 @@ class TelaPesquisar extends StatefulWidget {
 }
 
 class _TelaPesquisarState extends State<TelaPesquisar> {
-  List<Map<String, String>> _produtos = [];
+  List<Prato> _produtos = []; 
 
   @override
   void initState() {
@@ -1087,7 +1136,7 @@ class _TelaPesquisarState extends State<TelaPesquisar> {
     final produtos = await ConexaoAPI.getProdutos();
     if (mounted) {
       setState(() {
-        _produtos = produtos as List<Map<String, String>>;
+        _produtos = produtos as List<Prato>;
       });
     }
   }
