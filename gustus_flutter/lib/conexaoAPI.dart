@@ -9,6 +9,7 @@ import 'wishlist.dart';
 import 'degustado.dart';
 import 'favorito.dart';
 
+
 // api teste
 class ConexaoAPI<T> {
   // Use um tipo genérico <T> para o dado
@@ -21,7 +22,6 @@ class ConexaoAPI<T> {
   static void setToken(String? token) {
     _globalToken = token;
   }
-
   // Método para obter o token (chamado em qualquer requisição autenticada)
   static String? getToken() {
     return _globalToken;
@@ -39,6 +39,7 @@ class ConexaoAPI<T> {
       data: null, // Não há lista de dados nesta resposta
     );
   }
+
 
   // --- Métodos da API ---
 
@@ -152,17 +153,121 @@ class ConexaoAPI<T> {
   // remover favoritos -> rafaelly
 
   // pegar wishlist de um certo usuário -> mariana
+  static Future<ConexaoAPI<Prato>> getWishlist() async {
+    final token = getToken(); // Pega o token estático
+
+    if (token == null) {
+      throw Exception('Token de autenticação não encontrado. Faça o login.'); 
+    }
+
+    try {
+      final response = await http.get(
+        Uri.parse('https://gustus.onrender.com/ver-wishlist'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token', // Envia o token para autenticação
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonData = json.decode(response.body);
+
+        final List<int> pratoIds = jsonData.map((e) => e['idprato'] as int).toList();
+        
+        // PEGAR OS DETALHES DOS PRATOS DE ACORDO COM (N Chamadas API)
+        final List<Future<Prato>> pratosDetalhes = pratoIds.map((id) async {
+          final responsePrato = await http.get(
+            Uri.parse('https://gustus.onrender.com/produto?idprato=$id'),
+            headers: {
+              'Content-Type': 'application/json; charset=UTF-8',
+              'Authorization': 'Bearer $token',
+            },
+          );
+
+          if (responsePrato.statusCode == 200) {
+              final Map<String, dynamic> jsonPrato = json.decode(responsePrato.body);
+              return Prato.fromJson(jsonPrato); 
+          } else {
+              throw Exception('Falha ao carregar o Prato $id. Status: ${responsePrato.statusCode}');
+          }
+        }).toList();
+
+        // Aguarda todas as buscas de detalhes terminarem em paralelo
+        final List<Prato> produtos = await Future.wait(pratosDetalhes);
+
+        return await ConexaoAPI<Prato>(data: produtos, token: null);
+      } else {
+        throw Exception(
+          'Falha ao carregar os dados. Status: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      throw Exception('Erro ao conectar ou carregar dados: $e');
+    }
+  }
+
   // adicionar wishlist -> mariana
   // remover wishlist -> mariana
 
   // pegar degustados de um certo usuário -> mariana
+    static Future<ConexaoAPI<Prato>> getDegustados() async {
+    final token = getToken(); // Pega o token estático
+
+    if (token == null) {
+      throw Exception('Token de autenticação não encontrado. Faça o login.'); 
+    }
+
+    try {
+      final response = await http.get(
+        Uri.parse('https://gustus.onrender.com/ver-degustar'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token', // Envia o token para autenticação
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonData = json.decode(response.body);
+
+        final List<int> pratoIds = jsonData.map((e) => e['idprato'] as int).toList();
+        
+        // PEGAR OS DETALHES DOS PRATOS DE ACORDO COM (N Chamadas API)
+        final List<Future<Prato>> pratosDetalhes = pratoIds.map((id) async {
+          final responsePrato = await http.get(
+            Uri.parse('https://gustus.onrender.com/produto?idprato=$id'),
+            headers: {
+              'Content-Type': 'application/json; charset=UTF-8',
+              'Authorization': 'Bearer $token',
+            },
+          );
+
+          if (responsePrato.statusCode == 200) {
+              final Map<String, dynamic> jsonPrato = json.decode(responsePrato.body);
+              return Prato.fromJson(jsonPrato); 
+          } else {
+              throw Exception('Falha ao carregar o Prato $id. Status: ${responsePrato.statusCode}');
+          }
+        }).toList();
+
+        // Aguarda todas as buscas de detalhes terminarem em paralelo
+        final List<Prato> produtos = await Future.wait(pratosDetalhes);
+
+        return await ConexaoAPI<Prato>(data: produtos, token: null);
+      } else {
+        throw Exception(
+          'Falha ao carregar os dados. Status: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      throw Exception('Erro ao conectar ou carregar dados: $e');
+    }
+  }
+
   // adicionar degustados -> mariana
 
   // pesquisar -> mariana
 
   // avaliar -> rafaelly
-
-  // ver receita -> rafaelly
 
   // alterar configurações -> rafaelly
   // excluir conta -> rafaelly

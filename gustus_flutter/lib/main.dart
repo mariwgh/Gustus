@@ -1506,9 +1506,83 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
 }
 
 
-class TelaWishlist extends StatelessWidget {
+class TelaWishlist extends StatefulWidget {
+  @override
+  State<TelaWishlist> createState() => _TelaWishlistState(); 
+}
+
+class _TelaWishlistState extends State<TelaWishlist> {
+  List<Prato> _produtos = []; 
+  
+  // indicador de carregamento
+  bool _isLoading = true; 
+  String? _errorMessage; 
+
+  @override
+  void initState() {
+    super.initState();
+    // NÃO CHAME _fetchProdutos() DIRETAMENTE.
+    // CHAME A FUNÇÃO QUE VERIFICA O TOKEN PRIMEIRO
+    _checkTokenAndFetch(); 
+  }
+
+  // Novo método: Verifica o token antes de tentar buscar dados
+  Future<void> _checkTokenAndFetch() async {
+    // Tenta pegar o token global estático.
+    try{
+      final token = ConexaoAPI.getToken(); 
+
+      if (token == null) {
+        // Se a tela abriu sem token (sem ter feito login), exibe uma mensagem.
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+            //_errorMessage = "Por favor, faça o login para ver os produtos.";
+          });
+        }
+      }
+    }
+    catch(e){
+      _errorMessage = e.toString();
+      print(_errorMessage);
+    }
+   
+    // Se há token, procede com a busca de produtos
+    await _fetchProdutos(); 
+    return;
+  }
+
+  Future<void> _fetchProdutos() async {
+    try {
+      // O resultado é do tipo ConexaoAPI<Prato>
+      final apiResponse = await ConexaoAPI.getWishlist(); 
+      
+      // Verifica se o widget ainda está montado antes de chamar setState
+      if (mounted) {
+        setState(() {
+          // Acesse a lista de Prato corretamente no campo 'data'
+          // Se o 'data' for nulo (ex: a API retornou lista vazia), use []
+          _produtos = apiResponse.data ?? []; 
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Erro ao carregar produtos: $e');
+      if (mounted) {
+         setState(() {
+            _isLoading = false;
+         });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      // Mostra um indicador de carregamento enquanto espera
+      return Center(child: CircularProgressIndicator());
+    }
+
     return BaseInicial(
       child: Column(
         children: [
@@ -1530,7 +1604,7 @@ class TelaWishlist extends StatelessWidget {
           ),
           const SizedBox(height: 25),
 
-          MostraProdutos(produtos: [],),
+          MostraProdutos(produtos: _produtos,),
         ]
       )
     );
@@ -1538,9 +1612,83 @@ class TelaWishlist extends StatelessWidget {
 }
 
 
-class TelaDegustados extends StatelessWidget {
+class TelaDegustados extends StatefulWidget {
+  @override
+  State<TelaDegustados> createState() => _TelaDegustadosState(); 
+}
+
+class _TelaDegustadosState extends State<TelaDegustados> {
+  List<Prato> _produtos = []; 
+  
+  // indicador de carregamento
+  bool _isLoading = true; 
+  String? _errorMessage; 
+
+  @override
+  void initState() {
+    super.initState();
+    // NÃO CHAME _fetchProdutos() DIRETAMENTE.
+    // CHAME A FUNÇÃO QUE VERIFICA O TOKEN PRIMEIRO
+    _checkTokenAndFetch(); 
+  }
+
+  // Novo método: Verifica o token antes de tentar buscar dados
+  Future<void> _checkTokenAndFetch() async {
+    // Tenta pegar o token global estático.
+    try{
+      final token = ConexaoAPI.getToken(); 
+
+      if (token == null) {
+        // Se a tela abriu sem token (sem ter feito login), exibe uma mensagem.
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+            //_errorMessage = "Por favor, faça o login para ver os produtos.";
+          });
+        }
+      }
+    }
+    catch(e){
+      _errorMessage = e.toString();
+      print(_errorMessage);
+    }
+   
+    // Se há token, procede com a busca de produtos
+    await _fetchProdutos(); 
+    return;
+  }
+
+  Future<void> _fetchProdutos() async {
+    try {
+      // O resultado é do tipo ConexaoAPI<Prato>
+      final apiResponse = await ConexaoAPI.getDegustados(); 
+      
+      // Verifica se o widget ainda está montado antes de chamar setState
+      if (mounted) {
+        setState(() {
+          // Acesse a lista de Prato corretamente no campo 'data'
+          // Se o 'data' for nulo (ex: a API retornou lista vazia), use []
+          _produtos = apiResponse.data ?? []; 
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Erro ao carregar produtos: $e');
+      if (mounted) {
+         setState(() {
+            _isLoading = false;
+         });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      // Mostra um indicador de carregamento enquanto espera
+      return Center(child: CircularProgressIndicator());
+    }
+    
     return BaseInicial(
       child: Column(
         children: [
@@ -1562,7 +1710,7 @@ class TelaDegustados extends StatelessWidget {
           ),
           const SizedBox(height: 25),
 
-          MostraProdutos(produtos: [],),
+          MostraProdutos(produtos: _produtos,),
         ]
       )
     );
