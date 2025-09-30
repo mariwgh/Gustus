@@ -148,7 +148,7 @@ app.get("/produtos", verificarToken, async (req, res) => {
 app.get("/produto", verificarToken, async (req, res) => {
     const { prato } = req.query;
     try {
-        const result = await pool.query('SELECT * FROM pratos WHERE idPrato ILIKE $1', [`%${prato}%`]);
+        const result = await pool.query('SELECT * FROM pratos WHERE idPrato = $1', [`%${prato}%`]);
         res.json(result.rows);
     } catch (error) {
         console.error(error.message);
