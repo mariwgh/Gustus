@@ -1583,6 +1583,26 @@ class _TelaWishlistState extends State<TelaWishlist> {
       return Center(child: CircularProgressIndicator());
     }
 
+    // Estado de Erro ou Lista Vazia
+    if (_errorMessage != null || _produtos.isEmpty) {
+      String message = _errorMessage ?? "A sua Wishlist está vazia.";
+      
+      // Verifica se a Wishlist está vazia (caso não tenha dado erro)
+      if (_produtos.isEmpty && _errorMessage == null) {
+          message = "Sua Wishlist está vazia.";
+      }
+
+      return BaseInicial(
+          child: Center(
+              child: Text(
+                  message,
+                  style: const TextStyle(color: Colors.white, fontSize: 18),
+                  textAlign: TextAlign.center,
+              ),
+          ),
+      );
+    }
+
     return BaseInicial(
       child: Column(
         children: [
@@ -1688,7 +1708,7 @@ class _TelaDegustadosState extends State<TelaDegustados> {
       // Mostra um indicador de carregamento enquanto espera
       return Center(child: CircularProgressIndicator());
     }
-    
+
     return BaseInicial(
       child: Column(
         children: [

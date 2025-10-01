@@ -177,7 +177,7 @@ class ConexaoAPI<T> {
         // PEGAR OS DETALHES DOS PRATOS DE ACORDO COM (N Chamadas API)
         final List<Future<Prato>> pratosDetalhes = pratoIds.map((id) async {
           final responsePrato = await http.get(
-            Uri.parse('https://gustus.onrender.com/produto?idprato=$id'),
+            Uri.parse('https://gustus.onrender.com/produto?prato=$id'),
             headers: {
               'Content-Type': 'application/json; charset=UTF-8',
               'Authorization': 'Bearer $token',
