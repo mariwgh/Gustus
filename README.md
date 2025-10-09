@@ -95,6 +95,8 @@ Construa o **Gustus** a partir do código-fonte e instale as dependências:
 
 **Banco de Dados:** PostGreSQL (criado no PowerShell)
 
+*Backlog/Kanban: Projetos do GitHub*
+
 *Link da API:  https://gustus-ws.onrender.com/*
 
 API hospedada no render de cc24140@g.unicamp.br
