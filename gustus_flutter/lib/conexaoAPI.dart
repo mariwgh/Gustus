@@ -49,7 +49,7 @@ class ConexaoAPI<T> {
   static Future<ConexaoAPI<Usuario>> getUsuarios() async {
     try {
       final response = await http.get(
-        Uri.parse('https://gustus.onrender.com/usuarios'),
+        Uri.parse('https://gustus-ws.onrender.com/usuarios'),
       );
 
       if (response.statusCode == 200) {
@@ -87,7 +87,7 @@ class ConexaoAPI<T> {
   static Future<ConexaoAPI<dynamic>> postLogin(String email, String senha,) async {
     try {
       final response = await http.post(
-        Uri.parse('https://gustus.onrender.com/login'),
+        Uri.parse('https://gustus-ws.onrender.com/login'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -124,7 +124,7 @@ class ConexaoAPI<T> {
 
     try {
       final response = await http.get(
-        Uri.parse('https://gustus.onrender.com/produtos'),
+        Uri.parse('https://gustus-ws.onrender.com/produtos'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $token', // Envia o token para autenticação
@@ -162,7 +162,7 @@ class ConexaoAPI<T> {
 
     try {
       final response = await http.get(
-        Uri.parse('https://gustus.onrender.com/ver-wishlist'),
+        Uri.parse('https://gustus-ws.onrender.com/ver-wishlist'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $token', // Envia o token para autenticação
@@ -177,7 +177,7 @@ class ConexaoAPI<T> {
         // PEGAR OS DETALHES DOS PRATOS DE ACORDO COM (N Chamadas API)
         final List<Future<Prato>> pratosDetalhes = pratoIds.map((id) async {
           final responsePrato = await http.get(
-            Uri.parse('https://gustus.onrender.com/produto?prato=$id'),
+            Uri.parse('https://gustus-ws.onrender.com/produto?prato=$id'),
             headers: {
               'Content-Type': 'application/json; charset=UTF-8',
               'Authorization': 'Bearer $token',
@@ -185,10 +185,11 @@ class ConexaoAPI<T> {
           );
 
           if (responsePrato.statusCode == 200) {
-              final Map<String, dynamic> jsonPrato = json.decode(responsePrato.body);
-              return Prato.fromJson(jsonPrato); 
+            final List<dynamic> jsonList = json.decode(responsePrato.body);
+            final Map<String, dynamic> jsonPrato = jsonList[0];
+            return Prato.fromJson(jsonPrato); 
           } else {
-              throw Exception('Falha ao carregar o Prato $id. Status: ${responsePrato.statusCode}');
+            throw Exception('Falha ao carregar o Prato $id. Status: ${responsePrato.statusCode}');
           }
         }).toList();
 
@@ -219,7 +220,7 @@ class ConexaoAPI<T> {
 
     try {
       final response = await http.get(
-        Uri.parse('https://gustus.onrender.com/ver-degustar'),
+        Uri.parse('https://gustus-ws.onrender.com/ver-degustar'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $token', // Envia o token para autenticação
@@ -234,7 +235,7 @@ class ConexaoAPI<T> {
         // PEGAR OS DETALHES DOS PRATOS DE ACORDO COM (N Chamadas API)
         final List<Future<Prato>> pratosDetalhes = pratoIds.map((id) async {
           final responsePrato = await http.get(
-            Uri.parse('https://gustus.onrender.com/produto?idprato=$id'),
+            Uri.parse('https://gustus-ws.onrender.com/produto?idprato=$id'),
             headers: {
               'Content-Type': 'application/json; charset=UTF-8',
               'Authorization': 'Bearer $token',

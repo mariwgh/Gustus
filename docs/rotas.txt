@@ -1,0 +1,27 @@
+rotas: 
+
+entrar e cadastrar (post?)
+
+pegar todos os produtos*****
+pegar somente 1 produto*****
+
+pegar favoritos de um certo usuário
+adicionar favoritos
+remover favoritos
+
+pegar wishlist de um certo usuário
+adicionar wishlist
+remover wishlist
+
+pegar degustados de um certo usuário
+adicionar degustados
+
+pesquisar
+
+avaliar
+
+ver receita
+
+alterar configurações*****
+excluir conta*****
+

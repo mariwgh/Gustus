@@ -1,0 +1,98 @@
+Passos para Hospedar no Render
+
+----------------------------------------
+
+FASE 1: Criação dos Serviços no Render
+
+1. Criar o Banco de Dados (Postgres)
+- No dashboard do Render, clique em Novo → Postgres.
+- Dê um nome (ex: gustus-db).
+- IMPORTANTE: Escolha a mesma região que será usada pela API (ex: (Brazil) São Paulo).
+- Selecione o plano Free.
+- Clique em "Criar Banco de Dados".
+
+2. Criar a API (Serviço Web)
+- No dashboard, clique em Novo → Serviço Web.
+- Conecte seu repositório do GitHub onde está o código da API.
+- Dê um nome ao serviço (ex: gustus).
+
+----------------------------------------
+
+FASE 2: Configuração do Serviço Web
+
+Esta é a etapa onde ajustamos como o Render vai rodar sua API.
+
+- Região: mesma do seu banco de dados.
+- Branch: main (ou a branch principal).
+- Root Directory: se os arquivos estiverem em uma subpasta (ex: api/), digite o nome dela.
+  Se estiverem na raiz, deixe em branco.
+- Build Command:
+  npm install
+- Start Command:
+  node index.js
+- Plano: Free.
+
+Variáveis de Ambiente (Environment Variables)
+1. Vá na aba "Environment".
+2. Crie:
+   - SECRET_KEY → valor da sua senha do JWT.
+   - DATABASE_URL → valor da Internal Connection String do banco (copiada do Render).
+
+----------------------------------------
+
+FASE 3: Converter o Código para PostgreSQL
+
+1. Abra seu arquivo index.js.
+2. Remova a biblioteca mssql e toda a sua configuração.
+3. Instale a biblioteca pg com o comando:
+   npm install pg
+4. Adicione a lógica de conexão do pg que lê a URL do banco de dados a partir das variáveis de ambiente:
+
+   const { Pool } = require('pg');
+   const pool = new Pool({
+     connectionString: process.env.DATABASE_URL,
+     ssl: {
+       rejectUnauthorized: false
+     }
+   });
+
+----------------------------------------
+
+FASE 4: Populando o Banco de Dados
+
+Seu banco foi criado vazio — você precisa criar as tabelas e inserir os dados.
+
+Executar os Scripts:
+- Conecte-se ao banco usando psql:
+	1. Baixe o Instalador: Vá para o site oficial do PostgreSQL para Windows (fornecido pela EDB) e baixe a versão mais recente:
+https://www.enterprisedb.com/downloads/postgres-postgresql-downloads
+Ele pode dar erro e será preciso instalar um chocolatey no PowerShell como administrador.
+	2. Execute o Instalador: Inicie a instalação. Clique em "Next" até chegar na tela "Select Components".
+	3. Selecione Apenas o Necessário: Nesta tela, DESMARQUE TUDO, exceto a opção "Command Line Tools". Nós só precisamos dela.
+	4. Conclua a Instalação: Continue clicando em "Next" até o final. Não precisa instalar mais nada.
+	5. Abra um novo Prompt de Comando (CMD) ou PowerShell. É importante abrir um novo para que ele reconheça a instalação que você acabou de fazer.
+	6. Volte para a página do seu banco de dados no Render. Encontre o campo "Comando PSQL" ("PSQL Command") e clique no ícone para copiar o comando inteiro. Cole esse comando que você copiou diretamente no CMD e pressione Enter.
+	7. O terminal vai pedir a senha (Password). Volte ao Render, copie a senha do seu banco de dados (no campo "Senha") e cole no terminal. Atenção: Ao colar a senha, nada vai aparecer na tela. É um comportamento de segurança normal. Apenas cole e pressione Enter. Se a conexão for bem-sucedida, seu terminal vai mudar para algo como gustus=>, indicando que você está dentro do seu banco de dados.
+- Execute seus comandos CREATE TABLE e INSERT (Converter seus Scripts SQL para POSTGRE:
+- Troque INT IDENTITY(1,1) por SERIAL.
+- Troque varchar(max) por TEXT.) e depois de \dt para ver as tabelas e depois \q para sair.
+
+----------------------------------------
+
+FASE 5: Deploy e Teste Final
+
+Verificar o Deploy
+- Após o git push, o Render inicia o deploy automaticamente.
+- Vá em "Events" → aguarde o status "Live" ou "Success".
+- Se falhar, veja "Logs" para encontrar o erro.
+- Caso o deploy automático não atualize, use o botão "Manual Deploy".
+
+Testar a API
+- Pegue a URL pública (ex: https://gustus.onrender.com).
+- Use Insomnia ou Postman para testar as rotas.
+
+Rotas protegidas:
+1. Faça POST /login e copie o token.
+2. Nas outras rotas, vá em Auth → Bearer Token e cole o token.
+
+----------------------------------------

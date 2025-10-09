@@ -1,0 +1,80 @@
+BD em POSTGRESQL
+
+-------------------------------------------------
+
+CREATE TABLE usuarios (
+    idUsuario SERIAL PRIMARY KEY,
+    usuario VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(150) UNIQUE NOT NULL,
+    senha VARCHAR(100) NOT NULL
+);
+
+INSERT INTO usuarios (usuario, email, senha) VALUES
+('Mariana', 'mariana@email.com', '123456'),
+('Joao', 'joao@email.com', 'senha123'),
+('Rafaelly', 'rafaelly@email.com', 'segredo321');
+
+-------------------------------------------------
+
+CREATE TABLE pratos (
+    idPrato SERIAL PRIMARY KEY,
+    prato VARCHAR(100) UNIQUE NOT NULL,
+    foto TEXT NOT NULL,
+    descricao TEXT,
+    linkReceita TEXT
+);
+
+INSERT INTO pratos (prato, foto, descricao, linkReceita) VALUES
+('Risoto de Camarão', 'https://raw.githubusercontent.com/mariwgh/Gustus/refs/heads/main/imagens/risoto-de-camarao.png', 'Prato italiano cremoso com camarões frescos.', 'https://www.tudogostoso.com.br/receita/185493-risoto-de-camarao-sem-frescura.html'),
+('Ratatouille', 'https://raw.githubusercontent.com/mariwgh/Gustus/main/imagens/ratatouille.png', 'Receita francesa com legumes assados.', 'https://www.tudogostoso.com.br/receita/135302-ratatouille.html'),
+('File Mignon', 'https://raw.githubusercontent.com/mariwgh/Gustus/main/imagens/file-mignon.png', 'Corte nobre de carne ao molho madeira.', 'https://www.tudogostoso.com.br/categorias/1116-file-mignon'),
+('Açaí', 'https://raw.githubusercontent.com/mariwgh/Gustus/refs/heads/main/imagens/acai.png', 'Sobremesa brasileira servida gelada.', 'https://www.tudogostoso.com.br/receita/296086-acai.html'),
+('Carne ao molho', 'https://raw.githubusercontent.com/mariwgh/Gustus/refs/heads/main/imagens/carne-ao-molho.png', 'Iscas de carne bovina ao molho temperado.', 'https://www.tudogostoso.com.br/receita/131095-carne-ao-molho-simples-e-e-saboroso.html'),
+('Lasanha à Bolonhesa', 'https://raw.githubusercontent.com/mariwgh/Gustus/refs/heads/main/imagens/lasanha-a-bolonhesa.png', 'Massa em camadas com molho à bolonhesa e queijo gratinado.', 'https://www.tudogostoso.com.br/receita/876-lasanha-de-carne-moida.html'),
+('Brigadeiro', 'https://raw.githubusercontent.com/mariwgh/Gustus/refs/heads/main/imagens/brigadeiro.png', 'Doce brasileiro feito com leite condensado, chocolate e granulado.', 'https://www.tudogostoso.com.br/receita/114-brigadeiro.html'),
+('Sushi', 'https://raw.githubusercontent.com/mariwgh/Gustus/refs/heads/main/imagens/sushi.png', 'Prato japonês com arroz temperado e peixe cru.', 'https://www.tudogostoso.com.br/receita/37091-sushi.html');
+
+-------------------------------------------------
+
+CREATE TABLE favoritos (
+    idFavorito SERIAL PRIMARY KEY,
+    idUsuario INT NOT NULL REFERENCES usuarios(idUsuario),
+    idPrato INT NOT NULL REFERENCES pratos(idPrato)
+);
+
+INSERT INTO favoritos (idUsuario, idPrato) VALUES
+(1, 1),
+(1, 4),
+(2, 2),
+(2, 3),
+(3, 1);
+
+-------------------------------------------------
+
+CREATE TABLE degustados (
+    idDegustado SERIAL PRIMARY KEY,
+    idUsuario INT NOT NULL REFERENCES usuarios(idUsuario),
+    idPrato INT NOT NULL REFERENCES pratos(idPrato),
+    nota INT CHECK (nota BETWEEN 1 AND 5),
+    descricao TEXT
+);
+
+INSERT INTO degustados (idUsuario, idPrato, nota, descricao) VALUES
+(1, 2, 5, 'Muito saboroso, bem temperado.'),
+(2, 1, 4, 'Bom, mas poderia ter mais camarão.'),
+(3, 4, 5, 'Perfeito para dias quentes!');
+
+-------------------------------------------------
+
+CREATE TABLE wishlist (
+    idWishlist SERIAL PRIMARY KEY,
+    idUsuario INT NOT NULL REFERENCES usuarios(idUsuario),
+    idPrato INT NOT NULL REFERENCES pratos(idPrato)
+);
+
+INSERT INTO wishlist (idUsuario, idPrato) VALUES
+(1, 3),
+(2, 4),
+(3, 2);
+
+-------------------------------------------------
