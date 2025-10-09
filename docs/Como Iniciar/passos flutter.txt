@@ -1,0 +1,65 @@
+passos flutter:
+precisa condigurar o android studio p funiconar o flutter no vsc
+
+na pag inicial do android studio clicar nos 3 pontinhos
+sdk manager
+sdk tools
+5 primeiros, pula um, mais 3 com confirma
+ok
+
+https://flutter.dev/ -> get started -> windows -> android -> download and install -> install
+mover download flutter p docs e descompactar
+cmd: C:\Users\u24140>set PATH=%PATH%;C:\Users\u24140\Documents\flutter\bin
+flutter doctor --android-licenses
+
+C:\Users\u24140\Documents\flutter\bin>flutter doctor
+
+Users\uXXXXX\Documents\flutter\flutter config --no-analytics
+
+(nn pode fechar o cmd automaticamente mas fds
+
+
+no vsc: baixar extencoes flutter
+
+configuracoes do vsc -> settings -> flutter sdk -> edit settings.json -> "dart.flutterSdkPath": "C:/Users/u24140/Documents/flutter/bin"
+
+ctrl + shift + p -> flutter new project -> application
+
+run -> no device -> chrome
+
+
+O arquivo principal fica em lib/main.dart.
+
+
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MeuApp());
+}
+
+class MeuApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: Text("Meu Primeiro App")),
+        body: Center(
+          child: Text("Olá, Flutter!"),
+        ),
+      ),
+    );
+  }
+}
+
+
+Conceitos importantes
+
+Widgets → tudo na tela é um widget (texto, botão, layout).
+
+StatelessWidget → não muda (ex: texto fixo).
+
+StatefulWidget → pode mudar (ex: contador, input).
+
+Hot Reload → você salva e o app atualiza na hora.
+
+medium phone api 35 
