@@ -1123,28 +1123,77 @@ class TelaPesquisar extends StatefulWidget {
 
 class _TelaPesquisarState extends State<TelaPesquisar> {
   List<Prato> _produtos = []; 
+  final TextEditingController _pesquisaController = TextEditingController();
+    
+  // indicador de carregamento
+  bool _isLoading = true; 
+  String? _errorMessage; 
 
   @override
   void initState() {
     super.initState();
     // Chame a função que busca os produtos
     // e atualize o estado
-    _fetchProdutos();
+    _checkTokenAndFetch();
+  }
+
+  // Novo método: Verifica o token antes de tentar buscar dados
+  Future<void> _checkTokenAndFetch() async {
+    // Tenta pegar o token global estático.
+    try{
+      final token = ConexaoAPI.getToken(); 
+
+      if (token == null) {
+        // Se a tela abriu sem token (sem ter feito login), exibe uma mensagem.
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+            //_errorMessage = "Por favor, faça o login para ver os produtos.";
+          });
+        }
+      }
+    }
+    catch(e){
+      _errorMessage = e.toString();
+      print(_errorMessage);
+    }
+   
+    // Se há token, procede com a busca de produtos
+    await _fetchProdutos(); 
+    return;
   }
 
   Future<void> _fetchProdutos() async {
-    final produtos = await ConexaoAPI.getProdutos();
-    if (mounted) {
-      setState(() {
-        _produtos = produtos as List<Prato>;
-      });
+    try {
+      // O resultado é do tipo ConexaoAPI<Prato>
+      final apiResponse = await ConexaoAPI.getPesquisa(_pesquisaController.text); 
+      
+      // Verifica se o widget ainda está montado antes de chamar setState
+      if (mounted) {
+        setState(() {
+          // Acesse a lista de Prato corretamente no campo 'data'
+          // Se o 'data' for nulo (ex: a API retornou lista vazia), use []
+          _produtos = apiResponse.data ?? []; 
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Erro ao carregar produtos: $e');
+      if (mounted) {
+         setState(() {
+            _isLoading = false;
+         });
+      }
     }
   }
 
-  final TextEditingController _pesquisaController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      // Mostra um indicador de carregamento enquanto espera
+      return Center(child: CircularProgressIndicator());
+    }
+
     return BaseInicial(
       child: Column(
         children: [
@@ -1152,6 +1201,13 @@ class _TelaPesquisarState extends State<TelaPesquisar> {
             padding: const EdgeInsets.all(15),
             child: TextField(
               controller: _pesquisaController,          // para passarmos como parametro da lista de produtos
+              
+              onChanged: (text) {
+                _fetchProdutos(); 
+              },
+              // Opcional: Chama a busca ao pressionar 'Enter'
+              onSubmitted: (_) => _fetchProdutos(), 
+
               decoration: InputDecoration(
                 hintText: "Pesquisar",                  // texto que funciona como hint (dica) para sugerir o que o usuario deve escrever no campo input
                 prefixIcon: Icon(                       // icone de lupa do proprio flutter

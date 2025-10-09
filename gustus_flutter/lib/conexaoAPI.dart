@@ -22,6 +22,7 @@ class ConexaoAPI<T> {
   static void setToken(String? token) {
     _globalToken = token;
   }
+
   // Método para obter o token (chamado em qualquer requisição autenticada)
   static String? getToken() {
     return _globalToken;
@@ -39,7 +40,6 @@ class ConexaoAPI<T> {
       data: null, // Não há lista de dados nesta resposta
     );
   }
-
 
   // --- Métodos da API ---
 
@@ -80,21 +80,18 @@ class ConexaoAPI<T> {
       throw Exception('Erro ao conectar ou carregar dados: $e');
     }
   }
-  */ 
+  */
 
   // entrar -> rafaelly
   // O retorno usa <dynamic> porque esta resposta só contém o token
-  static Future<ConexaoAPI<dynamic>> postLogin(String email, String senha,) async {
+  static Future<ConexaoAPI<dynamic>> postLogin(String email, String senha) async {
     try {
       final response = await http.post(
         Uri.parse('https://gustus-ws.onrender.com/login'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: json.encode(<String, String>{
-          'email': email, 
-          'senha': senha
-        }),
+        body: json.encode(<String, String>{'email': email, 'senha': senha}),
       );
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
@@ -102,7 +99,6 @@ class ConexaoAPI<T> {
         setToken(token);
         // Usa o fromJson para extrair o token
         return ConexaoAPI<dynamic>.fromJson(json.decode(response.body));
-        
       } else {
         throw Exception('Falha ao autenticar. Status: ${response.statusCode}');
       }
@@ -119,7 +115,7 @@ class ConexaoAPI<T> {
     final token = getToken(); // Pega o token estático
 
     if (token == null) {
-      throw Exception('Token de autenticação não encontrado. Faça o login.'); 
+      throw Exception('Token de autenticação não encontrado. Faça o login.');
     }
 
     try {
@@ -134,8 +130,8 @@ class ConexaoAPI<T> {
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = json.decode(response.body);
         final List<Prato> produtos = jsonData
-          .map((e) => Prato.fromJson(e))
-          .toList();
+            .map((e) => Prato.fromJson(e))
+            .toList();
 
         return ConexaoAPI<Prato>(data: produtos, token: null);
       } else {
@@ -157,7 +153,7 @@ class ConexaoAPI<T> {
     final token = getToken(); // Pega o token estático
 
     if (token == null) {
-      throw Exception('Token de autenticação não encontrado. Faça o login.'); 
+      throw Exception('Token de autenticação não encontrado. Faça o login.');
     }
 
     try {
@@ -172,8 +168,10 @@ class ConexaoAPI<T> {
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = json.decode(response.body);
 
-        final List<int> pratoIds = jsonData.map((e) => e['idprato'] as int).toList();
-        
+        final List<int> pratoIds = jsonData
+            .map((e) => e['idprato'] as int)
+            .toList();
+
         // PEGAR OS DETALHES DOS PRATOS DE ACORDO COM (N Chamadas API)
         final List<Future<Prato>> pratosDetalhes = pratoIds.map((id) async {
           final responsePrato = await http.get(
@@ -187,9 +185,11 @@ class ConexaoAPI<T> {
           if (responsePrato.statusCode == 200) {
             final List<dynamic> jsonList = json.decode(responsePrato.body);
             final Map<String, dynamic> jsonPrato = jsonList[0];
-            return Prato.fromJson(jsonPrato); 
+            return Prato.fromJson(jsonPrato);
           } else {
-            throw Exception('Falha ao carregar o Prato $id. Status: ${responsePrato.statusCode}');
+            throw Exception(
+              'Falha ao carregar o Prato $id. Status: ${responsePrato.statusCode}',
+            );
           }
         }).toList();
 
@@ -211,11 +211,11 @@ class ConexaoAPI<T> {
   // remover wishlist -> mariana
 
   // pegar degustados de um certo usuário -> mariana
-    static Future<ConexaoAPI<Prato>> getDegustados() async {
+  static Future<ConexaoAPI<Prato>> getDegustados() async {
     final token = getToken(); // Pega o token estático
 
     if (token == null) {
-      throw Exception('Token de autenticação não encontrado. Faça o login.'); 
+      throw Exception('Token de autenticação não encontrado. Faça o login.');
     }
 
     try {
@@ -230,12 +230,14 @@ class ConexaoAPI<T> {
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = json.decode(response.body);
 
-        final List<int> pratoIds = jsonData.map((e) => e['idprato'] as int).toList();
-        
+        final List<int> pratoIds = jsonData
+            .map((e) => e['idprato'] as int)
+            .toList();
+
         // PEGAR OS DETALHES DOS PRATOS DE ACORDO COM (N Chamadas API)
         final List<Future<Prato>> pratosDetalhes = pratoIds.map((id) async {
           final responsePrato = await http.get(
-            Uri.parse('https://gustus-ws.onrender.com/produto?idprato=$id'),
+            Uri.parse('https://gustus-ws.onrender.com/produto?prato=$id'),
             headers: {
               'Content-Type': 'application/json; charset=UTF-8',
               'Authorization': 'Bearer $token',
@@ -243,10 +245,13 @@ class ConexaoAPI<T> {
           );
 
           if (responsePrato.statusCode == 200) {
-              final Map<String, dynamic> jsonPrato = json.decode(responsePrato.body);
-              return Prato.fromJson(jsonPrato); 
+            final List<dynamic> jsonList = json.decode(responsePrato.body);
+            final Map<String, dynamic> jsonPrato = jsonList[0];
+            return Prato.fromJson(jsonPrato);
           } else {
-              throw Exception('Falha ao carregar o Prato $id. Status: ${responsePrato.statusCode}');
+            throw Exception(
+              'Falha ao carregar o Prato $id. Status: ${responsePrato.statusCode}',
+            );
           }
         }).toList();
 
@@ -267,6 +272,38 @@ class ConexaoAPI<T> {
   // adicionar degustados -> mariana
 
   // pesquisar -> mariana
+  static Future<ConexaoAPI<Prato>> getPesquisa(String pesquisa) async {
+    final token = getToken(); // Pega o token estático
+
+    if (token == null) {
+      throw Exception('Token de autenticação não encontrado. Faça o login.');
+    }
+
+    try {
+      final response = await http.get(
+        Uri.parse('https://gustus-ws.onrender.com/pesquisar?prato=$pesquisa'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token', // Envia o token para autenticação
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonData = json.decode(response.body);
+        final List<Prato> produtos = jsonData
+            .map((e) => Prato.fromJson(e))
+            .toList();
+
+        return ConexaoAPI<Prato>(data: produtos, token: null);
+      } else {
+        throw Exception(
+          'Falha ao carregar os dados. Status: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      throw Exception('Erro ao conectar ou carregar dados: $e');
+    }
+  }
 
   // avaliar -> rafaelly
 
