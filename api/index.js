@@ -322,7 +322,7 @@ app.get("/pesquisar", verificarToken, async (req, res) => {
 });
 
 //atualizar avaliação
-app.post("/avaliar", verificarToken, async (req, res) => {
+app.put("/avaliar", verificarToken, async (req, res) => {
     // 1. Pega os dados do corpo da requisição
     const { idPrato, nota, descricao } = req.body;
 
