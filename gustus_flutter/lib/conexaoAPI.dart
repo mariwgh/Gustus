@@ -9,8 +9,6 @@ import 'wishlist.dart';
 import 'degustado.dart';
 import 'favorito.dart';
 
-
-// api teste
 class ConexaoAPI<T> {
   // Use um tipo genérico <T> para o dado
   final String? token;
@@ -28,9 +26,9 @@ class ConexaoAPI<T> {
     return _globalToken;
   }
 
-  final List<T>? data; // Novo campo para armazenar a lista de objetos (T)
+  final List<T>? data; // lista de objetos (T)
 
-  // Construtor atualizado para aceitar o token e a lista de dados
+  // Construtor
   ConexaoAPI({this.token, this.data});
 
   // Factory para decodificar apenas o token (usado no login)
@@ -41,7 +39,7 @@ class ConexaoAPI<T> {
     );
   }
 
-  // --- Métodos da API ---
+  ////////////////////////Métodos da API///////////////
 
   // get Usuarios de exemplo
   // O retorno agora especifica que o "data" será uma lista de "Usuario"
@@ -82,9 +80,12 @@ class ConexaoAPI<T> {
   }
   */
 
+  /////////////////////////////////////////////////////
+
   // entrar -> rafaelly
-  // O retorno usa <dynamic> porque esta resposta só contém o token
   static Future<ConexaoAPI<dynamic>> postLogin(String email, String senha) async {
+    // O retorno usa <dynamic> porque esta resposta só contém o token
+
     try {
       final response = await http.post(
         Uri.parse('https://gustus-ws.onrender.com/login'),
@@ -108,7 +109,7 @@ class ConexaoAPI<T> {
   }
 
   // cadastrar -> rafaelly
- static Future<void> postCadastro(String user, String email, String senha) async {
+  static Future<void> postCadastro(String user, String email, String senha) async {
     try {
       final response = await http.post(
         Uri.parse('https://gustus-ws.onrender.com/cadastrar'),
@@ -124,22 +125,23 @@ class ConexaoAPI<T> {
       if (response.statusCode == 201) {
         print('Usuário cadastrado com sucesso!');
         return;
-      } 
-      else {
+      } else {
         final Map<String, dynamic> responseData = json.decode(response.body);
-        final String mensagem = responseData['mensagem'] ?? 'Erro desconhecido.';
+        final String mensagem =
+            responseData['mensagem'] ?? 'Erro desconhecido.';
         throw Exception(mensagem);
       }
     } catch (erro) {
-
       throw Exception("Erro ao tentar realizar o cadastro: $erro");
     }
   }
-}
+
+  /////////////////////////////////////////////////////
 
   // pegar todos os produtos -> mariana
-  // O retorno agora especifica que o "data" será uma lista de "Prato"
   static Future<ConexaoAPI<Prato>> getProdutos() async {
+    // O retorno agora especifica que o "data" será uma lista de "Prato"
+
     final token = getToken(); // Pega o token estático
 
     if (token == null) {
@@ -172,8 +174,10 @@ class ConexaoAPI<T> {
     }
   }
 
+  /////////////////////////////////////////////////////
+
   // pegar favoritos de um certo usuário -> rafaelly
-    static Future<List<Favorito>> getFavoritos(String token) async {
+  static Future<List<Favorito>> getFavoritos(String token) async {
     try {
       final response = await http.get(
         // URL do seu endpoint para ver os favoritos
@@ -189,14 +193,16 @@ class ConexaoAPI<T> {
       if (response.statusCode == 200) {
         // Decodifica a resposta JSON, que é uma lista de objetos
         final List<dynamic> responseData = json.decode(response.body);
-        
+
         // Converte a lista de mapas JSON em uma lista de objetos Favorito
         return responseData.map((json) => Favorito.fromJson(json)).toList();
       } else {
         // Trata os erros específicos que a API pode retornar
         final Map<String, dynamic> responseData = json.decode(response.body);
-        final String mensagem = responseData['mensagem'] ?? 'Erro desconhecido ao buscar favoritos.';
-        
+        final String mensagem =
+            responseData['mensagem'] ??
+            'Erro desconhecido ao buscar favoritos.';
+
         // Lança uma exceção com a mensagem vinda da API
         throw Exception(mensagem);
       }
@@ -205,100 +211,70 @@ class ConexaoAPI<T> {
       throw Exception("Erro ao buscar favoritos: $erro");
     }
   }
-  
+
   // adicionar favoritos -> rafaelly
-  static Future<List<Favorito>> getFavoritos(String token) async {
-    try {
-      final response = await http.get(
-        // URL do seu endpoint para ver os favoritos
-        Uri.parse('https://gustus-ws.onrender.com/ver-favoritos'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer $token',
-        },
-      );
+  static Future<void> addFavorito(int idPrato, String token) async {
+    try {
+      final response = await http.post(
+        // URL do seu endpoint para adicionar favoritos
+        Uri.parse('https://gustus-ws.onrender.com/add-favoritos'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          // O token é essencial para o middleware 'verificarToken'
+          'Authorization': 'Bearer $token',
+        },
+        // Envia o id do prato no corpo da requisição
+        body: json.encode(<String, dynamic>{'idPrato': idPrato}),
+      );
 
-      // A API retorna 200 em caso de sucesso
-      if (response.statusCode == 200) {
-        // Decodifica a resposta JSON, que é uma lista de objetos
-        final List<dynamic> responseData = json.decode(response.body);
-        
-        // Converte a lista de mapas JSON em uma lista de objetos Favorito
-        return responseData.map((json) => Favorito.fromJson(json)).toList();
-      } else {
-        // Trata os erros específicos que a API pode retornar
-        final Map<String, dynamic> responseData = json.decode(response.body);
-        final String mensagem = responseData['mensagem'] ?? 'Erro desconhecido ao buscar favoritos.';
-        
-        // Lança uma exceção com a mensagem vinda da API
-        throw Exception(mensagem);
-      }
-    } catch (erro) {
-      // Captura erros de conexão ou exceções lançadas acima
-      throw Exception("Erro ao buscar favoritos: $erro");
-    }
-  }
+      // A API retorna 200 em caso de sucesso
+      if (response.statusCode == 200) {
+        print('Prato adicionado aos favoritos com sucesso!');
+        return;
+      } else {
+        // Trata os erros específicos que a API pode retornar
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String mensagem =
+            responseData['mensagem'] ??
+            'Erro desconhecido ao adicionar favorito.';
 
-  // adicionar favoritos -> rafaelly
-  static Future<void> addFavorito(int idPrato, String token) async {
-    try {
-      final response = await http.post(
-        // URL do seu endpoint para adicionar favoritos
-        Uri.parse('https://gustus-ws.onrender.com/add-favoritos'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          // O token é essencial para o middleware 'verificarToken'
-          'Authorization': 'Bearer $token',
-        },
-        // Envia o id do prato no corpo da requisição
-        body: json.encode(<String, dynamic>{
-          'idPrato': idPrato,
-        }),
-      );
+        // Lança uma exceção com a mensagem vinda da API
+        throw Exception(mensagem);
+      }
+    } catch (erro) {
+      // Captura erros de conexão ou exceções lançadas acima
+      throw Exception("Erro ao adicionar favorito: $erro");
+    }
+  }
 
-      // A API retorna 200 em caso de sucesso
-      if (response.statusCode == 200) {
-        print('Prato adicionado aos favoritos com sucesso!');
-        return;
-      } else {
-        // Trata os erros específicos que a API pode retornar
-        final Map<String, dynamic> responseData = json.decode(response.body);
-        final String mensagem = responseData['mensagem'] ?? 'Erro desconhecido ao adicionar favorito.';
-        
-        // Lança uma exceção com a mensagem vinda da API
-        throw Exception(mensagem);
-      }
-    } catch (erro) {
-      // Captura erros de conexão ou exceções lançadas acima
-      throw Exception("Erro ao adicionar favorito: $erro");
-    }
-  }
   // remover favoritos -> rafaelly
-  static Future<void> removeFavorito(int idPrato, String token) async {
-    try {
-      final response = await http.delete(
-        Uri.parse('https://gustus-ws.onrender.com/delete-favoritos'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer $token',
-        },
-        body: json.encode(<String, dynamic>{
-          'idPrato': idPrato,
-        }),
-      );
+  static Future<void> removeFavorito(int idPrato, String token) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('https://gustus-ws.onrender.com/delete-favoritos'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode(<String, dynamic>{'idPrato': idPrato}),
+      );
 
-      if (response.statusCode == 200) {
-        print('Prato removido dos favoritos com sucesso!');
-        return;
-      } else {
-        final Map<String, dynamic> responseData = json.decode(response.body);
-        final String mensagem = responseData['mensagem'] ?? 'Erro desconhecido ao remover favorito.';
-        throw Exception(mensagem);
-      }
-    } catch (erro) {
-      throw Exception("Erro ao remover favorito: $erro");
-    }
-  }
+      if (response.statusCode == 200) {
+        print('Prato removido dos favoritos com sucesso!');
+        return;
+      } else {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String mensagem =
+            responseData['mensagem'] ??
+            'Erro desconhecido ao remover favorito.';
+        throw Exception(mensagem);
+      }
+    } catch (erro) {
+      throw Exception("Erro ao remover favorito: $erro");
+    }
+  }
+
+  /////////////////////////////////////////////////////
 
   // pegar wishlist de um certo usuário -> mariana
   static Future<ConexaoAPI<Prato>> getWishlist() async {
@@ -360,7 +336,10 @@ class ConexaoAPI<T> {
   }
 
   // adicionar wishlist -> mariana
+
   // remover wishlist -> mariana
+
+  /////////////////////////////////////////////////////
 
   // pegar degustados de um certo usuário -> mariana
   static Future<ConexaoAPI<Prato>> getDegustados() async {
@@ -423,6 +402,8 @@ class ConexaoAPI<T> {
 
   // adicionar degustados -> mariana
 
+  /////////////////////////////////////////////////////
+
   // pesquisar -> mariana
   static Future<ConexaoAPI<Prato>> getPesquisa(String pesquisa) async {
     final token = getToken();
@@ -443,8 +424,8 @@ class ConexaoAPI<T> {
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = json.decode(response.body);
         final List<Prato> produtos = jsonData
-          .map((e) => Prato.fromJson(e))
-          .toList();
+            .map((e) => Prato.fromJson(e))
+            .toList();
 
         return ConexaoAPI<Prato>(data: produtos, token: null);
       } else {
@@ -457,37 +438,50 @@ class ConexaoAPI<T> {
     }
   }
 
-  // avaliar -> rafaelly
-  static Future<void> avaliarPrato(int idPrato, int nota, String? descricao, String token) async {
-    try {
-      final response = await http.put(
-        Uri.parse('https://gustus-ws.onrender.com/avaliar'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer $token',
-        },
-        body: json.encode(<String, dynamic>{
-          'idPrato': idPrato,
-          'nota': nota,
-          'descricao': descricao,
-        }),
-      );
+  /////////////////////////////////////////////////////
 
-      if (response.statusCode == 200) {
-        print('Avaliação registrada com sucesso!');
-        return;
-      } else {
-        final Map<String, dynamic> responseData = json.decode(response.body);
-        final String mensagem = responseData['mensagem'] ?? 'Erro desconhecido ao registrar avaliação.';
-        throw Exception(mensagem);
-      }
-    } catch (erro) {
-      throw Exception("Erro ao registrar avaliação: $erro");
-    }
-  }
+  // avaliar -> rafaelly
+  static Future<void> avaliarPrato(
+    int idPrato,
+    int nota,
+    String? descricao,
+    String token,
+  ) async {
+    try {
+      final response = await http.put(
+        Uri.parse('https://gustus-ws.onrender.com/avaliar'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode(<String, dynamic>{
+          'idPrato': idPrato,
+          'nota': nota,
+          'descricao': descricao,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('Avaliação registrada com sucesso!');
+        return;
+      } else {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String mensagem =
+            responseData['mensagem'] ??
+            'Erro desconhecido ao registrar avaliação.';
+        throw Exception(mensagem);
+      }
+    } catch (erro) {
+      throw Exception("Erro ao registrar avaliação: $erro");
+    }
+  }
+
+  /////////////////////////////////////////////////////
+
   // alterar configurações -> rafaelly
+
   // excluir conta -> rafaelly
- static Future<void> deleteAccount(String token) async {
+  static Future<void> deleteAccount(String token) async {
     try {
       final response = await http.delete(
         // URL do seu endpoint para deletar a conta
@@ -507,8 +501,10 @@ class ConexaoAPI<T> {
       } else {
         // Trata os erros específicos que a API pode retornar
         final Map<String, dynamic> responseData = json.decode(response.body);
-        final String mensagem = responseData['mensagem'] ?? 'Erro desconhecido ao tentar deletar a conta.';
-        
+        final String mensagem =
+            responseData['mensagem'] ??
+            'Erro desconhecido ao tentar deletar a conta.';
+
         // Lança uma exceção com a mensagem vinda da API
         throw Exception(mensagem);
       }
@@ -517,3 +513,4 @@ class ConexaoAPI<T> {
       throw Exception("Erro ao tentar deletar a conta: $erro");
     }
   }
+}

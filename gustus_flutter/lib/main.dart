@@ -23,6 +23,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+
 /*
 // api teste
 class MyWidget extends StatefulWidget {
@@ -122,6 +123,7 @@ class _MyWidgetState extends State<MyWidget> {
   }
 }
 */
+
 
 // widgets reutilizável 
 class BaseBloqueio extends StatelessWidget {
