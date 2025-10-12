@@ -8,9 +8,9 @@ const app = express();
 const PORT = 3000;
 
 app.use(cors({
-  origin: '*', // Permite todas as origens
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Permite os métodos HTTP comuns
-  allowedHeaders: ['Content-Type', 'Authorization'], // Permite cabeçalhos comuns
+    origin: '*', // Permite todas as origens
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Permite os métodos HTTP comuns
+    allowedHeaders: ['Content-Type', 'Authorization'], // Permite cabeçalhos comuns
 }));
 
 app.use(express.json());
@@ -188,7 +188,8 @@ app.post("/add-favoritos", verificarToken, async (req, res) => {
 
         await pool.query('INSERT INTO favoritos (idUsuario, idPrato) VALUES ($1, $2)', [idUser, idPrato]);
         res.status(200).json({ mensagem: "Adicionado aos favoritos." });
-    } catch (erro) {
+    }
+    catch (erro) {
         console.error(erro.message);
         res.status(500).json({ mensagem: "Erro interno no servidor." });
     }
@@ -418,13 +419,13 @@ app.delete("/delete-conta", verificarToken, async (req, res) => {
         }
 
         await Promise.all([
-            pool.query('DELETE FROM favoritos WHERE idUsuario = $1', [idUser]),
-            pool.query('DELETE FROM wishlist WHERE idUsuario = $1', [idUser]),
-            pool.query('DELETE FROM degustados WHERE idUsuario = $1', [idUser])
-        ]);
+            pool.query('DELETE FROM favoritos WHERE idUsuario = $1', [idUser]),
+            pool.query('DELETE FROM wishlist WHERE idUsuario = $1', [idUser]),
+            pool.query('DELETE FROM degustados WHERE idUsuario = $1', [idUser])
+        ]);
 
         await pool.query('DELETE FROM usuarios WHERE idUsuario = $1', [idUser]);
-        
+
         res.status(200).json({ mensagem: "Removido de Usuários." });
     } catch (erro) {
         console.log(erro.message);

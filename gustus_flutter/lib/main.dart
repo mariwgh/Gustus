@@ -519,13 +519,41 @@ class _TelaCadastroState extends State<TelaCadastro> {
   }
 
   // função que será chamada quando o botão "Cadastrar" for pressionado e definira as variaveis
-  void _cadastrarUsuario() {
-    final String usuario = _userController.text;
-    final String email = _emailController.text;
-    final String senha = _passwordController.text;
-    // aqui ele chama outra funcao q manda as variaveis p banco de dados
+ void _cadastrarUsuario() async {
+  final String usuario = _userController.text;
+  final String email = _emailController.text;
+  final String senha = _passwordController.text;
+
+  // Validação para garantir que os campos não estão vazios
+  if (usuario.isEmpty || email.isEmpty || senha.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Por favor, preencha todos os campos.')),
+    );
+    return; // Para a execução
   }
 
+  try {
+    await ConexaoAPI.postCadastro(usuario, email, senha);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Cadastro realizado com sucesso! Faça o login.')),
+    );
+
+    //usar pushReplacement é uma boa prática aqui para que o usuário não consiga "voltar" para a tela de cadastro.
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => TelaLogin()),
+    );
+
+  } 
+  catch (erro) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Erro: ${erro.toString().replaceAll("Exception: ", "")}'),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+}
   @override
   Widget build(BuildContext context) {
     // TelaBloqueio retorna um Scaffold, que fornece a estrutura básica
@@ -678,12 +706,11 @@ class _TelaLoginState extends State<TelaLogin> {
     String senha = _passwordController.text;
 
     try {
-      // Chama a função postLogin da sua ConexaoAPI
       final conexao = await ConexaoAPI.postLogin(email, senha);
 
       if(conexao.token != null){
         print(conexao.token);
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => TelaInicial()),
         );
