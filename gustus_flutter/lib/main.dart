@@ -526,6 +526,7 @@ class _TelaCadastroState extends State<TelaCadastro> {
   final String email = _emailController.text;
   final String senha = _passwordController.text;
 
+  print("entrou no método");
   // Validação para garantir que os campos não estão vazios
   if (usuario.isEmpty || email.isEmpty || senha.isEmpty) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -535,11 +536,12 @@ class _TelaCadastroState extends State<TelaCadastro> {
   }
 
   try {
+    print("entrou no try");
     await ConexaoAPI.postCadastro(usuario, email, senha);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Cadastro realizado com sucesso! Faça o login.')),
     );
-
+    print("na teoria cadastro feito com sucesso");
     //usar pushReplacement é uma boa prática aqui para que o usuário não consiga "voltar" para a tela de cadastro.
     Navigator.pushReplacement(
       context,
@@ -548,6 +550,7 @@ class _TelaCadastroState extends State<TelaCadastro> {
 
   } 
   catch (erro) {
+    print("caiu no catch");
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Erro: ${erro.toString().replaceAll("Exception: ", "")}'),
@@ -635,10 +638,6 @@ class _TelaCadastroState extends State<TelaCadastro> {
           ElevatedButton(
             onPressed: () {
               _cadastrarUsuario();                            //funcao que chamara a API
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => TelaInicial()),
-              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color.fromRGBO(188, 192, 198, 1),
