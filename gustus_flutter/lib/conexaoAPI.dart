@@ -425,7 +425,7 @@ class ConexaoAPI<T> {
 
   // pesquisar -> mariana
   static Future<ConexaoAPI<Prato>> getPesquisa(String pesquisa) async {
-    final token = getToken(); // Pega o token estático
+    final token = getToken();
 
     if (token == null) {
       throw Exception('Token de autenticação não encontrado. Faça o login.');
@@ -443,8 +443,8 @@ class ConexaoAPI<T> {
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = json.decode(response.body);
         final List<Prato> produtos = jsonData
-            .map((e) => Prato.fromJson(e))
-            .toList();
+          .map((e) => Prato.fromJson(e))
+          .toList();
 
         return ConexaoAPI<Prato>(data: produtos, token: null);
       } else {
