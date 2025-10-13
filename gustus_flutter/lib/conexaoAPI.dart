@@ -247,6 +247,9 @@ class ConexaoAPI<T> {
     }
   }
 
+  //verificar favoritos -> rafaelly
+  
+
   // remover favoritos -> rafaelly
   static Future<void> removeFavorito(int idPrato, String token) async {
     try {

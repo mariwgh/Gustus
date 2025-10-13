@@ -159,7 +159,7 @@ app.get("/produto", verificarToken, async (req, res) => {
 //verificar se é favorito de um usuario ou não
 
 app.get("/favSN", verificarToken, async(req, res)=>{
-    const { idPrato } = req.body;
+    const { idPrato } = req.query;
     try{
         const idUser = await getUserIdByEmail(req.user.email);
         if (!idUser) {
