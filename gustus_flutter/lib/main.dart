@@ -957,6 +957,7 @@ class _TelaProduto extends State<TelaProduto>{
 
     try {
       // Se o item já é um favorito, chama a API para remover
+      print(_isFavorito);
       if (_isFavorito) {
         await ConexaoAPI.removeFavorito(widget.nome, token);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -977,7 +978,9 @@ class _TelaProduto extends State<TelaProduto>{
           _isFavorito = !_isFavorito; // Inverte o valor (true vira false e vice-versa)
         });
       }
-    } catch (e) {
+    } 
+    catch (e) {
+      print("caiu no catch");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Erro: ${e.toString()}')),
       );
@@ -1513,7 +1516,8 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
   }
 
   _excluirConta() {
-    // a implementar
+    ConexaoAPI.deleteConta();
+    const SnackBar(content: Text('Conta Excluída.'));
   }
 
   // função que será chamada quando o botão "Salvar" for pressionado e definira as variaveis
@@ -1521,6 +1525,9 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
     final String usuario = _userController.text;
     final String email = _emailController.text;
     final String senha = _passwordController.text;
+
+    ConexaoAPI.atualizarConfig(email, senha, usuario);
+    const SnackBar(content: Text('Dados atualizados com sucesso.'));
     // aqui ele chama outra funcao q manda as variaveis p banco de dados
   }
 
