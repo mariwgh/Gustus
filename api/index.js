@@ -161,7 +161,7 @@ app.get("/produto", verificarToken, async (req, res) => {
 app.get("/favSN", verificarToken, async(req, res)=>{
     const { nomePrato } = req.query;
     try{
-        const pratoResult = await pool.query("SELECT idPrato FROM pratos WHERE nome = $1", [nomePrato]);
+        const pratoResult = await pool.query("SELECT idPrato FROM pratos WHERE prato = $1", [nomePrato]);
         if (pratoResult.rows.length === 0) {
             return res.status(404).json({ mensagem: "Prato não encontrado." });
         }
@@ -201,7 +201,7 @@ app.get("/ver-favoritos", verificarToken, async (req, res) => {
 app.post("/add-favoritos", verificarToken, async (req, res) => {
     const { nomePrato } = req.query;
     try {
-        const pratoResult = await pool.query("SELECT idPrato FROM pratos WHERE nome = $1", [nomePrato]);
+        const pratoResult = await pool.query("SELECT idPrato FROM pratos WHERE prato = $1", [nomePrato]);
         if (pratoResult.rows.length === 0) {
             return res.status(404).json({ mensagem: "Prato não encontrado." });
         }
@@ -228,7 +228,7 @@ app.post("/add-favoritos", verificarToken, async (req, res) => {
 app.delete("/delete-favoritos", verificarToken, async (req, res) => {
     const { nomePrato } = req.query;
     try {
-        const pratoResult = await pool.query("SELECT idPrato FROM pratos WHERE nome = $1", [nomePrato]);
+        const pratoResult = await pool.query("SELECT idPrato FROM pratos WHERE prato = $1", [nomePrato]);
         if (pratoResult.rows.length === 0) {
             return res.status(404).json({ mensagem: "Prato não encontrado." });
         }
