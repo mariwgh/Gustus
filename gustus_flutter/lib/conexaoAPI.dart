@@ -543,10 +543,12 @@ class ConexaoAPI<T> {
   /////////////////////////////////////////////////////
 
   // alterar configurações -> rafaelly
+  
 
   // excluir conta -> rafaelly
-  static Future<void> deleteConta(String token) async {
+  static Future<void> deleteConta() async {
     try {
+      final token = getToken();
       final response = await http.delete(
         // URL do seu endpoint para deletar a conta
         Uri.parse('https://gustus-ws.onrender.com/delete-conta'),

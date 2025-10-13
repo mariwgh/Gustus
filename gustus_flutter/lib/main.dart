@@ -1516,7 +1516,7 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
   }
 
   _excluirConta() {
-    // a implementar
+    ConexaoAPI.deleteConta();
   }
 
   // função que será chamada quando o botão "Salvar" for pressionado e definira as variaveis

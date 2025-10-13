@@ -422,7 +422,7 @@ app.get("/ver-receita", async (req, res) => {
 
 //alterar configuracoes
 app.put("/atualizar-config", verificarToken, async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, user } = req.query;
 
     if (!email || !password) {
         return res.status(400).json({ mensagem: "Os campos são obrigatórios." });
@@ -435,7 +435,7 @@ app.put("/atualizar-config", verificarToken, async (req, res) => {
         }
 
         await pool.query(
-            'UPDATE usuarios SET email = $1, senha = $2 WHERE idUsuario = $3', [email, password, idUser]
+            'UPDATE usuarios SET email = $1, senha = $2, usuario = $3 WHERE idUsuario = $4', [email, password, user, idUser]
         );
 
         res.status(200).json({ mensagem: "Conta atualizada registrada com sucesso!" });
