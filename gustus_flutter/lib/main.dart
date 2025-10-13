@@ -951,6 +951,32 @@ class _TelaProduto extends State<TelaProduto>{
     widget.nome;          //com widget pois o pega o parametro da classe q ele extende
   }
 
+  void _verificarStatusFavorito() async {
+
+    String nomePrato = widget.nome
+    String? token = ConexaoAPI.getToken();
+
+    if (token != null) {
+      try {
+        bool resultado = await ConexaoAPI.isFavorito(idDoPratoAtual, token);
+
+        if (resultado == true) {
+          print("Este prato JÁ É um favorito!");
+          setState(() {
+            _isFavorito = true;
+          });
+        } else {
+          print("Este prato NÃO é um favorito.");
+          setState(() {
+            _isFavorito = false;
+          });
+        }
+      } catch (e) {
+        print("Erro ao verificar favorito: $e");
+      }
+    }
+  }
+
   void abrirPaginaWeb(String url) async {
     final Uri uri = Uri.parse(url);
     try {

@@ -248,7 +248,34 @@ class ConexaoAPI<T> {
   }
 
   //verificar favoritos -> rafaelly
-  
+    static Future<bool> isFavorito(int idPrato, String token) async {
+    try {
+      // Constrói a URL com o parâmetro de query
+      final uri = Uri.parse('https://gustus-ws.onrender.com/favSN').replace(
+        queryParameters: {'idPrato': idPrato.toString()},
+      );
+
+      final response = await http.get(
+        uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> responseData = json.decode(response.body);
+        // Se a lista retornada não estiver vazia, significa que o item é um favorito.
+        return responseData.isNotEmpty;
+      } else {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String mensagem = responseData['mensagem'] ?? 'Erro desconhecido ao verificar favorito.';
+        throw Exception(mensagem);
+      }
+    } catch (erro) {
+      throw Exception("Erro ao verificar favorito: $erro");
+    }
+  }
 
   // remover favoritos -> rafaelly
   static Future<void> removeFavorito(int idPrato, String token) async {

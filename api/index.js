@@ -159,8 +159,14 @@ app.get("/produto", verificarToken, async (req, res) => {
 //verificar se é favorito de um usuario ou não
 
 app.get("/favSN", verificarToken, async(req, res)=>{
-    const { idPrato } = req.query;
+    const { nomePrato } = req.query;
     try{
+        const pratoResult = await pool.query("SELECT idPrato FROM pratos WHERE nome = $1", [nomePrato]);
+        if (pratoResult.rows.length === 0) {
+            return res.status(404).json({ mensagem: "Prato não encontrado." });
+        }
+        const idPrato = pratoResult.rows[0].idprato;
+
         const idUser = await getUserIdByEmail(req.user.email);
         if (!idUser) {
             return res.status(404).json({ mensagem: "Usuário não encontrado" });
