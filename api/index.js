@@ -175,6 +175,7 @@ app.get("/favSN", verificarToken, async(req, res)=>{
         return res.json(result.rows);
     }
     catch(erro){
+        console.log("Caiu no catch")
         console.log(erro.message)
         return res.status(500).json({mensagem: "Erro no servidor."});
     }
@@ -184,6 +185,9 @@ app.get("/favSN", verificarToken, async(req, res)=>{
 app.get("/ver-favoritos", verificarToken, async (req, res) => {
     try {
         const idUser = await getUserIdByEmail(req.user.email);
+
+        console.log("Email recebido do token: ", req.user.email);
+
         if (!idUser) {
             return res.status(404).json({ mensagem: "Usuário não encontrado" });
         }
@@ -192,6 +196,7 @@ app.get("/ver-favoritos", verificarToken, async (req, res) => {
         return res.json(result.rows);
 
     } catch (erro) {
+        console.log("Caiu no catch")
         console.error(erro.message);
         return res.status(500).json({ mensagem: "Erro interno no servidor." });
     }
