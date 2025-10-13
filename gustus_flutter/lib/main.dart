@@ -984,13 +984,6 @@ class _TelaProduto extends State<TelaProduto>{
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    // Assim que a tela carrega, verifica se o prato já é um favorito
-    _verificarStatusFavorito();
-  }
-
   void _verificarStatusFavorito() async {
 
     String nomePrato = widget.nome;
@@ -1016,6 +1009,13 @@ class _TelaProduto extends State<TelaProduto>{
         print("Erro ao verificar favorito: $e");
       }
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Assim que a tela carrega, verifica se o prato já é um favorito
+    _verificarStatusFavorito();
   }
 
   void abrirPaginaWeb(String url) async {

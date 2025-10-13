@@ -76,7 +76,7 @@ async function getUserIdByEmail(email) {
         return null;
     }
     // Lembre-se que o PostgreSQL geralmente retorna nomes de colunas em minúsculo.
-    return userResult.rows[0].idusuario;
+    return userResult.rows[0].idUsuario;
 }
 
 //cadastrar
