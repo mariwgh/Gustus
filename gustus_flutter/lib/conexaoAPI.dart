@@ -23,6 +23,7 @@ class ConexaoAPI<T> {
 
   // Método para obter o token (chamado em qualquer requisição autenticada)
   static String? getToken() {
+    print('Token sendo usado: $_globalToken'); 
     return _globalToken;
   }
 
@@ -177,7 +178,13 @@ class ConexaoAPI<T> {
   /////////////////////////////////////////////////////
 
   // pegar favoritos de um certo usuário -> rafaelly
-  static Future<List<Favorito>> getFavoritos(String token) async {
+  static Future<ConexaoAPI<Prato>> getFavoritos() async {
+    final token = getToken(); // Pega o token estático
+
+    if (token == null) {
+      throw Exception('Token de autenticação não encontrado. Faça o login.');
+    }
+
     try {
       final response = await http.get(
         // URL do seu endpoint para ver os favoritos
@@ -194,14 +201,42 @@ class ConexaoAPI<T> {
         // Decodifica a resposta JSON, que é uma lista de objetos
         final List<dynamic> responseData = json.decode(response.body);
 
-        // Converte a lista de mapas JSON em uma lista de objetos Favorito
-        return responseData.map((json) => Favorito.fromJson(json)).toList();
+        List<int> pratoIds = responseData.map((e) => e['idprato'] as int).toList();
+
+        final List<Future<Prato>> pratosDetalhes = pratoIds.map((id) async {
+          final responsePrato = await http.get(
+            Uri.parse('https://gustus-ws.onrender.com/produto?idprato=$id'),
+            headers: {
+              'Content-Type': 'application/json; charset=UTF-8',
+              'Authorization': 'Bearer $token',
+            },
+          );
+
+          if (responsePrato.statusCode == 200) {
+            final dynamic decodedBody = json.decode(responsePrato.body);
+            
+            // *Correção para List/Map (Problema comum da API)*
+            if (decodedBody is List && decodedBody.isNotEmpty) {
+              final Map<String, dynamic> jsonPrato = decodedBody[0];
+              return Prato.fromJson(jsonPrato);
+              
+            } else if (decodedBody is Map<String, dynamic>) {
+              return Prato.fromJson(decodedBody);
+            } else {
+              throw Exception('Resposta da API inesperada ou prato $id não encontrado.');
+            }
+          } else {
+              throw Exception('Falha ao carregar o Prato $id. Status: ${responsePrato.statusCode}');
+          }
+        }).toList();
+
+        final List<Prato> produtos = await Future.wait(pratosDetalhes);
+
+        return ConexaoAPI<Prato>(data: produtos, token: null);
       } else {
         // Trata os erros específicos que a API pode retornar
         final Map<String, dynamic> responseData = json.decode(response.body);
-        final String mensagem =
-            responseData['mensagem'] ??
-            'Erro desconhecido ao buscar favoritos.';
+        final String mensagem = responseData['mensagem'] ?? 'Erro desconhecido ao buscar favoritos.';
 
         // Lança uma exceção com a mensagem vinda da API
         throw Exception(mensagem);
@@ -248,7 +283,7 @@ class ConexaoAPI<T> {
   }
 
   //verificar favoritos -> rafaelly
-    static Future<bool> isFavorito(String nomePrato, String token) async {
+  static Future<bool> isFavorito(String nomePrato, String token) async {
     try {
       // Constrói a URL com o parâmetro de query
       final uri = Uri.parse('https://gustus-ws.onrender.com/favSN').replace(
