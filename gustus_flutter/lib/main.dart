@@ -1517,6 +1517,7 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
 
   _excluirConta() {
     ConexaoAPI.deleteConta();
+    const SnackBar(content: Text('Conta Excluída.'));
   }
 
   // função que será chamada quando o botão "Salvar" for pressionado e definira as variaveis
@@ -1524,6 +1525,9 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
     final String usuario = _userController.text;
     final String email = _emailController.text;
     final String senha = _passwordController.text;
+
+    ConexaoAPI.atualizarConfig(email, senha, usuario);
+    const SnackBar(content: Text('Dados atualizados com sucesso.'));
     // aqui ele chama outra funcao q manda as variaveis p banco de dados
   }
 

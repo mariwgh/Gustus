@@ -543,7 +543,50 @@ class ConexaoAPI<T> {
   /////////////////////////////////////////////////////
 
   // alterar configurações -> rafaelly
-  
+  static Future<void> atualizarConfig(
+    String novoEmail,
+    String novaSenha,
+    String novoUsuario,
+  ) async {
+    final token = getToken(); 
+
+    if (token == null) {
+      throw Exception('Token de autenticação não encontrado. Faça o login.');
+    }
+
+    try {
+      final uri = Uri.parse('https://gustus-ws.onrender.com/atualizar-config').replace(
+          queryParameters: {
+            'email': novoEmail,
+            'password': novaSenha,
+            'user': novoUsuario,
+          },
+      );
+
+      final response = await http.put(
+        uri, 
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token', // Autenticação
+        },
+      );
+
+      if (response.statusCode == 200) {
+        print('Configurações do usuário atualizadas com sucesso!');
+        // Se o email ou senha mudou, o token atual pode não ser válido
+        // para futuras requisições, mas para este caso, vamos apenas retornar.
+        return;
+      } else {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String mensagem =
+            responseData['mensagem'] ??
+            'Erro desconhecido ao atualizar as configurações.';
+        throw Exception(mensagem);
+      }
+    } catch (erro) {
+      throw Exception("Erro ao atualizar configurações: $erro");
+    }
+  }
 
   // excluir conta -> rafaelly
   static Future<void> deleteConta() async {
