@@ -205,7 +205,7 @@ class ConexaoAPI<T> {
 
         final List<Future<Prato>> pratosDetalhes = pratoIds.map((id) async {
           final responsePrato = await http.get(
-            Uri.parse('https://gustus-ws.onrender.com/produto?idprato=$id'),
+            Uri.parse('https://gustus-ws.onrender.com/produto?prato=$id'),
             headers: {
               'Content-Type': 'application/json; charset=UTF-8',
               'Authorization': 'Bearer $token',
@@ -248,18 +248,18 @@ class ConexaoAPI<T> {
   }
 
   // adicionar favoritos -> rafaelly
-  static Future<void> addFavorito(String nome, String token) async {
+   static Future<void> addFavorito(String nome, String token) async {
     try {
+      final uri = Uri.parse('https://gustus-ws.onrender.com/add-favoritos').replace(
+          queryParameters: {'nomePrato': nome},
+      );
+
       final response = await http.post(
-        // URL do seu endpoint para adicionar favoritos
-        Uri.parse('https://gustus-ws.onrender.com/add-favoritos'),
+        uri, // Usa a URI com o parâmetro de consulta
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
-          // O token é essencial para o middleware 'verificarToken'
           'Authorization': 'Bearer $token',
         },
-        // Envia o id do prato no corpo da requisição
-        body: json.encode(<String, dynamic>{'nomePrato': nome}),
       );
 
       // A API retorna 200 em caso de sucesso
@@ -267,17 +267,13 @@ class ConexaoAPI<T> {
         print('Prato adicionado aos favoritos com sucesso!');
         return;
       } else {
-        // Trata os erros específicos que a API pode retornar
         final Map<String, dynamic> responseData = json.decode(response.body);
         final String mensagem =
             responseData['mensagem'] ??
             'Erro desconhecido ao adicionar favorito.';
-
-        // Lança uma exceção com a mensagem vinda da API
         throw Exception(mensagem);
       }
     } catch (erro) {
-      // Captura erros de conexão ou exceções lançadas acima
       throw Exception("Erro ao adicionar favorito: $erro");
     }
   }
@@ -315,6 +311,7 @@ class ConexaoAPI<T> {
   // remover favoritos -> rafaelly
   static Future<void> removeFavorito(String nome, String token) async {
     try {
+      print(nome);
       final response = await http.delete(
         Uri.parse('https://gustus-ws.onrender.com/delete-favoritos'),
         headers: <String, String>{

@@ -210,7 +210,7 @@ app.post("/add-favoritos", verificarToken, async (req, res) => {
         if (pratoResult.rows.length === 0) {
             return res.status(404).json({ mensagem: "Prato não encontrado." });
         }
-        const idPrato = pratoResult.rows[0].idPrato;
+        const idPrato = pratoResult.rows[0].idprato;
 
         if (!idPrato) {
             return res.status(400).json({ mensagem: "ID do prato não informado" });
@@ -237,7 +237,7 @@ app.delete("/delete-favoritos", verificarToken, async (req, res) => {
         if (pratoResult.rows.length === 0) {
             return res.status(404).json({ mensagem: "Prato não encontrado." });
         }
-        const idPrato = pratoResult.rows[0].idPrato;
+        const idPrato = pratoResult.rows[0].idprato;
 
         const idUser = await getUserIdByEmail(req.user.email);
         if (!idUser) {
