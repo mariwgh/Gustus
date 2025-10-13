@@ -1004,7 +1004,7 @@ class _TelaProduto extends State<TelaProduto>{
                           ),
                         ),
                       ),
-
+                      // tem que arrumar uma outra imagem para quando for favorito o coração estar cheio
                       // faz com que o coracao seja clicavel
                       GestureDetector(            
                         onTap: () {

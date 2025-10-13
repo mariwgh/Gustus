@@ -156,6 +156,23 @@ app.get("/produto", verificarToken, async (req, res) => {
     }
 });
 
+//verificar se é favorito de um usuario ou não
+
+app.get("/favSN", verificarToken, async(req, res)=>{
+    const { idPrato } = req.body;
+    try{
+        const idUser = await getUserIdByEmail(req.user.email);
+        if (!idUser) {
+            return res.status(404).json({ mensagem: "Usuário não encontrado" });
+        }
+        const result = await pool.query("SELECT * FROM favoritos WHERE idUsuario = $1 AND idPrato = $2", [idUser, idPrato])
+        return res.json(result.rows);
+    }
+    catch(erro){
+        console.log(erro.message)
+        return res.status(500).json({mensagem: "Erro no servidor."});
+    }
+})
 
 //ver favoritos
 app.get("/ver-favoritos", verificarToken, async (req, res) => {
