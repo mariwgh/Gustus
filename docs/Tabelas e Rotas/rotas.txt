@@ -1,24 +1,25 @@
-rotas: 
+rotas (19): 
 
-entrar e cadastrar (post?)
+entrar e cadastrar (post)
 
 pegar todos os produtos*****
 pegar somente 1 produto*****
 
-pegar favoritos de um certo usuário
+pegar favoritos de um certo usuário*
+verificar se é favorito**
 adicionar favoritos
 remover favoritos
 
 pegar wishlist de um certo usuário
+verificar se esta na wishlist**
 adicionar wishlist
 remover wishlist
 
 pegar degustados de um certo usuário
-adicionar degustados
+verificar se esta degustou**
+adicionar degustados/avaliar*
 
 pesquisar
-
-avaliar
 
 ver receita
 

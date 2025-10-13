@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require('cors');
 const jwt = require("jsonwebtoken");
-const { Pool } = require('pg'); // Usando a biblioteca do PostgreSQL
+const { Pool } = require('pg');         // Usando a biblioteca do PostgreSQL
 const SECRET_KEY = "loveMyGirlfriend";
 
 const app = express();
@@ -79,6 +79,7 @@ async function getUserIdByEmail(email) {
     return userResult.rows[0].idusuario;
 }
 
+
 //cadastrar
 app.post("/cadastrar", async (req, res) => {
     const { email, senha, user } = req.body;
@@ -132,7 +133,7 @@ app.post("/login", async (req, res) => {
 });
 
 
-//pegar um produto de todos (pagina produto)
+//pegar todos produtos (pagina produto)
 app.get("/produtos", verificarToken, async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM pratos');
@@ -142,7 +143,6 @@ app.get("/produtos", verificarToken, async (req, res) => {
         res.status(500).json({ mensagem: "Erro interno no servidor." });
     }
 });
-
 
 //pegar um produto de todos (pagina produto)
 app.get("/produto", verificarToken, async (req, res) => {
@@ -156,30 +156,6 @@ app.get("/produto", verificarToken, async (req, res) => {
     }
 });
 
-//verificar se é favorito de um usuario ou não
-
-app.get("/favSN", verificarToken, async(req, res)=>{
-    const { nomePrato } = req.query;
-    try{
-        const pratoResult = await pool.query("SELECT idPrato FROM pratos WHERE prato = $1", [nomePrato]);
-        if (pratoResult.rows.length === 0) {
-            return res.status(404).json({ mensagem: "Prato não encontrado." });
-        }
-        const idPrato = pratoResult.rows[0].idprato;
-
-        const idUser = await getUserIdByEmail(req.user.email);
-        if (!idUser) {
-            return res.status(404).json({ mensagem: "Usuário não encontrado" });
-        }
-        const result = await pool.query("SELECT * FROM favoritos WHERE idUsuario = $1 AND idPrato = $2", [idUser, idPrato])
-        return res.json(result.rows);
-    }
-    catch(erro){
-        console.log("Caiu no catch")
-        console.log(erro.message)
-        return res.status(500).json({mensagem: "Erro no servidor."});
-    }
-})
 
 //ver favoritos
 app.get("/ver-favoritos", verificarToken, async (req, res) => {
@@ -201,6 +177,30 @@ app.get("/ver-favoritos", verificarToken, async (req, res) => {
         return res.status(500).json({ mensagem: "Erro interno no servidor." });
     }
 });
+
+//verificar se é favorito de um usuario ou não
+app.get("/favSN", verificarToken, async (req, res) => {
+    const { nomePrato } = req.query;
+    try {
+        const pratoResult = await pool.query("SELECT idPrato FROM pratos WHERE prato = $1", [nomePrato]);
+        if (pratoResult.rows.length === 0) {
+            return res.status(404).json({ mensagem: "Prato não encontrado." });
+        }
+        const idPrato = pratoResult.rows[0].idprato;
+
+        const idUser = await getUserIdByEmail(req.user.email);
+        if (!idUser) {
+            return res.status(404).json({ mensagem: "Usuário não encontrado" });
+        }
+        const result = await pool.query("SELECT * FROM favoritos WHERE idUsuario = $1 AND idPrato = $2", [idUser, idPrato])
+        return res.json(result.rows);
+    }
+    catch (erro) {
+        console.log("Caiu no catch")
+        console.log(erro.message)
+        return res.status(500).json({ mensagem: "Erro no servidor." });
+    }
+})
 
 //adicionar favoritos
 app.post("/add-favoritos", verificarToken, async (req, res) => {
@@ -269,6 +269,30 @@ app.get("/ver-wishlist", verificarToken, async (req, res) => {
     }
 });
 
+//verificar se é wishlist de um usuario ou não
+app.get("/wishSN", verificarToken, async (req, res) => {
+    const { nomePrato } = req.query;
+    try {
+        const pratoResult = await pool.query("SELECT idPrato FROM pratos WHERE prato = $1", [nomePrato]);
+        if (pratoResult.rows.length === 0) {
+            return res.status(404).json({ mensagem: "Prato não encontrado." });
+        }
+        const idPrato = pratoResult.rows[0].idprato;
+
+        const idUser = await getUserIdByEmail(req.user.email);
+        if (!idUser) {
+            return res.status(404).json({ mensagem: "Usuário não encontrado" });
+        }
+        const result = await pool.query("SELECT * FROM wishlist WHERE idUsuario = $1 AND idPrato = $2", [idUser, idPrato])
+        return res.json(result.rows);
+    }
+    catch (erro) {
+        console.log("Caiu no catch")
+        console.log(erro.message)
+        return res.status(500).json({ mensagem: "Erro no servidor." });
+    }
+})
+
 //adicionar na wishlist
 app.post("/add-wishlist", verificarToken, async (req, res) => {
     const { idPrato } = req.body;
@@ -326,7 +350,31 @@ app.get("/ver-degustar", verificarToken, async (req, res) => {
     }
 });
 
-//adicionar a degustados
+//verificar se é degustado de um usuario ou não
+app.get("/deguSN", verificarToken, async (req, res) => {
+    const { nomePrato } = req.query;
+    try {
+        const pratoResult = await pool.query("SELECT idPrato FROM pratos WHERE prato = $1", [nomePrato]);
+        if (pratoResult.rows.length === 0) {
+            return res.status(404).json({ mensagem: "Prato não encontrado." });
+        }
+        const idPrato = pratoResult.rows[0].idprato;
+
+        const idUser = await getUserIdByEmail(req.user.email);
+        if (!idUser) {
+            return res.status(404).json({ mensagem: "Usuário não encontrado" });
+        }
+        const result = await pool.query("SELECT * FROM degustados WHERE idUsuario = $1 AND idPrato = $2", [idUser, idPrato])
+        return res.json(result.rows);
+    }
+    catch (erro) {
+        console.log("Caiu no catch")
+        console.log(erro.message)
+        return res.status(500).json({ mensagem: "Erro no servidor." });
+    }
+})
+
+//adicionar a degustados/avaliar
 app.post("/add-degustar", verificarToken, async (req, res) => {
     const { idPrato, nota, descricao } = req.body;
     try {
@@ -355,49 +403,6 @@ app.get("/pesquisar", verificarToken, async (req, res) => {
         res.json(result.rows);
     } catch (error) {
         console.error(error.message);
-        res.status(500).json({ mensagem: "Erro interno no servidor." });
-    }
-});
-
-//atualizar avaliação
-app.put("/avaliar", verificarToken, async (req, res) => {
-    // 1. Pega os dados do corpo da requisição
-    const { idPrato, nota, descricao } = req.body;
-
-    // 2. Validação básica de entrada
-    if (!idPrato || nota === undefined) {
-        return res.status(400).json({ mensagem: "Os campos 'idPrato' e 'nota' são obrigatórios." });
-    }
-
-    try {
-        // 3. Pega o ID do usuário a partir do token (email) PRIMEIRO
-        const idUser = await getUserIdByEmail(req.user.email);
-        if (!idUser) {
-            return res.status(404).json({ mensagem: "Usuário não encontrado." });
-        }
-
-        // 4. Verifica se o usuário REALMENTE degustou o prato
-        const pratoDegustado = await pool.query(
-            "SELECT * FROM degustados WHERE idUsuario = $1 AND idPrato = $2",
-            [idUser, idPrato]
-        );
-
-        // 5. Se o resultado da busca for zero, o prato não foi degustado por ele.
-        if (pratoDegustado.rows.length === 0) {
-            return res.status(403).json({ mensagem: "Você não pode avaliar um prato que ainda não foi degustado." });
-        }
-
-        // 6. Se passou pela verificação, atualiza a avaliação no banco de dados
-        await pool.query(
-            'UPDATE degustados SET nota = $1, descricao = $2 WHERE idUsuario = $3 AND idPrato = $4',
-            [nota, descricao, idUser, idPrato]
-        );
-
-        // 7. Envia a resposta de sucesso
-        res.status(200).json({ mensagem: "Avaliação registrada com sucesso!" });
-
-    } catch (erro) {
-        console.error(erro.message);
         res.status(500).json({ mensagem: "Erro interno no servidor." });
     }
 });
