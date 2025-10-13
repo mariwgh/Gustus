@@ -945,20 +945,60 @@ class TelaProduto extends StatefulWidget {
 }
 
 class _TelaProduto extends State<TelaProduto>{
+  bool _isFavorito = false;
+    void _adicionarOuRemoverFavoritos() async {
+    final token = ConexaoAPI.getToken();
+    if (token == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Você precisa estar logado para favoritar.')),
+      );
+      return;
+    }
 
-  void _adicionarOuRemoverFavoritos() {   // a implementar
-    final String usuario;
-    widget.nome;          //com widget pois o pega o parametro da classe q ele extende
+    try {
+      // Se o item já é um favorito, chama a API para remover
+      if (_isFavorito) {
+        await ConexaoAPI.removeFavorito(widget.nome, token);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Removido dos favoritos!')),
+        );
+      }
+      // Se não for, chama a API para adicionar
+      else {
+        await ConexaoAPI.addFavorito(widget.nome, token);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Adicionado aos favoritos!')),
+        );
+      }
+
+      // Atualiza o estado da variável e redesenha a tela com o novo ícone
+      if (mounted) {
+        setState(() {
+          _isFavorito = !_isFavorito; // Inverte o valor (true vira false e vice-versa)
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro: ${e.toString()}')),
+      );
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Assim que a tela carrega, verifica se o prato já é um favorito
+    _verificarStatusFavorito();
   }
 
   void _verificarStatusFavorito() async {
 
-    String nomePrato = widget.nome
+    String nomePrato = widget.nome;
     String? token = ConexaoAPI.getToken();
 
     if (token != null) {
       try {
-        bool resultado = await ConexaoAPI.isFavorito(idDoPratoAtual, token);
+        bool resultado = await ConexaoAPI.isFavorito(widget.nome, token);
 
         if (resultado == true) {
           print("Este prato JÁ É um favorito!");
@@ -971,7 +1011,8 @@ class _TelaProduto extends State<TelaProduto>{
             _isFavorito = false;
           });
         }
-      } catch (e) {
+      } 
+      catch (e) {
         print("Erro ao verificar favorito: $e");
       }
     }
@@ -1040,8 +1081,8 @@ class _TelaProduto extends State<TelaProduto>{
                           top: 20,
                           right: 30,
                           child: Icon(
-                            Icons.favorite_border, // coração vazio
-                            color: Colors.white,
+                            _isFavorito ? Icons.favorite : Icons.favorite_border,
+                            color: _isFavorito ? Colors.red : Colors.white,
                             size: 28,
                           ),
                         ),

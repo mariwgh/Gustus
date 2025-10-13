@@ -213,7 +213,7 @@ class ConexaoAPI<T> {
   }
 
   // adicionar favoritos -> rafaelly
-  static Future<void> addFavorito(int idPrato, String token) async {
+  static Future<void> addFavorito(String nome, String token) async {
     try {
       final response = await http.post(
         // URL do seu endpoint para adicionar favoritos
@@ -224,7 +224,7 @@ class ConexaoAPI<T> {
           'Authorization': 'Bearer $token',
         },
         // Envia o id do prato no corpo da requisição
-        body: json.encode(<String, dynamic>{'idPrato': idPrato}),
+        body: json.encode(<String, dynamic>{'nomePrato': nome}),
       );
 
       // A API retorna 200 em caso de sucesso
@@ -248,11 +248,11 @@ class ConexaoAPI<T> {
   }
 
   //verificar favoritos -> rafaelly
-    static Future<bool> isFavorito(int idPrato, String token) async {
+    static Future<bool> isFavorito(String nomePrato, String token) async {
     try {
       // Constrói a URL com o parâmetro de query
       final uri = Uri.parse('https://gustus-ws.onrender.com/favSN').replace(
-        queryParameters: {'idPrato': idPrato.toString()},
+        queryParameters: {'nomePrato': nomePrato},
       );
 
       final response = await http.get(
@@ -278,7 +278,7 @@ class ConexaoAPI<T> {
   }
 
   // remover favoritos -> rafaelly
-  static Future<void> removeFavorito(int idPrato, String token) async {
+  static Future<void> removeFavorito(String nome, String token) async {
     try {
       final response = await http.delete(
         Uri.parse('https://gustus-ws.onrender.com/delete-favoritos'),
@@ -286,7 +286,7 @@ class ConexaoAPI<T> {
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $token',
         },
-        body: json.encode(<String, dynamic>{'idPrato': idPrato}),
+        body: json.encode(<String, dynamic>{'nomePrato': nome}),
       );
 
       if (response.statusCode == 200) {
