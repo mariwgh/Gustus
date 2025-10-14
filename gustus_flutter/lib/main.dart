@@ -1521,19 +1521,55 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
   }
 
   // função que será chamada quando o botão "Salvar" for pressionado e definira as variaveis
-  void _salvarUsuario() {
+  void _salvarUsuario() async {
     final String usuario = _userController.text;
     final String email = _emailController.text;
     final String senha = _passwordController.text;
 
-    if (usuario.isEmpty){
-      ConexaoAPI.atualizarConfig(email, senha, "");
-    }
-
-    
-    const SnackBar(content: Text('Dados atualizados com sucesso.'));
-    // aqui ele chama outra funcao q manda as variaveis p banco de dados
+      // Nenhum campo preenchido
+  if (usuario.isEmpty && email.isEmpty && senha.isEmpty) {
+    const SnackBar(content: Text('Nenhum campo preenchido.'));
+    return;
   }
+
+  // Só usuario
+  if (usuario.isNotEmpty && email.isEmpty && senha.isEmpty) {
+    await ConexaoAPI.atualizarConfig("", "", usuario);
+  }
+
+  // Só email
+  else if (email.isNotEmpty && usuario.isEmpty && senha.isEmpty) {
+    await ConexaoAPI.atualizarConfig(email, "", "");
+  }
+
+  // Só senha
+  else if (senha.isNotEmpty && usuario.isEmpty && email.isEmpty) {
+    await ConexaoAPI.atualizarConfig("", senha, "");
+  }
+
+  // Usuario e email
+  else if (usuario.isNotEmpty && email.isNotEmpty && senha.isEmpty) {
+    await ConexaoAPI.atualizarConfig(email, "", usuario);
+  }
+
+  // Usuario e senha
+  else if (usuario.isNotEmpty && senha.isNotEmpty && email.isEmpty) {
+    await ConexaoAPI.atualizarConfig("", senha, usuario);
+  }
+
+  // Email e senha
+  else if (email.isNotEmpty && senha.isNotEmpty && usuario.isEmpty) {
+    await ConexaoAPI.atualizarConfig(email, senha, "");
+  }
+
+  // Todos preenchidos
+  else if (email.isNotEmpty && senha.isNotEmpty && usuario.isNotEmpty) {
+    await ConexaoAPI.atualizarConfig(email, senha, usuario);
+  }
+
+  const SnackBar(content: Text('Dados atualizados com sucesso.'));
+  // aqui ele chama outra funcao q manda as variaveis p banco de dados
+}
 
   @override
   Widget build(BuildContext context) {
@@ -1656,10 +1692,6 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
             ElevatedButton(
               onPressed: () {
                 _salvarUsuario();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => TelaInicial()),
-                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromRGBO(188, 192, 198, 1),
