@@ -427,11 +427,7 @@ app.get("/ver-receita", async (req, res) => {
 
 //alterar configuracoes
 app.put("/atualizar-config", verificarToken, async (req, res) => {
-    const { email, password, user } = req.query;
-
-    if (!email || !password) {
-        return res.status(400).json({ mensagem: "Os campos são obrigatórios." });
-    }
+    const { email, senha, usuario } = req.query;
 
     try {
         const idUser = await getUserIdByEmail(req.user.email);
@@ -439,17 +435,58 @@ app.put("/atualizar-config", verificarToken, async (req, res) => {
             return res.status(404).json({ mensagem: "Usuário não encontrado." });
         }
 
-        await pool.query(
-            'UPDATE usuarios SET email = $1, senha = $2, usuario = $3 WHERE idUsuario = $4', [email, password, user, idUser]
-        );
+        // Todos vazios
+        if (
+            (!email || email.trim() === "") &&
+            (!senha || senha.trim() === "") &&
+            (!usuario || usuario.trim() === "")
+        ) {
+            return res.status(400).json({ mensagem: "Nenhum campo foi fornecido para atualizar." });
+        }
 
-        res.status(200).json({ mensagem: "Conta atualizada registrada com sucesso!" });
+        // Só email
+        if (email && email.trim() !== "" && (!senha || senha.trim() === "") && (!usuario || usuario.trim() === "")) {
+            await pool.query('UPDATE usuarios SET email = $1 WHERE idUsuario = $2', [email, idUser]);
+        }
+
+        // Só senha
+        else if (senha && senha.trim() !== "" && (!email || email.trim() === "") && (!usuario || usuario.trim() === "")) {
+            await pool.query('UPDATE usuarios SET senha = $1 WHERE idUsuario = $2', [senha, idUser]);
+        }
+
+        // Só usuario
+        else if (usuario && usuario.trim() !== "" && (!email || email.trim() === "") && (!senha || senha.trim() === "")) {
+            await pool.query('UPDATE usuarios SET usuario = $1 WHERE idUsuario = $2', [usuario, idUser]);
+        }
+
+        // Email e senha
+        else if (email && email.trim() !== "" && senha && senha.trim() !== "" && (!usuario || usuario.trim() === "")) {
+            await pool.query('UPDATE usuarios SET email = $1, senha = $2 WHERE idUsuario = $3', [email, senha, idUser]);
+        }
+
+        // Email e usuario
+        else if (email && email.trim() !== "" && usuario && usuario.trim() !== "" && (!senha || senha.trim() === "")) {
+            await pool.query('UPDATE usuarios SET email = $1, usuario = $2 WHERE idUsuario = $3', [email, usuario, idUser]);
+        }
+
+        // Senha e usuario
+        else if (senha && senha.trim() !== "" && usuario && usuario.trim() !== "" && (!email || email.trim() === "")) {
+            await pool.query('UPDATE usuarios SET senha = $1, usuario = $2 WHERE idUsuario = $3', [senha, usuario, idUser]);
+        }
+
+        // Todos os campos
+        else if (email && email.trim() !== "" && senha && senha.trim() !== "" && usuario && usuario.trim() !== "") {
+            await pool.query('UPDATE usuarios SET email = $1, senha = $2, usuario = $3 WHERE idUsuario = $4', [email, senha, usuario, idUser]);
+        }
+
+        res.status(200).json({ mensagem: "Conta atualizada com sucesso!" });
 
     } catch (erro) {
         console.error(erro.message);
         res.status(500).json({ mensagem: "Erro interno no servidor." });
     }
 });
+
 
 
 //deletar conta

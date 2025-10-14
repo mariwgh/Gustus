@@ -1526,7 +1526,11 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
     final String email = _emailController.text;
     final String senha = _passwordController.text;
 
-    ConexaoAPI.atualizarConfig(email, senha, usuario);
+    if (usuario.isEmpty){
+      ConexaoAPI.atualizarConfig(email, senha, "");
+    }
+
+    
     const SnackBar(content: Text('Dados atualizados com sucesso.'));
     // aqui ele chama outra funcao q manda as variaveis p banco de dados
   }
