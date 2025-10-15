@@ -1579,11 +1579,13 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
 
   _excluirConta() {
     ConexaoAPI.deleteConta();
-    const SnackBar(content: Text('Conta Excluída.'));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Conta excluída.')));
   }
 
   // função que será chamada quando o botão "Salvar" for pressionado e definira as variaveis
-  void _salvarUsuario() {
+  void _salvarUsuario() async {
     final String usuario = _userController.text;
     final String email = _emailController.text;
     final String senha = _passwordController.text;
@@ -1598,35 +1600,46 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
 
     // Só usuario
     if (usuario.isNotEmpty && email.isEmpty && senha.isEmpty) {
-      ConexaoAPI.atualizarConfig("", "", usuario);
+      await ConexaoAPI.atualizarConfig("", "", usuario);
     }
     // Só email
     else if (email.isNotEmpty && usuario.isEmpty && senha.isEmpty) {
-      ConexaoAPI.atualizarConfig(email, "", "");
+      await ConexaoAPI.atualizarConfig(email, "", "");
     }
     // Só senha
     else if (senha.isNotEmpty && usuario.isEmpty && email.isEmpty) {
-      ConexaoAPI.atualizarConfig("", senha, "");
+      await ConexaoAPI.atualizarConfig("", senha, "");
     }
     // Usuario e email
     else if (usuario.isNotEmpty && email.isNotEmpty && senha.isEmpty) {
-      ConexaoAPI.atualizarConfig(email, "", usuario);
+      await ConexaoAPI.atualizarConfig(email, "", usuario);
     }
     // Usuario e senha
     else if (usuario.isNotEmpty && senha.isNotEmpty && email.isEmpty) {
-      ConexaoAPI.atualizarConfig("", senha, usuario);
+      await ConexaoAPI.atualizarConfig("", senha, usuario);
     }
     // Email e senha
     else if (email.isNotEmpty && senha.isNotEmpty && usuario.isEmpty) {
-      ConexaoAPI.atualizarConfig(email, senha, "");
+      await ConexaoAPI.atualizarConfig(email, senha, "");
     }
     // Todos preenchidos
     else if (email.isNotEmpty && senha.isNotEmpty && usuario.isNotEmpty) {
-      ConexaoAPI.atualizarConfig(email, senha, usuario);
+      await ConexaoAPI.atualizarConfig(email, senha, usuario);
     }
 
-    const SnackBar(content: Text('Dados atualizados com sucesso.'));
-    // aqui ele chama outra funcao q manda as variaveis p banco de dados
+    _userController.text = "";
+    _emailController.text = "";
+    _passwordController.text = "";
+    if (ConexaoAPI.getAtualizou()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Dados atualizados com sucesso.')),
+      );
+    } 
+    else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Erro ao atualizar os dados.')),
+      );
+    }
   }
 
   @override

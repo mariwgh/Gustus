@@ -447,6 +447,7 @@ app.put("/atualizar-config", verificarToken, async (req, res) => {
         if (email && email.trim() !== "" && (!senha || senha.trim() === "") && (!usuario || usuario.trim() === "")) {
             if (validarEmail(email)){
                 await pool.query('UPDATE usuarios SET email = $1 WHERE idUsuario = $2', [email, idUser]);
+                req.user.email = email;
             }
             else {
                 res.status(400).json({ mensagem: "Formato de e-mail inválido." });
@@ -467,6 +468,7 @@ app.put("/atualizar-config", verificarToken, async (req, res) => {
         else if (email && email.trim() !== "" && senha && senha.trim() !== "" && (!usuario || usuario.trim() === "")) {
             if(validarEmail(email)){
                 await pool.query('UPDATE usuarios SET email = $1, senha = $2 WHERE idUsuario = $3', [email, senha, idUser]);
+                req.user.email = email;
             }
             else {
                 res.status(400).json({ mensagem: "Formato de e-mail inválido." });
@@ -477,6 +479,7 @@ app.put("/atualizar-config", verificarToken, async (req, res) => {
         else if (email && email.trim() !== "" && usuario && usuario.trim() !== "" && (!senha || senha.trim() === "")) {
             if(validarEmail(email)){
                 await pool.query('UPDATE usuarios SET email = $1, usuario = $2 WHERE idUsuario = $3', [email, usuario, idUser]);
+                req.user.email = email;
             }
             else {
                 res.status(400).json({ mensagem: "Formato de e-mail inválido." });
@@ -492,6 +495,7 @@ app.put("/atualizar-config", verificarToken, async (req, res) => {
         else if (email && email.trim() !== "" && senha && senha.trim() !== "" && usuario && usuario.trim() !== "") {
             if (validarEmail(email)){
                 await pool.query('UPDATE usuarios SET email = $1, senha = $2, usuario = $3 WHERE idUsuario = $4', [email, senha, usuario, idUser]);
+                req.user.email = email;
             }
             else {
                 res.status(400).json({ mensagem: "Formato de e-mail inválido." });

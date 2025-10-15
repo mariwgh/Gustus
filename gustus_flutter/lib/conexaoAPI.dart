@@ -13,6 +13,8 @@ class ConexaoAPI<T> {
   // Use um tipo genérico <T> para o dado
   final String? token;
 
+  static bool _atualizou = false;
+
   // Variável estática para armazenar o token JWT globalmente
   static String? _globalToken;
 
@@ -21,9 +23,13 @@ class ConexaoAPI<T> {
     _globalToken = token;
   }
 
+  static bool getAtualizou() {
+    return _atualizou;
+  }
+
   // Método para obter o token (chamado em qualquer requisição autenticada)
   static String? getToken() {
-    print('Token sendo usado: $_globalToken'); 
+    print('Token sendo usado: $_globalToken');
     return _globalToken;
   }
 
@@ -84,7 +90,10 @@ class ConexaoAPI<T> {
   /////////////////////////////////////////////////////
 
   // entrar -> rafaelly
-  static Future<ConexaoAPI<dynamic>> postLogin(String email, String senha) async {
+  static Future<ConexaoAPI<dynamic>> postLogin(
+    String email,
+    String senha,
+  ) async {
     // O retorno usa <dynamic> porque esta resposta só contém o token
 
     try {
@@ -110,7 +119,11 @@ class ConexaoAPI<T> {
   }
 
   // cadastrar -> rafaelly
-  static Future<void> postCadastro(String user, String email, String senha) async {
+  static Future<void> postCadastro(
+    String user,
+    String email,
+    String senha,
+  ) async {
     try {
       final response = await http.post(
         Uri.parse('https://gustus-ws.onrender.com/cadastrar'),
@@ -201,7 +214,9 @@ class ConexaoAPI<T> {
         // Decodifica a resposta JSON, que é uma lista de objetos
         final List<dynamic> responseData = json.decode(response.body);
 
-        List<int> pratoIds = responseData.map((e) => e['idprato'] as int).toList();
+        List<int> pratoIds = responseData
+            .map((e) => e['idprato'] as int)
+            .toList();
 
         final List<Future<Prato>> pratosDetalhes = pratoIds.map((id) async {
           final responsePrato = await http.get(
@@ -214,19 +229,22 @@ class ConexaoAPI<T> {
 
           if (responsePrato.statusCode == 200) {
             final dynamic decodedBody = json.decode(responsePrato.body);
-            
+
             // *Correção para List/Map (Problema comum da API)*
             if (decodedBody is List && decodedBody.isNotEmpty) {
               final Map<String, dynamic> jsonPrato = decodedBody[0];
               return Prato.fromJson(jsonPrato);
-              
             } else if (decodedBody is Map<String, dynamic>) {
               return Prato.fromJson(decodedBody);
             } else {
-              throw Exception('Resposta da API inesperada ou prato $id não encontrado.');
+              throw Exception(
+                'Resposta da API inesperada ou prato $id não encontrado.',
+              );
             }
           } else {
-              throw Exception('Falha ao carregar o Prato $id. Status: ${responsePrato.statusCode}');
+            throw Exception(
+              'Falha ao carregar o Prato $id. Status: ${responsePrato.statusCode}',
+            );
           }
         }).toList();
 
@@ -236,7 +254,9 @@ class ConexaoAPI<T> {
       } else {
         // Trata os erros específicos que a API pode retornar
         final Map<String, dynamic> responseData = json.decode(response.body);
-        final String mensagem = responseData['mensagem'] ?? 'Erro desconhecido ao buscar favoritos.';
+        final String mensagem =
+            responseData['mensagem'] ??
+            'Erro desconhecido ao buscar favoritos.';
 
         // Lança uma exceção com a mensagem vinda da API
         throw Exception(mensagem);
@@ -246,14 +266,14 @@ class ConexaoAPI<T> {
       throw Exception("Erro ao buscar favoritos: $erro");
     }
   }
-  
+
   // verificar favoritos -> rafaelly
   static Future<bool> isFavorito(String nomePrato, String token) async {
     try {
       // Constrói a URL com o parâmetro de query
-      final uri = Uri.parse('https://gustus-ws.onrender.com/favSN').replace(
-        queryParameters: {'nomePrato': nomePrato},
-      );
+      final uri = Uri.parse(
+        'https://gustus-ws.onrender.com/favSN',
+      ).replace(queryParameters: {'nomePrato': nomePrato});
 
       final response = await http.get(
         uri,
@@ -269,7 +289,9 @@ class ConexaoAPI<T> {
         return responseData.isNotEmpty;
       } else {
         final Map<String, dynamic> responseData = json.decode(response.body);
-        final String mensagem = responseData['mensagem'] ?? 'Erro desconhecido ao verificar favorito.';
+        final String mensagem =
+            responseData['mensagem'] ??
+            'Erro desconhecido ao verificar favorito.';
         throw Exception(mensagem);
       }
     } catch (erro) {
@@ -280,9 +302,9 @@ class ConexaoAPI<T> {
   // adicionar favoritos -> rafaelly
   static Future<void> addFavorito(String nome, String token) async {
     try {
-      final uri = Uri.parse('https://gustus-ws.onrender.com/add-favoritos').replace(
-        queryParameters: {'nomePrato': nome},
-      );
+      final uri = Uri.parse(
+        'https://gustus-ws.onrender.com/add-favoritos',
+      ).replace(queryParameters: {'nomePrato': nome});
 
       final response = await http.post(
         uri, // Usa a URI com o parâmetro de consulta
@@ -299,20 +321,21 @@ class ConexaoAPI<T> {
       } else {
         final Map<String, dynamic> responseData = json.decode(response.body);
         final String mensagem =
-          responseData['mensagem'] ?? 'Erro desconhecido ao adicionar favorito.';
+            responseData['mensagem'] ??
+            'Erro desconhecido ao adicionar favorito.';
         throw Exception(mensagem);
       }
     } catch (erro) {
       throw Exception("Erro ao adicionar favorito: $erro");
     }
   }
-  
+
   // remover favoritos -> rafaelly
   static Future<void> removeFavorito(String nome, String token) async {
     try {
-      final uri = Uri.parse('https://gustus-ws.onrender.com/delete-favoritos').replace(
-        queryParameters: {'nomePrato': nome},
-      );
+      final uri = Uri.parse(
+        'https://gustus-ws.onrender.com/delete-favoritos',
+      ).replace(queryParameters: {'nomePrato': nome});
 
       final response = await http.delete(
         uri, // Usa a URI com o parâmetro de consulta
@@ -328,7 +351,8 @@ class ConexaoAPI<T> {
       } else {
         final Map<String, dynamic> responseData = json.decode(response.body);
         final String mensagem =
-          responseData['mensagem'] ?? 'Erro desconhecido ao remover favorito.';
+            responseData['mensagem'] ??
+            'Erro desconhecido ao remover favorito.';
         throw Exception(mensagem);
       }
     } catch (erro) {
@@ -548,23 +572,24 @@ class ConexaoAPI<T> {
     String novaSenha,
     String novoUsuario,
   ) async {
-    final token = getToken(); 
+    final token = getToken();
 
     if (token == null) {
       throw Exception('Token de autenticação não encontrado. Faça o login.');
     }
 
     try {
-      final uri = Uri.parse('https://gustus-ws.onrender.com/atualizar-config').replace(
-          queryParameters: {
-            'email': novoEmail,
-            'senha': novaSenha,
-            'usuario': novoUsuario,
-          },
-      );
+      final uri = Uri.parse('https://gustus-ws.onrender.com/atualizar-config')
+          .replace(
+            queryParameters: {
+              'email': novoEmail,
+              'senha': novaSenha,
+              'usuario': novoUsuario,
+            },
+          );
 
       final response = await http.put(
-        uri, 
+        uri,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $token', // Autenticação
@@ -573,18 +598,15 @@ class ConexaoAPI<T> {
 
       if (response.statusCode == 200) {
         print('Configurações do usuário atualizadas com sucesso!');
-        // Se o email ou senha mudou, o token atual pode não ser válido
-        // para futuras requisições, mas para este caso, vamos apenas retornar.
+        _atualizou = true;
         return;
-      }
-      else if (response.statusCode == 400){
+      } else if (response.statusCode == 400) {
+        _atualizou = false;
         final Map<String, dynamic> responseData = json.decode(response.body);
-        final String mensagem =
-            responseData['mensagem'] ??
-            'E-mail inválido.';
+        final String mensagem = responseData['mensagem'] ?? 'E-mail inválido.';
         throw Exception(mensagem);
-      } 
-      else {
+      } else {
+        _atualizou = false;
         final Map<String, dynamic> responseData = json.decode(response.body);
         final String mensagem =
             responseData['mensagem'] ??
@@ -630,5 +652,4 @@ class ConexaoAPI<T> {
       throw Exception("Erro ao tentar deletar a conta: $erro");
     }
   }
-
 }
