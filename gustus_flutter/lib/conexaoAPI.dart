@@ -558,8 +558,8 @@ class ConexaoAPI<T> {
       final uri = Uri.parse('https://gustus-ws.onrender.com/atualizar-config').replace(
           queryParameters: {
             'email': novoEmail,
-            'password': novaSenha,
-            'user': novoUsuario,
+            'senha': novaSenha,
+            'usuario': novoUsuario,
           },
       );
 
@@ -576,7 +576,15 @@ class ConexaoAPI<T> {
         // Se o email ou senha mudou, o token atual pode não ser válido
         // para futuras requisições, mas para este caso, vamos apenas retornar.
         return;
-      } else {
+      }
+      else if (response.statusCode == 400){
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String mensagem =
+            responseData['mensagem'] ??
+            'E-mail inválido.';
+        throw Exception(mensagem);
+      } 
+      else {
         final Map<String, dynamic> responseData = json.decode(response.body);
         final String mensagem =
             responseData['mensagem'] ??

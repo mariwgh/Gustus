@@ -428,8 +428,6 @@ app.get("/ver-receita", async (req, res) => {
 //alterar configuracoes
 app.put("/atualizar-config", verificarToken, async (req, res) => {
     const { email, senha, usuario } = req.query;
-
-    if (validarEmail(email)){
         try {
         const idUser = await getUserIdByEmail(req.user.email);
         if (!idUser) {
@@ -447,7 +445,12 @@ app.put("/atualizar-config", verificarToken, async (req, res) => {
 
         // Só email
         if (email && email.trim() !== "" && (!senha || senha.trim() === "") && (!usuario || usuario.trim() === "")) {
-            await pool.query('UPDATE usuarios SET email = $1 WHERE idUsuario = $2', [email, idUser]);
+            if (validarEmail(email)){
+                await pool.query('UPDATE usuarios SET email = $1 WHERE idUsuario = $2', [email, idUser]);
+            }
+            else {
+                res.status(400).json({ mensagem: "Formato de e-mail inválido." });
+            }
         }
 
         // Só senha
@@ -462,12 +465,22 @@ app.put("/atualizar-config", verificarToken, async (req, res) => {
 
         // Email e senha
         else if (email && email.trim() !== "" && senha && senha.trim() !== "" && (!usuario || usuario.trim() === "")) {
-            await pool.query('UPDATE usuarios SET email = $1, senha = $2 WHERE idUsuario = $3', [email, senha, idUser]);
+            if(validarEmail(email)){
+                await pool.query('UPDATE usuarios SET email = $1, senha = $2 WHERE idUsuario = $3', [email, senha, idUser]);
+            }
+            else {
+                res.status(400).json({ mensagem: "Formato de e-mail inválido." });
+            }
         }
 
         // Email e usuario
         else if (email && email.trim() !== "" && usuario && usuario.trim() !== "" && (!senha || senha.trim() === "")) {
-            await pool.query('UPDATE usuarios SET email = $1, usuario = $2 WHERE idUsuario = $3', [email, usuario, idUser]);
+            if(validarEmail(email)){
+                await pool.query('UPDATE usuarios SET email = $1, usuario = $2 WHERE idUsuario = $3', [email, usuario, idUser]);
+            }
+            else {
+                res.status(400).json({ mensagem: "Formato de e-mail inválido." });
+            }
         }
 
         // Senha e usuario
@@ -477,7 +490,12 @@ app.put("/atualizar-config", verificarToken, async (req, res) => {
 
         // Todos os campos
         else if (email && email.trim() !== "" && senha && senha.trim() !== "" && usuario && usuario.trim() !== "") {
-            await pool.query('UPDATE usuarios SET email = $1, senha = $2, usuario = $3 WHERE idUsuario = $4', [email, senha, usuario, idUser]);
+            if (validarEmail(email)){
+                await pool.query('UPDATE usuarios SET email = $1, senha = $2, usuario = $3 WHERE idUsuario = $4', [email, senha, usuario, idUser]);
+            }
+            else {
+                res.status(400).json({ mensagem: "Formato de e-mail inválido." });
+            }
         }
 
         res.status(200).json({ mensagem: "Conta atualizada com sucesso!" });
@@ -487,12 +505,8 @@ app.put("/atualizar-config", verificarToken, async (req, res) => {
             console.error(erro.message);
             res.status(500).json({ mensagem: "Erro interno no servidor." });
         }
-    }
-    else {
-        res.status(400).json({ mensagem: "Formato de e-mail inválido." });
-    }
-    
-});
+    } 
+);
 
 
 

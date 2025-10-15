@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gustus_flutter/prato.dart';
-import 'package:url_launcher/url_launcher.dart';  //pacote para abrir links
-import 'package:http/http.dart' as http;          // pacote para conexão com api
+import 'package:url_launcher/url_launcher.dart'; //pacote para abrir links
+import 'package:http/http.dart' as http; // pacote para conexão com api
 import 'dart:convert';
 import 'conexaoAPI.dart';
 
@@ -123,16 +123,14 @@ class _MyWidgetState extends State<MyWidget> {
 }
 */
 
-// widgets reutilizável 
+// widgets reutilizável
 class BaseBloqueio extends StatelessWidget {
   //final indica que a variável child só pode ser inicializada uma única vez e não pode ser alterado depois
-  //child pode ser qualquer outro widget do Flutter que será aninhado dentro de outro 
+  //child pode ser qualquer outro widget do Flutter que será aninhado dentro de outro
   final Widget child;
 
   //construtor da classe e precisa necessariamente ter um child
-  const BaseBloqueio({
-    required this.child,
-  });
+  const BaseBloqueio({required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -145,10 +143,10 @@ class BaseBloqueio extends StatelessWidget {
         children: [
           // imagem de fundo com opacidade.
           Opacity(
-            opacity: 1, 
+            opacity: 1,
             child: Image.asset(
               "assets/fundo.png",
-              fit: BoxFit.cover,        //vai encaixar na tela
+              fit: BoxFit.cover, //vai encaixar na tela
               height: double.infinity,
               width: double.infinity,
             ),
@@ -157,23 +155,29 @@ class BaseBloqueio extends StatelessWidget {
           // centraliza o conteúdo (o Container) na tela.
           Center(
             child: Container(
-              width: 300.0,                                         //nao tem unidade de medida nada aqui
+              width: 300.0, //nao tem unidade de medida nada aqui
               padding: const EdgeInsets.all(20.0),
               decoration: BoxDecoration(
-                color: const Color.fromRGBO(255, 255, 255, 0.4),  // fundo translúcido.
+                color: const Color.fromRGBO(
+                  255,
+                  255,
+                  255,
+                  0.4,
+                ), // fundo translúcido.
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,                                 //sombra desfocada
-                    offset: const Offset(0, 5),                     //direcao da sombra
+                    blurRadius: 10, //sombra desfocada
+                    offset: const Offset(0, 5), //direcao da sombra
                   ),
                 ],
               ),
 
-              child: child,           //virao aqui o resto da tela (child) como filho (child) do container
+              child:
+                  child, //virao aqui o resto da tela (child) como filho (child) do container
             ),
-          )
+          ),
         ],
       ),
     );
@@ -183,9 +187,7 @@ class BaseBloqueio extends StatelessWidget {
 class BaseInicial extends StatelessWidget {
   final Widget child;
 
-  const BaseInicial({
-    required this.child,
-  });
+  const BaseInicial({required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -196,7 +198,7 @@ class BaseInicial extends StatelessWidget {
         children: [
           // background com opacidade.
           Opacity(
-            opacity: 1, 
+            opacity: 1,
             child: Image.asset(
               "assets/fundo.png",
               fit: BoxFit.cover,
@@ -208,9 +210,9 @@ class BaseInicial extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(10),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,   // centraliza horizontalmente
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // centraliza horizontalmente
               children: [
-
                 //home
                 ElevatedButton(
                   //quando pressionado navega para a tela inicial
@@ -221,19 +223,22 @@ class BaseInicial extends StatelessWidget {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,  // botao transparente
-                    shadowColor: Colors.transparent,      // botao sem sombra
-                    elevation: 0,                           // nao tem elevacao -> nao tem sombra
+                    backgroundColor: Colors.transparent, // botao transparente
+                    shadowColor: Colors.transparent, // botao sem sombra
+                    elevation: 0, // nao tem elevacao -> nao tem sombra
                   ),
-                  child: ClipRRect(           //usado para recortar (ou "clipar") seu widget filho em um retângulo com cantos arredondados
+                  child: ClipRRect(
+                    //usado para recortar (ou "clipar") seu widget filho em um retângulo com cantos arredondados
                     child: Image.asset(
-                      "assets/home.png", 
-                      height: MediaQuery.of(context).size.height * 0.05,  // a altura é 5% da media do tamanho da altura da tela
+                      "assets/home.png",
+                      height:
+                          MediaQuery.of(context).size.height *
+                          0.05, // a altura é 5% da media do tamanho da altura da tela
                       fit: BoxFit.cover,
                     ),
                   ),
                 ),
-              
+
                 //search
                 ElevatedButton(
                   onPressed: () {
@@ -249,13 +254,13 @@ class BaseInicial extends StatelessWidget {
                   ),
                   child: ClipRRect(
                     child: Image.asset(
-                      "assets/search.png", 
+                      "assets/search.png",
                       height: MediaQuery.of(context).size.height * 0.05,
                       fit: BoxFit.cover,
                     ),
                   ),
                 ),
-              
+
                 //profile
                 ElevatedButton(
                   onPressed: () {
@@ -271,19 +276,21 @@ class BaseInicial extends StatelessWidget {
                   ),
                   child: ClipRRect(
                     child: Image.asset(
-                      "assets/profile.png", 
+                      "assets/profile.png",
                       height: MediaQuery.of(context).size.height * 0.05,
                       fit: BoxFit.cover,
                     ),
                   ),
                 ),
-              
+
                 //settings
                 ElevatedButton(
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => TelaConfiguracoes()),
+                      MaterialPageRoute(
+                        builder: (context) => TelaConfiguracoes(),
+                      ),
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -293,7 +300,7 @@ class BaseInicial extends StatelessWidget {
                   ),
                   child: ClipRRect(
                     child: Image.asset(
-                      "assets/settings.png", 
+                      "assets/settings.png",
                       height: MediaQuery.of(context).size.height * 0.05,
                       fit: BoxFit.cover,
                     ),
@@ -304,16 +311,12 @@ class BaseInicial extends StatelessWidget {
           ),
 
           // o resto do conteudo sera posicionado completamente p preencherr a tela com uma distancia de 80 do topo
-          Positioned.fill(
-            top: 80,
-            child: child,
-          ),
+          Positioned.fill(top: 80, child: child),
         ],
       ),
     );
   }
 }
-
 
 class MostraProdutos extends StatefulWidget {
   const MostraProdutos({super.key, required this.produtos});
@@ -332,19 +335,20 @@ class _MostraProdutosState extends State<MostraProdutos> {
 
   @override
   Widget build(BuildContext context) {
-
     return GridView.builder(
       padding: const EdgeInsets.all(50),
-      shrinkWrap: true,                 // importante quando está dentro de outra coluna, pois dimensiona-se para o tamanho mínimo sem brigas com outros elementos
+      shrinkWrap:
+          true, // importante quando está dentro de outra coluna, pois dimensiona-se para o tamanho mínimo sem brigas com outros elementos
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,              // duas colunas
-        mainAxisSpacing: 150,           //espaco
-        crossAxisSpacing: 150,          //espaco
-        childAspectRatio: 1,            // mantém quadrado
+        crossAxisCount: 2, // duas colunas
+        mainAxisSpacing: 150, //espaco
+        crossAxisSpacing: 150, //espaco
+        childAspectRatio: 1, // mantém quadrado
       ),
-      itemCount: widget.produtos.length,  //quantos items terao na tabela
+      itemCount: widget.produtos.length, //quantos items terao na tabela
       itemBuilder: (context, index) {
-        final produto = widget.produtos[index];   // percorre cada elemento da lista o transformando em produto
+        final produto = widget
+            .produtos[index]; // percorre cada elemento da lista o transformando em produto
 
         //cada produto é clicável, e quando clica, vai para a tela de seu produto com mais informacoes
         return GestureDetector(
@@ -364,7 +368,8 @@ class _MostraProdutosState extends State<MostraProdutos> {
           },
           child: LayoutBuilder(
             builder: (context, constraints) {
-              final largura = constraints.maxWidth; //informa o tamanho máximo e mínimo de largura e altura que o widget pai permite para este LayoutBuilder
+              final largura = constraints
+                  .maxWidth; //informa o tamanho máximo e mínimo de largura e altura que o widget pai permite para este LayoutBuilder
               final altura = constraints.maxHeight;
 
               // a caixa que contem os dados de cada produto
@@ -385,24 +390,28 @@ class _MostraProdutosState extends State<MostraProdutos> {
                   children: [
                     //imagem do produto em sua vez da lista
                     Positioned(
-                      top: -altura * 0.15,      // 15% saindo pra cima
-                      right: -largura * 0.15,   // 15% saindo pro lado
-                      child: Image.network(     //imagem da internet
+                      top: -altura * 0.15, // 15% saindo pra cima
+                      right: -largura * 0.15, // 15% saindo pro lado
+                      child: Image.network(
+                        //imagem da internet
                         produto.foto,
-                        width: largura * 0.4,   // 40% do container
+                        width: largura * 0.4, // 40% do container
                         fit: BoxFit.cover,
                       ),
                     ),
                     Align(
-                      alignment: Alignment.bottomLeft,            //alinha para baixo a esquerda
+                      alignment:
+                          Alignment.bottomLeft, //alinha para baixo a esquerda
                       child: Padding(
-                        padding: EdgeInsets.all(largura * 0.05),  // 5% de padding
+                        padding: EdgeInsets.all(
+                          largura * 0.05,
+                        ), // 5% de padding
                         child: Text(
                           produto.prato,
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: largura * 0.08,             // fonte proporcional 8%
-                            fontWeight: FontWeight.bold,          //negrito
+                            fontSize: largura * 0.08, // fonte proporcional 8%
+                            fontWeight: FontWeight.bold, //negrito
                           ),
                         ),
                       ),
@@ -411,13 +420,12 @@ class _MostraProdutosState extends State<MostraProdutos> {
                 ),
               );
             },
-          )
+          ),
         );
       },
     );
   }
 }
-
 
 class TelaBloqueio extends StatelessWidget {
   @override
@@ -426,14 +434,15 @@ class TelaBloqueio extends StatelessWidget {
     return BaseBloqueio(
       // texto e botoes
       child: Column(
-        mainAxisSize: MainAxisSize.min,               // ocupa o mínimo de espaço vertical.
-        mainAxisAlignment: MainAxisAlignment.center,  //alinha no centro
+        mainAxisSize: MainAxisSize.min, // ocupa o mínimo de espaço vertical.
+        mainAxisAlignment: MainAxisAlignment.center, //alinha no centro
 
         children: [
           Padding(
             padding: EdgeInsets.all(5),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start, //usei row  so para poder colocar o texto a esquerda
+              mainAxisAlignment: MainAxisAlignment
+                  .start, //usei row  so para poder colocar o texto a esquerda
               children: [
                 const Text(
                   "Gustus",
@@ -446,8 +455,9 @@ class TelaBloqueio extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 25),                 //espaco vertical entre um elemento e outro
-
+          const SizedBox(
+            height: 25,
+          ), //espaco vertical entre um elemento e outro
           // botao de entrar
           ElevatedButton(
             onPressed: () {
@@ -458,13 +468,14 @@ class TelaBloqueio extends StatelessWidget {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color.fromRGBO(188, 192, 198, 1),
-              foregroundColor: Colors.black,            //cor do texto e icone que estiverem dentro do btoao
+              foregroundColor: Colors
+                  .black, //cor do texto e icone que estiverem dentro do btoao
               minimumSize: const Size(double.infinity, 50),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
               shadowColor: Colors.black.withOpacity(0.1),
-              elevation: 5,                               //elevacao de 5, forma uma sombra maior
+              elevation: 5, //elevacao de 5, forma uma sombra maior
             ),
             child: const Text("Entrar"),
           ),
@@ -497,8 +508,8 @@ class TelaBloqueio extends StatelessWidget {
   }
 }
 
-
-class TelaCadastro extends StatefulWidget {                  // estado mutável dos campos que o usuario digita
+class TelaCadastro extends StatefulWidget {
+  // estado mutável dos campos que o usuario digita
   @override
   State<TelaCadastro> createState() => _TelaCadastroState(); //objeto de estado deve ser gerenciado para TelaCadastro
 }
@@ -519,57 +530,61 @@ class _TelaCadastroState extends State<TelaCadastro> {
   }
 
   // função que será chamada quando o botão "Cadastrar" for pressionado e definira as variaveis
- void _cadastrarUsuario() async {
-  final String usuario = _userController.text;
-  final String email = _emailController.text;
-  final String senha = _passwordController.text;
+  void _cadastrarUsuario() async {
+    final String usuario = _userController.text;
+    final String email = _emailController.text;
+    final String senha = _passwordController.text;
 
-  print("entrou no método");
-  // Validação para garantir que os campos não estão vazios
-  if (usuario.isEmpty || email.isEmpty || senha.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Por favor, preencha todos os campos.')),
-    );
-    return; // Para a execução
+    print("entrou no método");
+    // Validação para garantir que os campos não estão vazios
+    if (usuario.isEmpty || email.isEmpty || senha.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Por favor, preencha todos os campos.')),
+      );
+      return; // Para a execução
+    }
+
+    try {
+      print("entrou no try");
+      await ConexaoAPI.postCadastro(usuario, email, senha);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Cadastro realizado com sucesso! Faça o login.'),
+        ),
+      );
+      print("na teoria cadastro feito com sucesso");
+      //usar pushReplacement é uma boa prática aqui para que o usuário não consiga "voltar" para a tela de cadastro.
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => TelaLogin()),
+      );
+    } catch (erro) {
+      print("caiu no catch");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Erro: ${erro.toString().replaceAll("Exception: ", "")}',
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
-  try {
-    print("entrou no try");
-    await ConexaoAPI.postCadastro(usuario, email, senha);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Cadastro realizado com sucesso! Faça o login.')),
-    );
-    print("na teoria cadastro feito com sucesso");
-    //usar pushReplacement é uma boa prática aqui para que o usuário não consiga "voltar" para a tela de cadastro.
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => TelaLogin()),
-    );
-
-  } 
-  catch (erro) {
-    print("caiu no catch");
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Erro: ${erro.toString().replaceAll("Exception: ", "")}'),
-        backgroundColor: Colors.red,
-      ),
-    );
-  }
-}
   @override
   Widget build(BuildContext context) {
     // TelaBloqueio retorna um Scaffold, que fornece a estrutura básica
     return BaseBloqueio(
       child: Column(
-        mainAxisSize: MainAxisSize.min,               // ocupa o mínimo de espaço vertical.
-        mainAxisAlignment: MainAxisAlignment.center,  //alinha no centro
+        mainAxisSize: MainAxisSize.min, // ocupa o mínimo de espaço vertical.
+        mainAxisAlignment: MainAxisAlignment.center, //alinha no centro
 
         children: [
           Padding(
             padding: EdgeInsets.all(5),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start, //usei row  so para poder colocar o texto a esquerda
+              mainAxisAlignment: MainAxisAlignment
+                  .start, //usei row  so para poder colocar o texto a esquerda
               children: [
                 const Text(
                   "Cadastro",
@@ -585,14 +600,18 @@ class _TelaCadastroState extends State<TelaCadastro> {
           const SizedBox(height: 20),
 
           TextField(
-            controller: _userController,                        //define a variavel que sera usada para ir para o bd
-            decoration: InputDecoration(                        //decoracao de lugar que digita
-              labelText: "User",                                //texto do campo para digitar
+            controller:
+                _userController, //define a variavel que sera usada para ir para o bd
+            decoration: InputDecoration(
+              //decoracao de lugar que digita
+              labelText: "User", //texto do campo para digitar
               labelStyle: TextStyle(color: Colors.white),
-              enabledBorder: UnderlineInputBorder(              //a borda sera em baixo, como uma linha para escrever
+              enabledBorder: UnderlineInputBorder(
+                //a borda sera em baixo, como uma linha para escrever
                 borderSide: BorderSide(color: Colors.white),
               ),
-              focusedBorder: UnderlineInputBorder(              //e quando o usuario clicar, essa borda sera assim (igual)
+              focusedBorder: UnderlineInputBorder(
+                //e quando o usuario clicar, essa borda sera assim (igual)
                 borderSide: BorderSide(color: Colors.white),
               ),
             ),
@@ -635,7 +654,7 @@ class _TelaCadastroState extends State<TelaCadastro> {
           // botao de cadastrar
           ElevatedButton(
             onPressed: () {
-              _cadastrarUsuario();                            //funcao que chamara a API
+              _cadastrarUsuario(); //funcao que chamara a API
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color.fromRGBO(188, 192, 198, 1),
@@ -668,7 +687,10 @@ class _TelaCadastroState extends State<TelaCadastro> {
                 },
                 child: const Text(
                   "Entrar",
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
@@ -680,10 +702,10 @@ class _TelaCadastroState extends State<TelaCadastro> {
   }
 }
 
-
-class TelaLogin extends StatefulWidget {                  // estado mutável dos campos que o usuario digita
+class TelaLogin extends StatefulWidget {
+  // estado mutável dos campos que o usuario digita
   @override
-  State<TelaLogin> createState() => _TelaLoginState();    //objeto de estado deve ser gerenciado para TelaLogin
+  State<TelaLogin> createState() => _TelaLoginState(); //objeto de estado deve ser gerenciado para TelaLogin
 }
 
 class _TelaLoginState extends State<TelaLogin> {
@@ -707,19 +729,17 @@ class _TelaLoginState extends State<TelaLogin> {
     try {
       final conexao = await ConexaoAPI.postLogin(email, senha);
 
-      if(conexao.token != null){
+      if (conexao.token != null) {
         print(conexao.token);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => TelaInicial()),
         );
-      }
-
-      else {
+      } else {
         // Se o token for nulo (login falhou), exibe uma mensagem de erro
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("E-mail ou senha incorretos.")),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("E-mail ou senha incorretos.")));
       }
     } catch (e) {
       // Se houver qualquer erro na conexão, exibe uma mensagem
@@ -741,14 +761,15 @@ class _TelaLoginState extends State<TelaLogin> {
     return BaseBloqueio(
       // texto e botoes
       child: Column(
-        mainAxisSize: MainAxisSize.min,               // ocupa o mínimo de espaço vertical.
-        mainAxisAlignment: MainAxisAlignment.center,  //alinha no centro
+        mainAxisSize: MainAxisSize.min, // ocupa o mínimo de espaço vertical.
+        mainAxisAlignment: MainAxisAlignment.center, //alinha no centro
 
         children: [
           Padding(
             padding: EdgeInsets.all(5),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start, //usei row  so para poder colocar o texto a esquerda
+              mainAxisAlignment: MainAxisAlignment
+                  .start, //usei row  so para poder colocar o texto a esquerda
               children: [
                 const Text(
                   "Login",
@@ -764,14 +785,18 @@ class _TelaLoginState extends State<TelaLogin> {
           const SizedBox(height: 20),
 
           TextField(
-            controller: _emailController,                        //define a variavel que sera usada para ir para o bd
-            decoration: InputDecoration(                        //decoracao de lugar que digita
-              labelText: "E-mail",                                //texto do campo para digitar
+            controller:
+                _emailController, //define a variavel que sera usada para ir para o bd
+            decoration: InputDecoration(
+              //decoracao de lugar que digita
+              labelText: "E-mail", //texto do campo para digitar
               labelStyle: TextStyle(color: Colors.white),
-              enabledBorder: UnderlineInputBorder(              //a borda sera em baixo, como uma linha para escrever
+              enabledBorder: UnderlineInputBorder(
+                //a borda sera em baixo, como uma linha para escrever
                 borderSide: BorderSide(color: Colors.white),
               ),
-              focusedBorder: UnderlineInputBorder(              //e quando o usuario clicar, essa borda sera assim (igual)
+              focusedBorder: UnderlineInputBorder(
+                //e quando o usuario clicar, essa borda sera assim (igual)
                 borderSide: BorderSide(color: Colors.white),
               ),
             ),
@@ -798,7 +823,7 @@ class _TelaLoginState extends State<TelaLogin> {
           // botao de entrar
           ElevatedButton(
             onPressed: () {
-              _verificarUsuario();    
+              _verificarUsuario();
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color.fromRGBO(188, 192, 198, 1),
@@ -831,7 +856,10 @@ class _TelaLoginState extends State<TelaLogin> {
                 },
                 child: const Text(
                   "Cadastrar",
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
@@ -843,72 +871,70 @@ class _TelaLoginState extends State<TelaLogin> {
   }
 }
 
-
 class TelaInicial extends StatefulWidget {
   @override
-  State<TelaInicial> createState() => _TelaInicialState(); 
+  State<TelaInicial> createState() => _TelaInicialState();
 }
 
 class _TelaInicialState extends State<TelaInicial> {
-  List<Prato> _produtos = []; 
-  
+  List<Prato> _produtos = [];
+
   // indicador de carregamento
-  bool _isLoading = true; 
-  String? _errorMessage; 
+  bool _isLoading = true;
+  String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
     // NÃO CHAME _fetchProdutos() DIRETAMENTE.
     // CHAME A FUNÇÃO QUE VERIFICA O TOKEN PRIMEIRO
-    _checkTokenAndFetch(); 
+    _checkTokenAndFetch();
   }
 
   // Novo método: Verifica o token antes de tentar buscar dados
   Future<void> _checkTokenAndFetch() async {
     // Tenta pegar o token global estático.
-    try{
-      final token = ConexaoAPI.getToken(); 
+    try {
+      final token = ConexaoAPI.getToken();
       if (token == null) {
         // Se a tela abriu sem token (sem ter feito login), exibe uma mensagem.
         if (mounted) {
-            setState(() {
-              _isLoading = false;
-              //_errorMessage = "Por favor, faça o login para ver os produtos.";
-            });
-          }
+          setState(() {
+            _isLoading = false;
+            //_errorMessage = "Por favor, faça o login para ver os produtos.";
+          });
+        }
       }
-    }
-    catch(e){
+    } catch (e) {
       _errorMessage = e.toString();
       print(_errorMessage);
     }
-   
+
     // Se há token, procede com a busca de produtos
-    await _fetchProdutos(); 
+    await _fetchProdutos();
     return;
   }
 
   Future<void> _fetchProdutos() async {
     try {
       // O resultado é do tipo ConexaoAPI<Prato>
-      final apiResponse = await ConexaoAPI.getProdutos(); 
-      
+      final apiResponse = await ConexaoAPI.getProdutos();
+
       // Verifica se o widget ainda está montado antes de chamar setState
       if (mounted) {
         setState(() {
           // Acesse a lista de Prato corretamente no campo 'data'
           // Se o 'data' for nulo (ex: a API retornou lista vazia), use []
-          _produtos = apiResponse.data ?? []; 
+          _produtos = apiResponse.data ?? [];
           _isLoading = false;
         });
       }
     } catch (e) {
       print('Erro ao carregar produtos: $e');
       if (mounted) {
-         setState(() {
-            _isLoading = false;
-         });
+        setState(() {
+          _isLoading = false;
+        });
       }
     }
   }
@@ -919,14 +945,11 @@ class _TelaInicialState extends State<TelaInicial> {
       // Mostra um indicador de carregamento enquanto espera
       return Center(child: CircularProgressIndicator());
     }
-    
+
     // Se o carregamento terminou, exibe o conteúdo
-    return BaseInicial(
-      child: MostraProdutos(produtos: _produtos), 
-    );
+    return BaseInicial(child: MostraProdutos(produtos: _produtos));
   }
 }
-
 
 class TelaProduto extends StatefulWidget {
   // parametros necessarios para poder apresentar o produto
@@ -936,19 +959,27 @@ class TelaProduto extends StatefulWidget {
   final String linkReceita;
 
   //construtor que pede os parametros
-  const TelaProduto({Key? key, required this.nome, required this.imagem, required this.descricao, required this.linkReceita}) : super(key: key);
+  const TelaProduto({
+    Key? key,
+    required this.nome,
+    required this.imagem,
+    required this.descricao,
+    required this.linkReceita,
+  }) : super(key: key);
 
   @override
   State<TelaProduto> createState() => _TelaProduto();
 }
 
-class _TelaProduto extends State<TelaProduto>{
+class _TelaProduto extends State<TelaProduto> {
   bool _isFavorito = false;
-    void _adicionarOuRemoverFavoritos() async {
+  void _adicionarOuRemoverFavoritos() async {
     final token = ConexaoAPI.getToken();
     if (token == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Você precisa estar logado para favoritar.')),
+        const SnackBar(
+          content: Text('Você precisa estar logado para favoritar.'),
+        ),
       );
       return;
     }
@@ -973,20 +1004,19 @@ class _TelaProduto extends State<TelaProduto>{
       // Atualiza o estado da variável e redesenha a tela com o novo ícone
       if (mounted) {
         setState(() {
-          _isFavorito = !_isFavorito; // Inverte o valor (true vira false e vice-versa)
+          _isFavorito =
+              !_isFavorito; // Inverte o valor (true vira false e vice-versa)
         });
       }
-    } 
-    catch (e) {
+    } catch (e) {
       print("caiu no catch");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro: ${e.toString()}')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro: ${e.toString()}')));
     }
   }
 
   void _verificarStatusFavorito() async {
-
     String nomePrato = widget.nome;
     String? token = ConexaoAPI.getToken();
 
@@ -1005,8 +1035,7 @@ class _TelaProduto extends State<TelaProduto>{
             _isFavorito = false;
           });
         }
-      } 
-      catch (e) {
+      } catch (e) {
         print("Erro ao verificar favorito: $e");
       }
     }
@@ -1027,22 +1056,21 @@ class _TelaProduto extends State<TelaProduto>{
           uri,
           mode: LaunchMode.externalApplication, // abre no navegador
         );
-      } 
-      else {
+      } else {
         throw 'Não foi possível abrir $url';
       }
-    } 
-    catch (e) {
+    } catch (e) {
       print('Erro ao tentar abrir o URL: $e'); // imprime o erro no console
     }
   }
 
-  void _removerOuAdicionarWishlist() {    // a implementar
+  void _removerOuAdicionarWishlist() {
+    // a implementar
     final String usuario;
-    widget.nome;          //com widget pois o pega o parametro da classe q ele extende
+    widget.nome; //com widget pois o pega o parametro da classe q ele extende
   }
 
- @override
+  @override
   Widget build(BuildContext context) {
     final largura = MediaQuery.of(context).size.width;
 
@@ -1053,13 +1081,13 @@ class _TelaProduto extends State<TelaProduto>{
             Stack(
               clipBehavior: Clip.none, // permite que a imagem saia do Stack
               children: [
-                
                 Padding(
                   padding: EdgeInsetsGeometry.all(20),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,  // espaça os elementos
+                    mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween, // espaça os elementos
                     children: [
-                      // posiciona o nome do produto 
+                      // posiciona o nome do produto
                       Positioned(
                         top: 20,
                         left: 20,
@@ -1074,7 +1102,7 @@ class _TelaProduto extends State<TelaProduto>{
                       ),
                       // tem que arrumar uma outra imagem para quando for favorito o coração estar cheio
                       // faz com que o coracao seja clicavel
-                      GestureDetector(            
+                      GestureDetector(
                         onTap: () {
                           _adicionarOuRemoverFavoritos();
                         },
@@ -1082,24 +1110,27 @@ class _TelaProduto extends State<TelaProduto>{
                           top: 20,
                           right: 30,
                           child: Icon(
-                            _isFavorito ? Icons.favorite : Icons.favorite_border,
+                            _isFavorito
+                                ? Icons.favorite
+                                : Icons.favorite_border,
                             color: _isFavorito ? Colors.red : Colors.white,
                             size: 28,
                           ),
                         ),
-                      )
-                    ]
+                      ),
+                    ],
                   ),
                 ),
-                  
+
                 // imagem do produto
                 Align(
-                  alignment: Alignment.centerRight,       // joga para a direita
+                  alignment: Alignment.centerRight, // joga para a direita
                   child: FractionalTranslation(
-                    translation: const Offset(0.3, 0.3),  // metade para fora
+                    translation: const Offset(0.3, 0.3), // metade para fora
                     child: Container(
                       width: largura * 0.7,
-                      height: largura * 0.7,              // altura da imagem para um bom aspecto
+                      height:
+                          largura * 0.7, // altura da imagem para um bom aspecto
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image: NetworkImage(widget.imagem),
@@ -1115,25 +1146,24 @@ class _TelaProduto extends State<TelaProduto>{
 
             // box/container cinza que fica em baixo com descricao e botoes
             Container(
-              height: MediaQuery.of(context).size.height * 0.5,   // metade da tela
+              height:
+                  MediaQuery.of(context).size.height * 0.5, // metade da tela
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: const BoxDecoration(
                 color: Color.fromRGBO(255, 255, 255, 0.4),
-                borderRadius: BorderRadius.only(                 // bordas somente em cima
+                borderRadius: BorderRadius.only(
+                  // bordas somente em cima
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
                 ),
               ),
-              child: Column (
+              child: Column(
                 children: [
                   // descricao
                   Text(
                     widget.descricao,
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                    ),
+                    style: const TextStyle(color: Colors.black, fontSize: 16),
                   ),
                   const SizedBox(height: 25),
 
@@ -1143,16 +1173,18 @@ class _TelaProduto extends State<TelaProduto>{
                       abrirPaginaWeb(widget.linkReceita);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.transparent,            // fundo transparente
-                      foregroundColor: Colors.black,                  // cor do texto e ícone
+                      backgroundColor: Colors.transparent, // fundo transparente
+                      foregroundColor: Colors.black, // cor do texto e ícone
                       minimumSize: const Size(double.infinity, 50),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
-                        side: const BorderSide(color: Colors.black),  // borda preta
+                        side: const BorderSide(
+                          color: Colors.black,
+                        ), // borda preta
                       ),
-                      elevation: 0,                                     // remove sombra
+                      elevation: 0, // remove sombra
                     ),
-                    child: const Text("Receita",),
+                    child: const Text("Receita"),
                   ),
                   const SizedBox(height: 15),
 
@@ -1160,48 +1192,60 @@ class _TelaProduto extends State<TelaProduto>{
                   Row(
                     children: [
                       //botao wishlist
-                      Expanded(                  // preenche o espaço disponível proporcionalmente
+                      Expanded(
+                        // preenche o espaço disponível proporcionalmente
                         child: ElevatedButton(
                           onPressed: () {
                             _removerOuAdicionarWishlist();
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,            // fundo transparente
-                            foregroundColor: Colors.black,                  // cor do texto e ícone
+                            backgroundColor:
+                                Colors.transparent, // fundo transparente
+                            foregroundColor:
+                                Colors.black, // cor do texto e ícone
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
-                              side: const BorderSide(color: Colors.black),  // borda preta
+                              side: const BorderSide(
+                                color: Colors.black,
+                              ), // borda preta
                             ),
-                            elevation: 0,                                     // remove sombra
+                            elevation: 0, // remove sombra
                           ),
-                          child: const Text("Wishlist/Remover",),
+                          child: const Text("Wishlist/Remover"),
                         ),
                       ),
                       const SizedBox(width: 10),
 
                       // botao degustar que leva p tela de avaliar
-                      Expanded(child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => TelaAvaliar())
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,            // fundo transparente
-                          foregroundColor: Colors.black,                  // cor do texto e ícone
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            side: const BorderSide(color: Colors.black),  // borda preta
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TelaAvaliar(),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                Colors.transparent, // fundo transparente
+                            foregroundColor:
+                                Colors.black, // cor do texto e ícone
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              side: const BorderSide(
+                                color: Colors.black,
+                              ), // borda preta
+                            ),
+                            elevation: 0, // remove sombra
                           ),
-                          elevation: 0,                                     // remove sombra
-                        ),
-                        child: const Text("Degustar",),
+                          child: const Text("Degustar"),
                         ),
                       ),
                     ],
-                  )
-                ]
+                  ),
+                ],
               ),
             ),
           ],
@@ -1211,19 +1255,18 @@ class _TelaProduto extends State<TelaProduto>{
   }
 }
 
-
 class TelaPesquisar extends StatefulWidget {
   @override
   State<TelaPesquisar> createState() => _TelaPesquisarState();
 }
 
 class _TelaPesquisarState extends State<TelaPesquisar> {
-  List<Prato> _produtos = []; 
+  List<Prato> _produtos = [];
   final TextEditingController _pesquisaController = TextEditingController();
-    
+
   // indicador de carregamento
-  bool _isLoading = true; 
-  String? _errorMessage; 
+  bool _isLoading = true;
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -1236,8 +1279,8 @@ class _TelaPesquisarState extends State<TelaPesquisar> {
   // Novo método: Verifica o token antes de tentar buscar dados
   Future<void> _checkTokenAndFetch() async {
     // Tenta pegar o token global estático.
-    try{
-      final token = ConexaoAPI.getToken(); 
+    try {
+      final token = ConexaoAPI.getToken();
 
       if (token == null) {
         // Se a tela abriu sem token (sem ter feito login), exibe uma mensagem.
@@ -1248,37 +1291,38 @@ class _TelaPesquisarState extends State<TelaPesquisar> {
           });
         }
       }
-    }
-    catch(e){
+    } catch (e) {
       _errorMessage = e.toString();
       print(_errorMessage);
     }
-   
+
     // Se há token, procede com a busca de produtos
-    await _fetchProdutos(); 
+    await _fetchProdutos();
     return;
   }
 
   Future<void> _fetchProdutos() async {
     try {
       // O resultado é do tipo ConexaoAPI<Prato>
-      final apiResponse = await ConexaoAPI.getPesquisa(_pesquisaController.text); 
-      
+      final apiResponse = await ConexaoAPI.getPesquisa(
+        _pesquisaController.text,
+      );
+
       // Verifica se o widget ainda está montado antes de chamar setState
       if (mounted) {
         setState(() {
           // Acesse a lista de Prato corretamente no campo 'data'
           // Se o 'data' for nulo (ex: a API retornou lista vazia), use []
-          _produtos = apiResponse.data ?? []; 
+          _produtos = apiResponse.data ?? [];
           _isLoading = false;
         });
       }
     } catch (e) {
       print('Erro ao carregar produtos: $e');
       if (mounted) {
-         setState(() {
-            _isLoading = false;
-         });
+        setState(() {
+          _isLoading = false;
+        });
       }
     }
   }
@@ -1296,40 +1340,42 @@ class _TelaPesquisarState extends State<TelaPesquisar> {
           Padding(
             padding: const EdgeInsets.all(15),
             child: TextField(
-              controller: _pesquisaController,          // para passarmos como parametro da lista de produtos
-              
+              controller:
+                  _pesquisaController, // para passarmos como parametro da lista de produtos
+
               onChanged: (text) {
-                _fetchProdutos(); 
+                _fetchProdutos();
               },
               // Opcional: Chama a busca ao pressionar 'Enter'
-              onSubmitted: (_) => _fetchProdutos(), 
+              onSubmitted: (_) => _fetchProdutos(),
 
               decoration: InputDecoration(
-                hintText: "Pesquisar",                  // texto que funciona como hint (dica) para sugerir o que o usuario deve escrever no campo input
-                prefixIcon: Icon(                       // icone de lupa do proprio flutter
-                  Icons.search, 
-                  color: const Color.fromARGB(255, 0, 0, 1)),
-                filled: true,                           // preenche com a cor absixo
+                hintText:
+                    "Pesquisar", // texto que funciona como hint (dica) para sugerir o que o usuario deve escrever no campo input
+                prefixIcon: Icon(
+                  // icone de lupa do proprio flutter
+                  Icons.search,
+                  color: const Color.fromARGB(255, 0, 0, 1),
+                ),
+                filled: true, // preenche com a cor absixo
                 fillColor: Colors.white.withOpacity(0.2),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(20),
                   borderSide: BorderSide.none,
                 ),
               ),
-              style: TextStyle(
-                color: const Color.fromARGB(255, 0, 0, 1)
-              ),
+              style: TextStyle(color: const Color.fromARGB(255, 0, 0, 1)),
             ),
           ),
-          Expanded(                                     // faz o GridView de mostraProdutos ocupar o resto da tela
-            child: MostraProdutos(produtos: _produtos), 
+          Expanded(
+            // faz o GridView de mostraProdutos ocupar o resto da tela
+            child: MostraProdutos(produtos: _produtos),
           ),
         ],
       ),
     );
   }
 }
-
 
 class TelaConta extends StatelessWidget {
   @override
@@ -1365,13 +1411,20 @@ class TelaConta extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => TelaFavoritos())
+                        MaterialPageRoute(
+                          builder: (context) => TelaFavoritos(),
+                        ),
                       );
                     },
                     child: Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 96, 106, 121), // cor de fundo
+                        color: const Color.fromARGB(
+                          255,
+                          96,
+                          106,
+                          121,
+                        ), // cor de fundo
                         border: Border(
                           top: BorderSide(color: Colors.white, width: 2),
                           bottom: BorderSide(color: Colors.white, width: 2),
@@ -1387,9 +1440,9 @@ class TelaConta extends StatelessWidget {
                               color: Colors.white,
                             ),
                           ),
-                          const Spacer(),               // empurra o ícone para a direita
+                          const Spacer(), // empurra o ícone para a direita
                           const Icon(
-                            Icons.arrow_forward_ios,    // seta horizontal
+                            Icons.arrow_forward_ios, // seta horizontal
                             color: Colors.white,
                             size: 20,
                           ),
@@ -1397,21 +1450,26 @@ class TelaConta extends StatelessWidget {
                       ),
                     ),
                   ),
-                  MostraProdutos( produtos: [],),
+                  MostraProdutos(produtos: []),
                   const SizedBox(height: 25),
-                
+
                   //wishlist
                   GestureDetector(
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => TelaWishlist())
+                        MaterialPageRoute(builder: (context) => TelaWishlist()),
                       );
                     },
                     child: Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 96, 106, 121), // cor de fundo
+                        color: const Color.fromARGB(
+                          255,
+                          96,
+                          106,
+                          121,
+                        ), // cor de fundo
                         border: Border(
                           top: BorderSide(color: Colors.white, width: 2),
                           bottom: BorderSide(color: Colors.white, width: 2),
@@ -1427,9 +1485,9 @@ class TelaConta extends StatelessWidget {
                               color: Colors.white,
                             ),
                           ),
-                          const Spacer(),               // empurra o ícone para a direita
+                          const Spacer(), // empurra o ícone para a direita
                           const Icon(
-                            Icons.arrow_forward_ios,    // seta horizontal
+                            Icons.arrow_forward_ios, // seta horizontal
                             color: Colors.white,
                             size: 20,
                           ),
@@ -1437,7 +1495,7 @@ class TelaConta extends StatelessWidget {
                       ),
                     ),
                   ),
-                  MostraProdutos( produtos: [],),
+                  MostraProdutos(produtos: []),
                   const SizedBox(height: 25),
 
                   //degustados
@@ -1445,13 +1503,20 @@ class TelaConta extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => TelaDegustados())
+                        MaterialPageRoute(
+                          builder: (context) => TelaDegustados(),
+                        ),
                       );
                     },
                     child: Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 96, 106, 121), // cor de fundo
+                        color: const Color.fromARGB(
+                          255,
+                          96,
+                          106,
+                          121,
+                        ), // cor de fundo
                         border: Border(
                           top: BorderSide(color: Colors.white, width: 2),
                           bottom: BorderSide(color: Colors.white, width: 2),
@@ -1467,9 +1532,9 @@ class TelaConta extends StatelessWidget {
                               color: Colors.white,
                             ),
                           ),
-                          const Spacer(),             // empurra o ícone para a direita
+                          const Spacer(), // empurra o ícone para a direita
                           const Icon(
-                            Icons.arrow_forward_ios,  // seta horizontal
+                            Icons.arrow_forward_ios, // seta horizontal
                             color: Colors.white,
                             size: 20,
                           ),
@@ -1477,17 +1542,16 @@ class TelaConta extends StatelessWidget {
                       ),
                     ),
                   ),
-                  MostraProdutos(produtos: [],),
+                  MostraProdutos(produtos: []),
                 ],
-              )
+              ),
             ),
-          ]
+          ],
         ),
       ),
     );
   }
 }
-
 
 class TelaConfiguracoes extends StatefulWidget {
   @override
@@ -1519,67 +1583,63 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
   }
 
   // função que será chamada quando o botão "Salvar" for pressionado e definira as variaveis
-  void _salvarUsuario() async {
+  void _salvarUsuario() {
     final String usuario = _userController.text;
     final String email = _emailController.text;
     final String senha = _passwordController.text;
 
-      // Nenhum campo preenchido
-  if (usuario.isEmpty && email.isEmpty && senha.isEmpty) {
-    const SnackBar(content: Text('Nenhum campo preenchido.'));
-    return;
-  }
+    print(usuario + " " + email + " " + senha);
 
-  // Só usuario
-  if (usuario.isNotEmpty && email.isEmpty && senha.isEmpty) {
-    await ConexaoAPI.atualizarConfig("", "", usuario);
-  }
+    // Nenhum campo preenchido
+    if (usuario.isEmpty && email.isEmpty && senha.isEmpty) {
+      const SnackBar(content: Text('Nenhum campo preenchido.'));
+      return;
+    }
 
-  // Só email
-  else if (email.isNotEmpty && usuario.isEmpty && senha.isEmpty) {
-    await ConexaoAPI.atualizarConfig(email, "", "");
-  }
+    // Só usuario
+    if (usuario.isNotEmpty && email.isEmpty && senha.isEmpty) {
+      ConexaoAPI.atualizarConfig("", "", usuario);
+    }
+    // Só email
+    else if (email.isNotEmpty && usuario.isEmpty && senha.isEmpty) {
+      ConexaoAPI.atualizarConfig(email, "", "");
+    }
+    // Só senha
+    else if (senha.isNotEmpty && usuario.isEmpty && email.isEmpty) {
+      ConexaoAPI.atualizarConfig("", senha, "");
+    }
+    // Usuario e email
+    else if (usuario.isNotEmpty && email.isNotEmpty && senha.isEmpty) {
+      ConexaoAPI.atualizarConfig(email, "", usuario);
+    }
+    // Usuario e senha
+    else if (usuario.isNotEmpty && senha.isNotEmpty && email.isEmpty) {
+      ConexaoAPI.atualizarConfig("", senha, usuario);
+    }
+    // Email e senha
+    else if (email.isNotEmpty && senha.isNotEmpty && usuario.isEmpty) {
+      ConexaoAPI.atualizarConfig(email, senha, "");
+    }
+    // Todos preenchidos
+    else if (email.isNotEmpty && senha.isNotEmpty && usuario.isNotEmpty) {
+      ConexaoAPI.atualizarConfig(email, senha, usuario);
+    }
 
-  // Só senha
-  else if (senha.isNotEmpty && usuario.isEmpty && email.isEmpty) {
-    await ConexaoAPI.atualizarConfig("", senha, "");
+    const SnackBar(content: Text('Dados atualizados com sucesso.'));
+    // aqui ele chama outra funcao q manda as variaveis p banco de dados
   }
-
-  // Usuario e email
-  else if (usuario.isNotEmpty && email.isNotEmpty && senha.isEmpty) {
-    await ConexaoAPI.atualizarConfig(email, "", usuario);
-  }
-
-  // Usuario e senha
-  else if (usuario.isNotEmpty && senha.isNotEmpty && email.isEmpty) {
-    await ConexaoAPI.atualizarConfig("", senha, usuario);
-  }
-
-  // Email e senha
-  else if (email.isNotEmpty && senha.isNotEmpty && usuario.isEmpty) {
-    await ConexaoAPI.atualizarConfig(email, senha, "");
-  }
-
-  // Todos preenchidos
-  else if (email.isNotEmpty && senha.isNotEmpty && usuario.isNotEmpty) {
-    await ConexaoAPI.atualizarConfig(email, senha, usuario);
-  }
-
-  const SnackBar(content: Text('Dados atualizados com sucesso.'));
-  // aqui ele chama outra funcao q manda as variaveis p banco de dados
-}
 
   @override
   Widget build(BuildContext context) {
     return BaseInicial(
       child: BaseBloqueio(
         child: Column(
-          mainAxisSize: MainAxisSize.min,             // ocupa o mínimo de espaço vertical.
+          mainAxisSize: MainAxisSize.min, // ocupa o mínimo de espaço vertical.
 
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
-              children: [ 
+              children: [
                 Text(
                   "Configurações",
                   style: TextStyle(
@@ -1588,7 +1648,7 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
                     color: Colors.white,
                   ),
                 ),
-              ]
+              ],
             ),
             const SizedBox(height: 20),
 
@@ -1650,16 +1710,23 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.transparent,                                  // fundo transparente
-                foregroundColor: const Color.fromARGB(255, 255, 255, 255),            // cor do texto e ícone
+                backgroundColor: Colors.transparent, // fundo transparente
+                foregroundColor: const Color.fromARGB(
+                  255,
+                  255,
+                  255,
+                  255,
+                ), // cor do texto e ícone
                 minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
-                  side: const BorderSide(color: Color.fromARGB(255, 255, 255, 255)),  // borda preta
+                  side: const BorderSide(
+                    color: Color.fromARGB(255, 255, 255, 255),
+                  ), // borda preta
                 ),
-                elevation: 0,                                                           // remove sombra
+                elevation: 0, // remove sombra
               ),
-              child: const Text("Sair",),
+              child: const Text("Sair"),
             ),
             const SizedBox(height: 15),
 
@@ -1673,22 +1740,25 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.transparent, 
-                foregroundColor: const Color.fromARGB(255, 255, 255, 255),  
+                backgroundColor: Colors.transparent,
+                foregroundColor: const Color.fromARGB(255, 255, 255, 255),
                 minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
-                  side: const BorderSide(color: Color.fromARGB(255, 255, 255, 255)), 
+                  side: const BorderSide(
+                    color: Color.fromARGB(255, 255, 255, 255),
+                  ),
                 ),
                 elevation: 0,
               ),
-              child: const Text("Excluir conta",),
+              child: const Text("Excluir conta"),
             ),
             const SizedBox(height: 15),
 
             // botao de salvar
             ElevatedButton(
               onPressed: () {
+                print("entrou no onPressed");
                 _salvarUsuario();
               },
               style: ElevatedButton.styleFrom(
@@ -1711,32 +1781,31 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
   }
 }
 
-
 class TelaFavoritos extends StatefulWidget {
   @override
-  State<TelaFavoritos> createState() => _TelaFavoritosState(); 
+  State<TelaFavoritos> createState() => _TelaFavoritosState();
 }
 
 class _TelaFavoritosState extends State<TelaFavoritos> {
-  List<Prato> _produtos = []; 
-  
+  List<Prato> _produtos = [];
+
   // indicador de carregamento
-  bool _isLoading = true; 
-  String? _errorMessage; 
+  bool _isLoading = true;
+  String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
     // NÃO CHAME _fetchProdutos() DIRETAMENTE.
     // CHAME A FUNÇÃO QUE VERIFICA O TOKEN PRIMEIRO
-    _checkTokenAndFetch(); 
+    _checkTokenAndFetch();
   }
 
   // Novo método: Verifica o token antes de tentar buscar dados
   Future<void> _checkTokenAndFetch() async {
     // Tenta pegar o token global estático.
-    try{
-      final token = ConexaoAPI.getToken(); 
+    try {
+      final token = ConexaoAPI.getToken();
 
       if (token == null) {
         // Se a tela abriu sem token (sem ter feito login), exibe uma mensagem.
@@ -1747,37 +1816,36 @@ class _TelaFavoritosState extends State<TelaFavoritos> {
           });
         }
       }
-    }
-    catch(e){
+    } catch (e) {
       _errorMessage = e.toString();
       print(_errorMessage);
     }
-   
+
     // Se há token, procede com a busca de produtos
-    await _fetchProdutos(); 
+    await _fetchProdutos();
     return;
   }
 
   Future<void> _fetchProdutos() async {
     try {
       // O resultado é do tipo ConexaoAPI<Prato>
-      final apiResponse = await ConexaoAPI.getFavoritos(); 
-      
+      final apiResponse = await ConexaoAPI.getFavoritos();
+
       // Verifica se o widget ainda está montado antes de chamar setState
       if (mounted) {
         setState(() {
           // Acesse a lista de Prato corretamente no campo 'data'
           // Se o 'data' for nulo (ex: a API retornou lista vazia), use []
-          _produtos = apiResponse.data ?? []; 
+          _produtos = apiResponse.data ?? [];
           _isLoading = false;
         });
       }
     } catch (e) {
       print('Erro ao carregar produtos: $e');
       if (mounted) {
-         setState(() {
-            _isLoading = false;
-         });
+        setState(() {
+          _isLoading = false;
+        });
       }
     }
   }
@@ -1792,20 +1860,20 @@ class _TelaFavoritosState extends State<TelaFavoritos> {
     // Estado de Erro ou Lista Vazia
     if (_errorMessage != null || _produtos.isEmpty) {
       String message = _errorMessage ?? "A sua Wishlist está vazia.";
-      
+
       // Verifica se a Wishlist está vazia (caso não tenha dado erro)
       if (_produtos.isEmpty && _errorMessage == null) {
-          message = "Sua lista de favoritos está vazia.";
+        message = "Sua lista de favoritos está vazia.";
       }
 
       return BaseInicial(
-          child: Center(
-              child: Text(
-                  message,
-                  style: const TextStyle(color: Colors.white, fontSize: 18),
-                  textAlign: TextAlign.center,
-              ),
+        child: Center(
+          child: Text(
+            message,
+            style: const TextStyle(color: Colors.white, fontSize: 18),
+            textAlign: TextAlign.center,
           ),
+        ),
       );
     }
 
@@ -1816,7 +1884,7 @@ class _TelaFavoritosState extends State<TelaFavoritos> {
             padding: EdgeInsetsGeometry.all(15),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
-              children: [ 
+              children: [
                 Text(
                   "Favoritos",
                   style: TextStyle(
@@ -1830,39 +1898,38 @@ class _TelaFavoritosState extends State<TelaFavoritos> {
           ),
           const SizedBox(height: 25),
 
-          MostraProdutos(produtos: _produtos,),
-        ]
-      )
+          MostraProdutos(produtos: _produtos),
+        ],
+      ),
     );
   }
 }
 
-
 class TelaWishlist extends StatefulWidget {
   @override
-  State<TelaWishlist> createState() => _TelaWishlistState(); 
+  State<TelaWishlist> createState() => _TelaWishlistState();
 }
 
 class _TelaWishlistState extends State<TelaWishlist> {
-  List<Prato> _produtos = []; 
-  
+  List<Prato> _produtos = [];
+
   // indicador de carregamento
-  bool _isLoading = true; 
-  String? _errorMessage; 
+  bool _isLoading = true;
+  String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
     // NÃO CHAME _fetchProdutos() DIRETAMENTE.
     // CHAME A FUNÇÃO QUE VERIFICA O TOKEN PRIMEIRO
-    _checkTokenAndFetch(); 
+    _checkTokenAndFetch();
   }
 
   // Novo método: Verifica o token antes de tentar buscar dados
   Future<void> _checkTokenAndFetch() async {
     // Tenta pegar o token global estático.
-    try{
-      final token = ConexaoAPI.getToken(); 
+    try {
+      final token = ConexaoAPI.getToken();
 
       if (token == null) {
         // Se a tela abriu sem token (sem ter feito login), exibe uma mensagem.
@@ -1873,37 +1940,36 @@ class _TelaWishlistState extends State<TelaWishlist> {
           });
         }
       }
-    }
-    catch(e){
+    } catch (e) {
       _errorMessage = e.toString();
       print(_errorMessage);
     }
-   
+
     // Se há token, procede com a busca de produtos
-    await _fetchProdutos(); 
+    await _fetchProdutos();
     return;
   }
 
   Future<void> _fetchProdutos() async {
     try {
       // O resultado é do tipo ConexaoAPI<Prato>
-      final apiResponse = await ConexaoAPI.getWishlist(); 
-      
+      final apiResponse = await ConexaoAPI.getWishlist();
+
       // Verifica se o widget ainda está montado antes de chamar setState
       if (mounted) {
         setState(() {
           // Acesse a lista de Prato corretamente no campo 'data'
           // Se o 'data' for nulo (ex: a API retornou lista vazia), use []
-          _produtos = apiResponse.data ?? []; 
+          _produtos = apiResponse.data ?? [];
           _isLoading = false;
         });
       }
     } catch (e) {
       print('Erro ao carregar produtos: $e');
       if (mounted) {
-         setState(() {
-            _isLoading = false;
-         });
+        setState(() {
+          _isLoading = false;
+        });
       }
     }
   }
@@ -1918,20 +1984,20 @@ class _TelaWishlistState extends State<TelaWishlist> {
     // Estado de Erro ou Lista Vazia
     if (_errorMessage != null || _produtos.isEmpty) {
       String message = _errorMessage ?? "A sua Wishlist está vazia.";
-      
+
       // Verifica se a Wishlist está vazia (caso não tenha dado erro)
       if (_produtos.isEmpty && _errorMessage == null) {
-          message = "Sua Wishlist está vazia.";
+        message = "Sua Wishlist está vazia.";
       }
 
       return BaseInicial(
-          child: Center(
-              child: Text(
-                  message,
-                  style: const TextStyle(color: Colors.white, fontSize: 18),
-                  textAlign: TextAlign.center,
-              ),
+        child: Center(
+          child: Text(
+            message,
+            style: const TextStyle(color: Colors.white, fontSize: 18),
+            textAlign: TextAlign.center,
           ),
+        ),
       );
     }
 
@@ -1942,7 +2008,7 @@ class _TelaWishlistState extends State<TelaWishlist> {
             padding: EdgeInsetsGeometry.all(15),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
-              children: [ 
+              children: [
                 Text(
                   "Wishlist",
                   style: TextStyle(
@@ -1956,39 +2022,38 @@ class _TelaWishlistState extends State<TelaWishlist> {
           ),
           const SizedBox(height: 25),
 
-          MostraProdutos(produtos: _produtos,),
-        ]
-      )
+          MostraProdutos(produtos: _produtos),
+        ],
+      ),
     );
   }
 }
 
-
 class TelaDegustados extends StatefulWidget {
   @override
-  State<TelaDegustados> createState() => _TelaDegustadosState(); 
+  State<TelaDegustados> createState() => _TelaDegustadosState();
 }
 
 class _TelaDegustadosState extends State<TelaDegustados> {
-  List<Prato> _produtos = []; 
-  
+  List<Prato> _produtos = [];
+
   // indicador de carregamento
-  bool _isLoading = true; 
-  String? _errorMessage; 
+  bool _isLoading = true;
+  String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
     // NÃO CHAME _fetchProdutos() DIRETAMENTE.
     // CHAME A FUNÇÃO QUE VERIFICA O TOKEN PRIMEIRO
-    _checkTokenAndFetch(); 
+    _checkTokenAndFetch();
   }
 
   // Novo método: Verifica o token antes de tentar buscar dados
   Future<void> _checkTokenAndFetch() async {
     // Tenta pegar o token global estático.
-    try{
-      final token = ConexaoAPI.getToken(); 
+    try {
+      final token = ConexaoAPI.getToken();
 
       if (token == null) {
         // Se a tela abriu sem token (sem ter feito login), exibe uma mensagem.
@@ -1999,37 +2064,36 @@ class _TelaDegustadosState extends State<TelaDegustados> {
           });
         }
       }
-    }
-    catch(e){
+    } catch (e) {
       _errorMessage = e.toString();
       print(_errorMessage);
     }
-   
+
     // Se há token, procede com a busca de produtos
-    await _fetchProdutos(); 
+    await _fetchProdutos();
     return;
   }
 
   Future<void> _fetchProdutos() async {
     try {
       // O resultado é do tipo ConexaoAPI<Prato>
-      final apiResponse = await ConexaoAPI.getDegustados(); 
-      
+      final apiResponse = await ConexaoAPI.getDegustados();
+
       // Verifica se o widget ainda está montado antes de chamar setState
       if (mounted) {
         setState(() {
           // Acesse a lista de Prato corretamente no campo 'data'
           // Se o 'data' for nulo (ex: a API retornou lista vazia), use []
-          _produtos = apiResponse.data ?? []; 
+          _produtos = apiResponse.data ?? [];
           _isLoading = false;
         });
       }
     } catch (e) {
       print('Erro ao carregar produtos: $e');
       if (mounted) {
-         setState(() {
-            _isLoading = false;
-         });
+        setState(() {
+          _isLoading = false;
+        });
       }
     }
   }
@@ -2048,7 +2112,7 @@ class _TelaDegustadosState extends State<TelaDegustados> {
             padding: EdgeInsetsGeometry.all(15),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
-              children: [ 
+              children: [
                 Text(
                   "Degustados",
                   style: TextStyle(
@@ -2062,13 +2126,12 @@ class _TelaDegustadosState extends State<TelaDegustados> {
           ),
           const SizedBox(height: 25),
 
-          MostraProdutos(produtos: _produtos,),
-        ]
-      )
+          MostraProdutos(produtos: _produtos),
+        ],
+      ),
     );
   }
 }
-
 
 class TelaAvaliar extends StatefulWidget {
   @override
@@ -2105,11 +2168,11 @@ class _TelaAvaliar extends State<TelaAvaliar> {
     return BaseInicial(
       child: BaseBloqueio(
         child: Column(
-          mainAxisSize: MainAxisSize.min,             // ocupa o mínimo de espaço vertical.
+          mainAxisSize: MainAxisSize.min, // ocupa o mínimo de espaço vertical.
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
-              children: [ 
+              children: [
                 Text(
                   "Degustar",
                   style: TextStyle(
@@ -2118,7 +2181,7 @@ class _TelaAvaliar extends State<TelaAvaliar> {
                     color: Colors.white,
                   ),
                 ),
-              ]
+              ],
             ),
             const SizedBox(height: 20),
 
@@ -2129,13 +2192,23 @@ class _TelaAvaliar extends State<TelaAvaliar> {
                 return IconButton(
                   onPressed: () {
                     setState(() {
-                      estrelasSelecionadas = index + 1;  // define quantas estrelas estão selecionadas
-                      _notaController.text = estrelasSelecionadas.toString(); // atualiza o TextField
+                      estrelasSelecionadas =
+                          index +
+                          1; // define quantas estrelas estão selecionadas
+                      _notaController.text = estrelasSelecionadas
+                          .toString(); // atualiza o TextField
                     });
                   },
                   icon: Icon(
-                    index < estrelasSelecionadas ? Icons.star : Icons.star_border,
-                    color: const Color.fromARGB(255, 255, 255, 255), // cor da estrela cheia
+                    index < estrelasSelecionadas
+                        ? Icons.star
+                        : Icons.star_border,
+                    color: const Color.fromARGB(
+                      255,
+                      255,
+                      255,
+                      255,
+                    ), // cor da estrela cheia
                     size: 36,
                   ),
                 );
