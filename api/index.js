@@ -430,9 +430,11 @@ app.put("/atualizar-config", verificarToken, async (req, res) => {
   const { email, senha, usuario } = req.query;
 
   try {
-    const idUser = req.user.idUsuario; // pega sempre pelo ID
+    // Pega o ID do usuário pelo email que está no token (mais simples)
+    const idUser = await getUserIdByEmail(req.user.email);
     if (!idUser) return res.status(404).json({ mensagem: "Usuário não encontrado." });
 
+    // Monta arrays dinâmicos para query e valores
     const updates = [];
     const values = [];
     let idx = 1;
@@ -441,6 +443,7 @@ app.put("/atualizar-config", verificarToken, async (req, res) => {
       if (!validarEmail(email)) return res.status(400).json({ mensagem: "Email inválido." });
       updates.push(`email = $${idx++}`);
       values.push(email);
+      req.user.email = email; // atualiza o email no req.user
     }
 
     if (senha && senha.trim() !== "") {
@@ -455,18 +458,18 @@ app.put("/atualizar-config", verificarToken, async (req, res) => {
 
     if (updates.length === 0) return res.status(400).json({ mensagem: "Nenhum campo para atualizar." });
 
-    values.push(idUser); // último parâmetro para WHERE
+    // Adiciona o ID no final para o WHERE
+    values.push(idUser);
     const query = `UPDATE usuarios SET ${updates.join(", ")} WHERE idUsuario = $${idx}`;
+
     await pool.query(query, values);
 
     res.status(200).json({ mensagem: "Conta atualizada com sucesso!" });
   } catch (erro) {
-    console.error(erro);
+    console.error(erro.message);
     res.status(500).json({ mensagem: "Erro interno no servidor." });
   }
 });
-
-
 
 
 //deletar conta
