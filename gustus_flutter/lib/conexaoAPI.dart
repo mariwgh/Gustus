@@ -597,7 +597,12 @@ class ConexaoAPI<T> {
       );
 
       if (response.statusCode == 200) {
-        print('Configurações do usuário atualizadas com sucesso!');
+        if (novoEmail != "") {
+          setToken(""); //limpa o token e obriga o user a fazer um novo login
+          print('E-mail atualizado com sucesso!');
+        } else {
+          print('Configurações do usuário atualizadas com sucesso!');
+        }
         _atualizou = true;
         return;
       } else if (response.statusCode == 400) {

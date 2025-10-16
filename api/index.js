@@ -429,7 +429,8 @@ app.get("/ver-receita", async (req, res) => {
 app.put("/atualizar-config", verificarToken, async (req, res) => {
     const { email, senha, usuario } = req.query;
         try {
-        const idUser = req.user.idUsuario
+        const idUser = await getUserIdByEmail(req.user.email);
+        print(idUser + " " + req.user.email)
         if (!idUser) {
             return res.status(404).json({ mensagem: "Usuário não encontrado." });
         }

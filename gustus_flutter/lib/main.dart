@@ -1585,59 +1585,57 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
   }
 
   // função que será chamada quando o botão "Salvar" for pressionado e definira as variaveis
-void _salvarUsuario() async {
-  final String usuario = _userController.text;
-  final String email = _emailController.text;
-  final String senha = _passwordController.text;
+  void _salvarUsuario() async {
+    final String usuario = _userController.text;
+    final String email = _emailController.text;
+    final String senha = _passwordController.text;
 
-  print(usuario + " " + email + " " + senha);
+    print(usuario + " " + email + " " + senha);
 
-  if (usuario.isEmpty && email.isEmpty && senha.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Nenhum campo preenchido.')),
-    );
-    return;
-  }
-
-  try {
-    // Chama a API conforme os campos preenchidos
-    if (usuario.isNotEmpty && email.isEmpty && senha.isEmpty) {
-      await ConexaoAPI.atualizarConfig("", "", usuario);
-    } else if (email.isNotEmpty && usuario.isEmpty && senha.isEmpty) {
-      await ConexaoAPI.atualizarConfig(email, "", "");
-    } else if (senha.isNotEmpty && usuario.isEmpty && email.isEmpty) {
-      await ConexaoAPI.atualizarConfig("", senha, "");
-    } else if (usuario.isNotEmpty && email.isNotEmpty && senha.isEmpty) {
-      await ConexaoAPI.atualizarConfig(email, "", usuario);
-    } else if (usuario.isNotEmpty && senha.isNotEmpty && email.isEmpty) {
-      await ConexaoAPI.atualizarConfig("", senha, usuario);
-    } else if (email.isNotEmpty && senha.isNotEmpty && usuario.isEmpty) {
-      await ConexaoAPI.atualizarConfig(email, senha, "");
-    } else if (email.isNotEmpty && senha.isNotEmpty && usuario.isNotEmpty) {
-      await ConexaoAPI.atualizarConfig(email, senha, usuario);
+    if (usuario.isEmpty && email.isEmpty && senha.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Nenhum campo preenchido.')));
+      return;
     }
 
-    // Se chegou aqui, a API não lançou exceção → sucesso
-    _userController.clear();
-    _emailController.clear();
-    _passwordController.clear();
+    try {
+      // Chama a API conforme os campos preenchidos
+      if (usuario.isNotEmpty && email.isEmpty && senha.isEmpty) {
+        await ConexaoAPI.atualizarConfig("", "", usuario);
+      } else if (email.isNotEmpty && usuario.isEmpty && senha.isEmpty) {
+        await ConexaoAPI.atualizarConfig(email, "", "");
+      } else if (senha.isNotEmpty && usuario.isEmpty && email.isEmpty) {
+        await ConexaoAPI.atualizarConfig("", senha, "");
+      } else if (usuario.isNotEmpty && email.isNotEmpty && senha.isEmpty) {
+        await ConexaoAPI.atualizarConfig(email, "", usuario);
+      } else if (usuario.isNotEmpty && senha.isNotEmpty && email.isEmpty) {
+        await ConexaoAPI.atualizarConfig("", senha, usuario);
+      } else if (email.isNotEmpty && senha.isNotEmpty && usuario.isEmpty) {
+        await ConexaoAPI.atualizarConfig(email, senha, "");
+      } else if (email.isNotEmpty && senha.isNotEmpty && usuario.isNotEmpty) {
+        await ConexaoAPI.atualizarConfig(email, senha, usuario);
+      }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Dados atualizados com sucesso.')),
-    );
-  } catch (erro) {
-    // Aqui você captura qualquer exceção lançada pela API
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(erro.toString())),
-    );
+      // Se chegou aqui, a API não lançou exceção → sucesso
+      _userController.clear();
+      _emailController.clear();
+      _passwordController.clear();
 
-    _userController.clear();
-    _emailController.clear();
-    _passwordController.clear();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Dados atualizados com sucesso.')),
+      );
+    } catch (erro) {
+      // Aqui você captura qualquer exceção lançada pela API
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(erro.toString())));
 
+      _userController.clear();
+      _emailController.clear();
+      _passwordController.clear();
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -1744,7 +1742,7 @@ void _salvarUsuario() async {
             ElevatedButton(
               onPressed: () {
                 _excluirConta();
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => TelaBloqueio()),
                 );
@@ -1768,8 +1766,16 @@ void _salvarUsuario() async {
             // botao de salvar
             ElevatedButton(
               onPressed: () {
-                print("entrou no onPressed");
                 _salvarUsuario();
+                if (ConexaoAPI.getAtualizou()){
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => TelaLogin()),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Faça o login novamente.')),
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromRGBO(188, 192, 198, 1),
