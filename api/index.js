@@ -376,8 +376,11 @@ app.get("/deguSN", verificarToken, async (req, res) => {
 
 //adicionar a degustados/avaliar
 app.post("/add-degustar", verificarToken, async (req, res) => {
-    const { idPrato, nota, descricao } = req.body;
+    const { nomePrato, nota, descricao } = req.query;
     try {
+        const idPratoQuery = await pool.query("SELECT idPrato FROM pratos WHERE prato = $1", [nomePrato])
+        const idPrato = idPratoQuery.rows[0].idprato
+
         if (!idPrato) {
             return res.status(400).json({ mensagem: "ID do prato não informado" });
         }
@@ -512,7 +515,6 @@ app.put("/atualizar-config", verificarToken, async (req, res) => {
         }
     } 
 );
-
 
 
 //deletar conta

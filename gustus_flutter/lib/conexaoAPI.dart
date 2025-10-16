@@ -9,6 +9,7 @@ import 'wishlist.dart';
 import 'degustado.dart';
 import 'favorito.dart';
 
+
 class ConexaoAPI<T> {
   // Use um tipo genérico <T> para o dado
   final String? token;
@@ -300,7 +301,7 @@ class ConexaoAPI<T> {
   }
 
   // adicionar favoritos -> rafaelly
-  static Future<void> addFavorito(String nome, String token) async {
+  static Future<void> postFavorito(String nome, String token) async {
     try {
       final uri = Uri.parse(
         'https://gustus-ws.onrender.com/add-favoritos',
@@ -331,7 +332,7 @@ class ConexaoAPI<T> {
   }
 
   // remover favoritos -> rafaelly
-  static Future<void> removeFavorito(String nome, String token) async {
+  static Future<void> deleteFavorito(String nome, String token) async {
     try {
       final uri = Uri.parse(
         'https://gustus-ws.onrender.com/delete-favoritos',
@@ -422,10 +423,97 @@ class ConexaoAPI<T> {
   }
 
   // verificar wishlist -> mariana
+  static Future<bool> isWishlist(String nomePrato, String token) async {
+    try {
+      // Constrói a URL com o parâmetro de query
+      final uri = Uri.parse(
+        'https://gustus-ws.onrender.com/wishSN',
+      ).replace(queryParameters: {'nomePrato': nomePrato});
+
+      final response = await http.get(
+        uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> responseData = json.decode(response.body);
+        // Se a lista retornada não estiver vazia, significa que o item é um favorito.
+        return responseData.isNotEmpty;
+      } else {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String mensagem =
+            responseData['mensagem'] ??
+            'Erro desconhecido ao verificar wishlist.';
+        throw Exception(mensagem);
+      }
+    } catch (erro) {
+      throw Exception("Erro ao verificar wishlist: $erro");
+    }
+  }
 
   // adicionar wishlist -> mariana
+  static Future<void> postWishlist(String nome, String token) async {
+    try {
+      final uri = Uri.parse(
+        'https://gustus-ws.onrender.com/add-wishlist',
+      ).replace(queryParameters: {'nomePrato': nome});
+
+      final response = await http.post(
+        uri, // Usa a URI com o parâmetro de consulta
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      // A API retorna 200 em caso de sucesso
+      if (response.statusCode == 200) {
+        print('Prato adicionado aos wishlist com sucesso!');
+        return;
+      } else {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String mensagem =
+            responseData['mensagem'] ??
+            'Erro desconhecido ao adicionar wishlist.';
+        throw Exception(mensagem);
+      }
+    } catch (erro) {
+      throw Exception("Erro ao adicionar wishlist: $erro");
+    }
+  }
 
   // remover wishlist -> mariana
+  static Future<void> deleteWishlist(String nome, String token) async {
+    try {
+      final uri = Uri.parse(
+        'https://gustus-ws.onrender.com/delete-wishlist',
+      ).replace(queryParameters: {'nomePrato': nome});
+
+      final response = await http.delete(
+        uri, // Usa a URI com o parâmetro de consulta
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        print('Prato removido dos wishlist com sucesso!');
+        return;
+      } else {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String mensagem =
+            responseData['mensagem'] ??
+            'Erro desconhecido ao remover wishlist.';
+        throw Exception(mensagem);
+      }
+    } catch (erro) {
+      throw Exception("Erro ao remover wishlist: $erro");
+    }
+  }
 
   /////////////////////////////////////////////////////
 
@@ -488,7 +576,68 @@ class ConexaoAPI<T> {
     }
   }
 
-  // adicionar degustados -> mariana
+  // verificar degustados -> mariana
+  static Future<bool> isDegustados(String nomePrato, String token) async {
+    try {
+      // Constrói a URL com o parâmetro de query
+      final uri = Uri.parse(
+        'https://gustus-ws.onrender.com/deguSN',
+      ).replace(queryParameters: {'nomePrato': nomePrato});
+
+      final response = await http.get(
+        uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> responseData = json.decode(response.body);
+        // Se a lista retornada não estiver vazia, significa que o item é um favorito.
+        return responseData.isNotEmpty;
+      } else {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String mensagem =
+            responseData['mensagem'] ??
+            'Erro desconhecido ao verificar degustados.';
+        throw Exception(mensagem);
+      }
+    } catch (erro) {
+      throw Exception("Erro ao verificar degustados: $erro");
+    }
+  }
+
+  // adicionar degustados/avaliar -> mariana
+  static Future<void> postAvaliar(
+    String nomePrato,
+    int nota,
+    String? descricao,
+    String token,
+  ) async {
+    try {
+      final response = await http.put(
+        Uri.parse('https://gustus-ws.onrender.com/add-degustar?nomePrato=$nomePrato&nota=$nota&descricao=$descricao'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        print('Avaliação registrada com sucesso!');
+        return;
+      } else {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String mensagem =
+            responseData['mensagem'] ??
+            'Erro desconhecido ao registrar avaliação.';
+        throw Exception(mensagem);
+      }
+    } catch (erro) {
+      throw Exception("Erro ao registrar avaliação: $erro");
+    }
+  }
 
   /////////////////////////////////////////////////////
 
@@ -528,46 +677,8 @@ class ConexaoAPI<T> {
 
   /////////////////////////////////////////////////////
 
-  // avaliar -> rafaelly
-  static Future<void> postAvaliar(
-    int idPrato,
-    int nota,
-    String? descricao,
-    String token,
-  ) async {
-    try {
-      final response = await http.put(
-        Uri.parse('https://gustus-ws.onrender.com/avaliar'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer $token',
-        },
-        body: json.encode(<String, dynamic>{
-          'idPrato': idPrato,
-          'nota': nota,
-          'descricao': descricao,
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        print('Avaliação registrada com sucesso!');
-        return;
-      } else {
-        final Map<String, dynamic> responseData = json.decode(response.body);
-        final String mensagem =
-            responseData['mensagem'] ??
-            'Erro desconhecido ao registrar avaliação.';
-        throw Exception(mensagem);
-      }
-    } catch (erro) {
-      throw Exception("Erro ao registrar avaliação: $erro");
-    }
-  }
-
-  /////////////////////////////////////////////////////
-
   // alterar configurações -> rafaelly
-  static Future<void> atualizarConfig(
+  static Future<void> putConfiguracoes(
     String novoEmail,
     String novaSenha,
     String novoUsuario,
@@ -658,7 +769,9 @@ class ConexaoAPI<T> {
     }
   }
 
+  // sair conta -> rafaelly
   static Future<void> sairConta() async {
     setToken("");
   }
+
 }

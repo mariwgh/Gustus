@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http; // pacote para conexão com api
 import 'dart:convert';
 import 'conexaoAPI.dart';
 
+
 // main é o primeiro método que o projeto executa
 void main() {
   // inicia a aplicação com a classe MyApp.
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(home: TelaBloqueio(), debugShowCheckedModeBanner: false);
   }
 }
+
 
 /*
 // api teste
@@ -122,6 +124,7 @@ class _MyWidgetState extends State<MyWidget> {
   }
 }
 */
+
 
 // widgets reutilizável
 class BaseBloqueio extends StatelessWidget {
@@ -318,6 +321,7 @@ class BaseInicial extends StatelessWidget {
   }
 }
 
+
 class MostraProdutos extends StatefulWidget {
   const MostraProdutos({super.key, required this.produtos});
 
@@ -427,6 +431,7 @@ class _MostraProdutosState extends State<MostraProdutos> {
   }
 }
 
+
 class TelaBloqueio extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -507,6 +512,7 @@ class TelaBloqueio extends StatelessWidget {
     );
   }
 }
+
 
 class TelaCadastro extends StatefulWidget {
   // estado mutável dos campos que o usuario digita
@@ -702,6 +708,7 @@ class _TelaCadastroState extends State<TelaCadastro> {
   }
 }
 
+
 class TelaLogin extends StatefulWidget {
   // estado mutável dos campos que o usuario digita
   @override
@@ -872,6 +879,7 @@ class _TelaLoginState extends State<TelaLogin> {
   }
 }
 
+
 class TelaInicial extends StatefulWidget {
   @override
   State<TelaInicial> createState() => _TelaInicialState();
@@ -952,6 +960,7 @@ class _TelaInicialState extends State<TelaInicial> {
   }
 }
 
+
 class TelaProduto extends StatefulWidget {
   // parametros necessarios para poder apresentar o produto
   final String nome;
@@ -974,6 +983,7 @@ class TelaProduto extends StatefulWidget {
 
 class _TelaProduto extends State<TelaProduto> {
   bool _isFavorito = false;
+
   void _adicionarOuRemoverFavoritos() async {
     final token = ConexaoAPI.getToken();
     if (token == null) {
@@ -989,14 +999,14 @@ class _TelaProduto extends State<TelaProduto> {
       // Se o item já é um favorito, chama a API para remover
       print(_isFavorito);
       if (_isFavorito) {
-        await ConexaoAPI.removeFavorito(widget.nome, token);
+        await ConexaoAPI.deleteFavorito(widget.nome, token);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Removido dos favoritos!')),
         );
       }
       // Se não for, chama a API para adicionar
       else {
-        await ConexaoAPI.addFavorito(widget.nome, token);
+        await ConexaoAPI.postFavorito(widget.nome, token);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Adicionado aos favoritos!')),
         );
@@ -1042,12 +1052,150 @@ class _TelaProduto extends State<TelaProduto> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    // Assim que a tela carrega, verifica se o prato já é um favorito
-    _verificarStatusFavorito();
+
+  bool _isWishlist = false;
+
+  void _adicionarOuRemoverWishlist() async {
+    final token = ConexaoAPI.getToken();
+    if (token == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Você precisa estar logado para favoritar.'),
+        ),
+      );
+      return;
+    }
+
+    try {
+      // Se o item já é um wishlist, chama a API para remover
+      print(_isWishlist);
+      if (_isWishlist) {
+        await ConexaoAPI.deleteWishlist(widget.nome, token);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Removido da wishlist!')),
+        );
+      }
+      // Se não for, chama a API para adicionar
+      else {
+        await ConexaoAPI.postWishlist(widget.nome, token);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Adicionado a wishlist!')),
+        );
+      }
+
+      // Atualiza o estado da variável e redesenha a tela com o novo ícone
+      if (mounted) {
+        setState(() {
+          _isWishlist =
+              !_isWishlist; // Inverte o valor (true vira false e vice-versa)
+        });
+      }
+    } catch (e) {
+      print("caiu no catch");
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro: ${e.toString()}')));
+    }
   }
+
+  void _verificarStatusWishlist() async {
+    String nomePrato = widget.nome;
+    String? token = ConexaoAPI.getToken();
+
+    if (token != null) {
+      try {
+        bool resultado = await ConexaoAPI.isWishlist(widget.nome, token);
+
+        if (resultado == true) {
+          print("Este prato JÁ É um wishlist!");
+          setState(() {
+            _isWishlist = true;
+          });
+        } else {
+          print("Este prato NÃO é um wishlist.");
+          setState(() {
+            _isWishlist = false;
+          });
+        }
+      } catch (e) {
+        print("Erro ao verificar wishlist: $e");
+      }
+    }
+  }
+
+
+  bool _isDegustado = false;
+
+  void _adicionarDegustados() async {
+    final token = ConexaoAPI.getToken();
+    if (token == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Você precisa estar logado para favoritar.'),
+        ),
+      );
+      return;
+    }
+
+    try {
+      // Se o item já é um degustado, não faz nada
+      print(_isDegustado);
+      if (_isDegustado) {
+        // await ConexaoAPI.deleteFavorito(widget.nome, token);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Não é possível remover dos degustados!')),
+        );
+      }
+      // Se não for, chama a tela
+      else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TelaAvaliar(widget.nome, token),
+          ),
+        );
+      }
+
+      // Atualiza o estado da variável e redesenha a tela com o novo ícone
+      if (mounted) {
+        setState(() {
+          _isDegustado =
+            !_isDegustado; // Inverte o valor (true vira false e vice-versa)
+        });
+      }
+    } catch (e) {
+      print("caiu no catch");
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro: ${e.toString()}')));
+    }
+  }
+
+  void _verificarStatusDegustados() async {
+    String nomePrato = widget.nome;
+    String? token = ConexaoAPI.getToken();
+
+    if (token != null) {
+      try {
+        bool resultado = await ConexaoAPI.isDegustados(widget.nome, token);
+
+        if (resultado == true) {
+          print("Este prato JÁ É um degustado!");
+          setState(() {
+            _isFavorito = true;
+          });
+        } else {
+          print("Este prato NÃO é um degustado.");
+          setState(() {
+            _isFavorito = false;
+          });
+        }
+      } catch (e) {
+        print("Erro ao verificar degustados: $e");
+      }
+    }
+  }
+
 
   void abrirPaginaWeb(String url) async {
     final Uri uri = Uri.parse(url);
@@ -1065,10 +1213,14 @@ class _TelaProduto extends State<TelaProduto> {
     }
   }
 
-  void _removerOuAdicionarWishlist() {
-    // a implementar
-    final String usuario;
-    widget.nome; //com widget pois o pega o parametro da classe q ele extende
+
+  @override
+  void initState() {
+    super.initState();
+    // Assim que a tela carrega, verifica se o prato já é um favorito
+    _verificarStatusFavorito();
+    _verificarStatusWishlist();
+    _verificarStatusDegustados();
   }
 
   @override
@@ -1197,7 +1349,7 @@ class _TelaProduto extends State<TelaProduto> {
                         // preenche o espaço disponível proporcionalmente
                         child: ElevatedButton(
                           onPressed: () {
-                            _removerOuAdicionarWishlist();
+                            _adicionarOuRemoverWishlist();
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor:
@@ -1212,7 +1364,7 @@ class _TelaProduto extends State<TelaProduto> {
                             ),
                             elevation: 0, // remove sombra
                           ),
-                          child: const Text("Wishlist/Remover"),
+                          child: const Text("Wishlist"),
                         ),
                       ),
                       const SizedBox(width: 10),
@@ -1221,12 +1373,7 @@ class _TelaProduto extends State<TelaProduto> {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => TelaAvaliar(),
-                              ),
-                            );
+                            _adicionarDegustados();
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor:
@@ -1255,6 +1402,7 @@ class _TelaProduto extends State<TelaProduto> {
     );
   }
 }
+
 
 class TelaPesquisar extends StatefulWidget {
   @override
@@ -1377,6 +1525,7 @@ class _TelaPesquisarState extends State<TelaPesquisar> {
     );
   }
 }
+
 
 class TelaConta extends StatelessWidget {
   @override
@@ -1554,6 +1703,7 @@ class TelaConta extends StatelessWidget {
   }
 }
 
+
 class TelaConfiguracoes extends StatefulWidget {
   @override
   State<TelaConfiguracoes> createState() => _TelaConfiguracoes();
@@ -1603,19 +1753,19 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
     try {
       // Chama a API conforme os campos preenchidos
       if (usuario.isNotEmpty && email.isEmpty && senha.isEmpty) {
-        await ConexaoAPI.atualizarConfig("", "", usuario);
+        await ConexaoAPI.putConfiguracoes("", "", usuario);
       } else if (email.isNotEmpty && usuario.isEmpty && senha.isEmpty) {
-        await ConexaoAPI.atualizarConfig(email, "", "");
+        await ConexaoAPI.putConfiguracoes(email, "", "");
       } else if (senha.isNotEmpty && usuario.isEmpty && email.isEmpty) {
-        await ConexaoAPI.atualizarConfig("", senha, "");
+        await ConexaoAPI.putConfiguracoes("", senha, "");
       } else if (usuario.isNotEmpty && email.isNotEmpty && senha.isEmpty) {
-        await ConexaoAPI.atualizarConfig(email, "", usuario);
+        await ConexaoAPI.putConfiguracoes(email, "", usuario);
       } else if (usuario.isNotEmpty && senha.isNotEmpty && email.isEmpty) {
-        await ConexaoAPI.atualizarConfig("", senha, usuario);
+        await ConexaoAPI.putConfiguracoes("", senha, usuario);
       } else if (email.isNotEmpty && senha.isNotEmpty && usuario.isEmpty) {
-        await ConexaoAPI.atualizarConfig(email, senha, "");
+        await ConexaoAPI.putConfiguracoes(email, senha, "");
       } else if (email.isNotEmpty && senha.isNotEmpty && usuario.isNotEmpty) {
-        await ConexaoAPI.atualizarConfig(email, senha, usuario);
+        await ConexaoAPI.putConfiguracoes(email, senha, usuario);
       }
 
       // Se chegou aqui, a API não lançou exceção → sucesso
@@ -1813,6 +1963,7 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
   }
 }
 
+
 class TelaFavoritos extends StatefulWidget {
   @override
   State<TelaFavoritos> createState() => _TelaFavoritosState();
@@ -1936,6 +2087,7 @@ class _TelaFavoritosState extends State<TelaFavoritos> {
     );
   }
 }
+
 
 class TelaWishlist extends StatefulWidget {
   @override
@@ -2061,6 +2213,7 @@ class _TelaWishlistState extends State<TelaWishlist> {
   }
 }
 
+
 class TelaDegustados extends StatefulWidget {
   @override
   State<TelaDegustados> createState() => _TelaDegustadosState();
@@ -2165,33 +2318,43 @@ class _TelaDegustadosState extends State<TelaDegustados> {
   }
 }
 
+
 class TelaAvaliar extends StatefulWidget {
+  final String nome;
+  final String token;
+
+  //construtor que pede os parametros
+  const TelaAvaliar({
+    Key? key,
+    required this.nome,
+    required this.token,
+  }) : super(key: key);
+
   @override
   State<TelaAvaliar> createState() => _TelaAvaliar();
 }
 
 class _TelaAvaliar extends State<TelaAvaliar> {
   // declarando controladores para pegar o texto de cada campo.
-  final TextEditingController _userController = TextEditingController();
-  final TextEditingController _notaController = TextEditingController();
   final TextEditingController _descricaoController = TextEditingController();
   int estrelasSelecionadas = 0; // adicionar como variável da State
 
   // limpa os controladores quando a tela é chamada
   @override
   void dispose() {
-    _userController.dispose();
-    _notaController.dispose();
     _descricaoController.dispose();
     super.dispose();
   }
 
   // função que será chamada quando o botão "Cadastrar" for pressionado e definira as variaveis
-  void _salvarAvaliacao() {
-    final String usuario = _userController.text;
-    final String nota = _notaController.text;
+  void _salvarAvaliacao() async{
     final String descricao = _descricaoController.text;
+    
     //ai aqui ele chama outra funcao q manda as variaveis p banco de dado
+    await ConexaoAPI.postAvaliar(widget.nome, estrelasSelecionadas, descricao, widget.token);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Adicionado aos degustados!')),
+    );
   }
 
   @override
@@ -2227,8 +2390,6 @@ class _TelaAvaliar extends State<TelaAvaliar> {
                       estrelasSelecionadas =
                           index +
                           1; // define quantas estrelas estão selecionadas
-                      _notaController.text = estrelasSelecionadas
-                          .toString(); // atualiza o TextField
                     });
                   },
                   icon: Icon(
