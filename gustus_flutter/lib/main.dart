@@ -709,11 +709,13 @@ class TelaLogin extends StatefulWidget {
 }
 
 class _TelaLoginState extends State<TelaLogin> {
-  // declarando controladores para pegar o texto de cada campo -> controlam e obtem o texto digitado em campos de entrada de texto
+  // declarando controladores para pegar o texto de cada campo
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  // limpa os controladores quando a tela é chamada
+  // NOVO ESTADO: Variável para controlar a visibilidade da senha
+  late bool _senhaVisivel = false;
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -721,7 +723,6 @@ class _TelaLoginState extends State<TelaLogin> {
     super.dispose();
   }
 
-  // função que será chamada quando o botão "Entrar" for pressionado e definira as variaveis
   void _verificarUsuario() async {
     String email = _emailController.text;
     String senha = _passwordController.text;
@@ -736,13 +737,11 @@ class _TelaLoginState extends State<TelaLogin> {
           MaterialPageRoute(builder: (context) => TelaInicial()),
         );
       } else {
-        // Se o token for nulo (login falhou), exibe uma mensagem de erro
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text("E-mail ou senha incorretos.")));
       }
     } catch (e) {
-      // Se houver qualquer erro na conexão, exibe uma mensagem
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Erro ao fazer login. Tente novamente.")),
       );
@@ -757,19 +756,15 @@ class _TelaLoginState extends State<TelaLogin> {
 
   @override
   Widget build(BuildContext context) {
-    // TelaBloqueio retorna um Scaffold, que fornece a estrutura básica.
     return BaseBloqueio(
-      // texto e botoes
       child: Column(
-        mainAxisSize: MainAxisSize.min, // ocupa o mínimo de espaço vertical.
-        mainAxisAlignment: MainAxisAlignment.center, //alinha no centro
-
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Padding(
             padding: EdgeInsets.all(5),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment
-                  .start, //usei row  so para poder colocar o texto a esquerda
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 const Text(
                   "Login",
@@ -783,20 +778,15 @@ class _TelaLoginState extends State<TelaLogin> {
             ),
           ),
           const SizedBox(height: 20),
-
           TextField(
-            controller:
-                _emailController, //define a variavel que sera usada para ir para o bd
+            controller: _emailController,
             decoration: InputDecoration(
-              //decoracao de lugar que digita
-              labelText: "E-mail", //texto do campo para digitar
+              labelText: "E-mail",
               labelStyle: TextStyle(color: Colors.white),
               enabledBorder: UnderlineInputBorder(
-                //a borda sera em baixo, como uma linha para escrever
                 borderSide: BorderSide(color: Colors.white),
               ),
               focusedBorder: UnderlineInputBorder(
-                //e quando o usuario clicar, essa borda sera assim (igual)
                 borderSide: BorderSide(color: Colors.white),
               ),
             ),
@@ -804,8 +794,11 @@ class _TelaLoginState extends State<TelaLogin> {
           ),
           const SizedBox(height: 15),
 
+          // CAMPO DE SENHA ATUALIZADO
           TextField(
             controller: _passwordController,
+            // AQUI VOCÊ CONTROLA A VISIBILIDADE
+            obscureText: !_senhaVisivel,
             decoration: InputDecoration(
               labelText: "Password",
               labelStyle: TextStyle(color: Colors.white),
@@ -815,16 +808,26 @@ class _TelaLoginState extends State<TelaLogin> {
               focusedBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.white),
               ),
+              // NOVO: Adiciona o ícone no final do campo
+              suffixIcon: IconButton(
+                icon: Icon(
+                  // Alterna entre os ícones com base no estado de _senhaVisivel
+                  _senhaVisivel ? Icons.visibility : Icons.visibility_off,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  // NOVO: Altera o estado da visibilidade da senha
+                  setState(() {
+                    _senhaVisivel = !_senhaVisivel;
+                  });
+                },
+              ),
             ),
             style: TextStyle(color: Colors.white),
           ),
           const SizedBox(height: 25),
-
-          // botao de entrar
           ElevatedButton(
-            onPressed: () {
-              _verificarUsuario();
-            },
+            onPressed: _verificarUsuario,
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color.fromRGBO(188, 192, 198, 1),
               foregroundColor: Colors.black,
@@ -838,8 +841,6 @@ class _TelaLoginState extends State<TelaLogin> {
             child: const Text("Entrar"),
           ),
           const SizedBox(height: 25),
-
-          // nao tem conta?
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -1574,7 +1575,7 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
   }
 
   _sairConta() {
-    // a implementar
+    ConexaoAPI.sairConta();
   }
 
   _excluirConta() {
@@ -1585,7 +1586,7 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
   }
 
   // função que será chamada quando o botão "Salvar" for pressionado e definira as variaveis
-  void _salvarUsuario() async {
+  Future<bool> _salvarUsuario() async {
     final String usuario = _userController.text;
     final String email = _emailController.text;
     final String senha = _passwordController.text;
@@ -1596,7 +1597,7 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Nenhum campo preenchido.')));
-      return;
+      return false;
     }
 
     try {
@@ -1623,8 +1624,12 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
       _passwordController.clear();
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Dados atualizados com sucesso.')),
+        const SnackBar(
+          content: Text('Dados atualizados com sucesso.'),
+          duration: Duration(seconds: 2),
+        ),
       );
+      return true;
     } catch (erro) {
       // Aqui você captura qualquer exceção lançada pela API
       ScaffoldMessenger.of(
@@ -1634,6 +1639,7 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
       _userController.clear();
       _emailController.clear();
       _passwordController.clear();
+      return false;
     }
   }
 
@@ -1712,7 +1718,11 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
             ElevatedButton(
               onPressed: () {
                 _sairConta();
-                Navigator.push(
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text("Logout.")));
+
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => TelaBloqueio()),
                 );
@@ -1765,13 +1775,19 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
 
             // botao de salvar
             ElevatedButton(
-              onPressed: () {
-                _salvarUsuario();
-                if (ConexaoAPI.getAtualizou()){
+              // No ElevatedButton (botão Salvar)
+              onPressed: () async {
+                // 1. ESPERA a função _salvarUsuario() terminar e armazena o resultado.
+                bool sucesso = await _salvarUsuario();
+
+                // 2. VERIFICA o resultado diretamente.
+                if (sucesso) {
+                  // Se a atualização foi um sucesso, navegue para o login.
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => TelaLogin()),
                   );
+                  // Mostra o Snackbar de "Faça o login novamente" (opcional, pode ser movido para o login)
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Faça o login novamente.')),
                   );

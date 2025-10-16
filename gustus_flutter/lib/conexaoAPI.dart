@@ -657,4 +657,8 @@ class ConexaoAPI<T> {
       throw Exception("Erro ao tentar deletar a conta: $erro");
     }
   }
+
+  static Future<void> sairConta() async {
+    setToken("");
+  }
 }
