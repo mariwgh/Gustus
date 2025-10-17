@@ -1151,7 +1151,7 @@ class _TelaProduto extends State<TelaProduto> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => TelaAvaliar(widget.nome, token),
+            builder: (context) => TelaAvaliar(nome: widget.nome, token: token),
           ),
         );
       }

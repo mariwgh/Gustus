@@ -295,8 +295,14 @@ app.get("/wishSN", verificarToken, async (req, res) => {
 
 //adicionar na wishlist
 app.post("/add-wishlist", verificarToken, async (req, res) => {
-    const { idPrato } = req.body;
+    const { nomePrato } = req.query;
     try {
+        const pratoResult = await pool.query("SELECT idPrato FROM pratos WHERE prato = $1", [nomePrato]);
+        if (pratoResult.rows.length === 0) {
+            return res.status(404).json({ mensagem: "Prato não encontrado." });
+        }
+        const idPrato = pratoResult.rows[0].idprato;
+        
         if (!idPrato) {
             return res.status(400).json({ mensagem: "ID do prato não informado" });
         }
@@ -315,8 +321,14 @@ app.post("/add-wishlist", verificarToken, async (req, res) => {
 
 //remover da wishlist
 app.delete("/delete-wishlist", verificarToken, async (req, res) => {
-    const { idPrato } = req.body;
+    const { nomePrato } = req.query;
     try {
+        const pratoResult = await pool.query("SELECT idPrato FROM pratos WHERE prato = $1", [nomePrato]);
+        if (pratoResult.rows.length === 0) {
+            return res.status(404).json({ mensagem: "Prato não encontrado." });
+        }
+        const idPrato = pratoResult.rows[0].idprato;
+        
         if (!idPrato) {
             return res.status(400).json({ mensagem: "ID do prato não informado" });
         }
