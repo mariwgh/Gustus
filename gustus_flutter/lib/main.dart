@@ -20,7 +20,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // MaterialApp é o widget raiz que define o tema e a navegação.
-    return MaterialApp(home: TelaBloqueio(), debugShowCheckedModeBanner: false);
+    return MaterialApp(
+      // theme: ThemeData(
+      //   // 'MinhaFonte' deve ser o mesmo nome usado em 'family' no pubspec.yaml
+      //   fontFamily: 'Counthills', 
+      // ),
+      home: TelaBloqueio(), debugShowCheckedModeBanner: false);
   }
 }
 

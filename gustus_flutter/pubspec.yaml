@@ -64,6 +64,11 @@ flutter:
   assets:
     - assets/
 
+  # fonts:
+  #   - family: Counthills # <-- 1. Este é o nome que você usará no arquivo main.dart
+  #     fonts:
+  #       - asset: assets/fonts/Counthills.otf
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

@@ -106,11 +106,12 @@ class ConexaoAPI<T> {
         body: json.encode(<String, String>{'email': email, 'senha': senha}),
       );
       if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String responseString = utf8.decode(response.bodyBytes);
+        final Map<String, dynamic> responseData = json.decode(responseString);
         final String? token = responseData['token'];
         setToken(token);
         // Usa o fromJson para extrair o token
-        return ConexaoAPI<dynamic>.fromJson(json.decode(response.body));
+        return ConexaoAPI<dynamic>.fromJson(json.decode(responseString));
       } else {
         throw Exception('Falha ao autenticar. Status: ${response.statusCode}');
       }
@@ -141,7 +142,8 @@ class ConexaoAPI<T> {
         print('Usuário cadastrado com sucesso!');
         return;
       } else {
-        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String responseString = utf8.decode(response.bodyBytes);
+        final Map<String, dynamic> responseData = json.decode(responseString);
         final String mensagem =
             responseData['mensagem'] ?? 'Erro desconhecido.';
         throw Exception(mensagem);
@@ -173,7 +175,8 @@ class ConexaoAPI<T> {
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> jsonData = json.decode(response.body);
+        final String responseString = utf8.decode(response.bodyBytes);
+        final List<dynamic> jsonData = json.decode(responseString);
         final List<Prato> produtos = jsonData
             .map((e) => Prato.fromJson(e))
             .toList();
@@ -213,7 +216,9 @@ class ConexaoAPI<T> {
       // A API retorna 200 em caso de sucesso
       if (response.statusCode == 200) {
         // Decodifica a resposta JSON, que é uma lista de objetos
-        final List<dynamic> responseData = json.decode(response.body);
+        final String responseString = utf8.decode(response.bodyBytes);
+        // Decodifica a resposta JSON, que é uma lista de objetos
+        final List<dynamic> responseData = json.decode(responseString);
 
         List<int> pratoIds = responseData
             .map((e) => e['idprato'] as int)
@@ -229,7 +234,8 @@ class ConexaoAPI<T> {
           );
 
           if (responsePrato.statusCode == 200) {
-            final dynamic decodedBody = json.decode(responsePrato.body);
+            final String responseString = utf8.decode(responsePrato.bodyBytes);
+            final dynamic decodedBody = json.decode(responseString);
 
             // *Correção para List/Map (Problema comum da API)*
             if (decodedBody is List && decodedBody.isNotEmpty) {
@@ -254,7 +260,8 @@ class ConexaoAPI<T> {
         return ConexaoAPI<Prato>(data: produtos, token: null);
       } else {
         // Trata os erros específicos que a API pode retornar
-        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String responseString = utf8.decode(response.bodyBytes);
+        final Map<String, dynamic> responseData = json.decode(responseString);
         final String mensagem =
             responseData['mensagem'] ??
             'Erro desconhecido ao buscar favoritos.';
@@ -285,11 +292,13 @@ class ConexaoAPI<T> {
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> responseData = json.decode(response.body);
+        final String responseString = utf8.decode(response.bodyBytes);
+        final List<dynamic> responseData = json.decode(responseString);
         // Se a lista retornada não estiver vazia, significa que o item é um favorito.
         return responseData.isNotEmpty;
       } else {
-        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String responseString = utf8.decode(response.bodyBytes);
+        final Map<String, dynamic> responseData = json.decode(responseString);
         final String mensagem =
             responseData['mensagem'] ??
             'Erro desconhecido ao verificar favorito.';
@@ -320,7 +329,8 @@ class ConexaoAPI<T> {
         print('Prato adicionado aos favoritos com sucesso!');
         return;
       } else {
-        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String responseString = utf8.decode(response.bodyBytes);
+final Map<String, dynamic> responseData = json.decode(responseString);
         final String mensagem =
             responseData['mensagem'] ??
             'Erro desconhecido ao adicionar favorito.';
@@ -350,7 +360,8 @@ class ConexaoAPI<T> {
         print('Prato removido dos favoritos com sucesso!');
         return;
       } else {
-        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String responseString = utf8.decode(response.bodyBytes);
+final Map<String, dynamic> responseData = json.decode(responseString);
         final String mensagem =
             responseData['mensagem'] ??
             'Erro desconhecido ao remover favorito.';
@@ -443,7 +454,8 @@ class ConexaoAPI<T> {
         // Se a lista retornada não estiver vazia, significa que o item é um favorito.
         return responseData.isNotEmpty;
       } else {
-        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String responseString = utf8.decode(response.bodyBytes);
+final Map<String, dynamic> responseData = json.decode(responseString);
         final String mensagem =
             responseData['mensagem'] ??
             'Erro desconhecido ao verificar wishlist.';
@@ -474,7 +486,8 @@ class ConexaoAPI<T> {
         print('Prato adicionado aos wishlist com sucesso!');
         return;
       } else {
-        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String responseString = utf8.decode(response.bodyBytes);
+final Map<String, dynamic> responseData = json.decode(responseString);
         final String mensagem =
             responseData['mensagem'] ??
             'Erro desconhecido ao adicionar wishlist.';
@@ -504,7 +517,8 @@ class ConexaoAPI<T> {
         print('Prato removido dos wishlist com sucesso!');
         return;
       } else {
-        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String responseString = utf8.decode(response.bodyBytes);
+final Map<String, dynamic> responseData = json.decode(responseString);
         final String mensagem =
             responseData['mensagem'] ??
             'Erro desconhecido ao remover wishlist.';
@@ -597,7 +611,8 @@ class ConexaoAPI<T> {
         // Se a lista retornada não estiver vazia, significa que o item é um favorito.
         return responseData.isNotEmpty;
       } else {
-        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String responseString = utf8.decode(response.bodyBytes);
+final Map<String, dynamic> responseData = json.decode(responseString);
         final String mensagem =
             responseData['mensagem'] ??
             'Erro desconhecido ao verificar degustados.';
@@ -628,7 +643,8 @@ class ConexaoAPI<T> {
         print('Avaliação registrada com sucesso!');
         return;
       } else {
-        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String responseString = utf8.decode(response.bodyBytes);
+final Map<String, dynamic> responseData = json.decode(responseString);
         final String mensagem =
             responseData['mensagem'] ??
             'Erro desconhecido ao registrar avaliação.';
@@ -718,12 +734,14 @@ class ConexaoAPI<T> {
         return;
       } else if (response.statusCode == 400) {
         _atualizou = false;
-        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String responseString = utf8.decode(response.bodyBytes);
+final Map<String, dynamic> responseData = json.decode(responseString);
         final String mensagem = responseData['mensagem'] ?? 'E-mail inválido.';
         throw Exception(mensagem);
       } else {
         _atualizou = false;
-        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String responseString = utf8.decode(response.bodyBytes);
+final Map<String, dynamic> responseData = json.decode(responseString);
         final String mensagem =
             responseData['mensagem'] ??
             'Erro desconhecido ao atualizar as configurações.';
@@ -755,7 +773,8 @@ class ConexaoAPI<T> {
         return;
       } else {
         // Trata os erros específicos que a API pode retornar
-        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String responseString = utf8.decode(response.bodyBytes);
+final Map<String, dynamic> responseData = json.decode(responseString);
         final String mensagem =
             responseData['mensagem'] ??
             'Erro desconhecido ao tentar deletar a conta.';
