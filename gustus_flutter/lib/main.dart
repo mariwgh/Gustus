@@ -526,6 +526,8 @@ class _TelaCadastroState extends State<TelaCadastro> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  late bool _senhaVisivel = false;
+
   // limpa os controladores quando a tela é chamada
   @override
   void dispose() {
@@ -643,6 +645,7 @@ class _TelaCadastroState extends State<TelaCadastro> {
 
           TextField(
             controller: _passwordController,
+            obscureText: !_senhaVisivel,
             decoration: InputDecoration(
               labelText: "Password",
               labelStyle: TextStyle(color: Colors.white),
@@ -651,6 +654,19 @@ class _TelaCadastroState extends State<TelaCadastro> {
               ),
               focusedBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.white),
+              ),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  // Alterna entre os ícones com base no estado de _senhaVisivel
+                  _senhaVisivel ? Icons.visibility : Icons.visibility_off,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  // NOVO: Altera o estado da visibilidade da senha
+                  setState(() {
+                    _senhaVisivel = !_senhaVisivel;
+                  });
+                },
               ),
             ),
             style: TextStyle(color: Colors.white),
