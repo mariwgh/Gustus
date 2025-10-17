@@ -616,7 +616,7 @@ class ConexaoAPI<T> {
     String token,
   ) async {
     try {
-      final response = await http.put(
+      final response = await http.post(
         Uri.parse('https://gustus-ws.onrender.com/add-degustar?nomePrato=$nomePrato&nota=$nota&descricao=$descricao'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
@@ -624,7 +624,7 @@ class ConexaoAPI<T> {
         },
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200|| response.statusCode == 201) {
         print('Avaliação registrada com sucesso!');
         return;
       } else {

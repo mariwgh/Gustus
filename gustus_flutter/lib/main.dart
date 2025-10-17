@@ -1148,20 +1148,29 @@ class _TelaProduto extends State<TelaProduto> {
       }
       // Se não for, chama a tela
       else {
-        Navigator.push(
+        final result = await Navigator.push( // <--- AWAIT o resultado
           context,
           MaterialPageRoute(
             builder: (context) => TelaAvaliar(nome: widget.nome, token: token),
           ),
         );
-      }
 
-      // Atualiza o estado da variável e redesenha a tela com o novo ícone
-      if (mounted) {
-        setState(() {
-          _isDegustado =
-            !_isDegustado; // Inverte o valor (true vira false e vice-versa)
-        });
+        if (result == true) {
+          // MOSTRA A MENSAGEM DE SUCESSO AQUI (na TelaProduto)
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Adicionado aos degustados com sucesso!'),
+            ),
+          );
+
+          // Atualiza o estado da variável _isDegustado (se precisar,
+          // mas o pop vai reconstruir a TelaProduto, então talvez o setState não seja necessário)
+          if (mounted) {
+            setState(() {
+              _isDegustado = true; // Define como TRUE após o sucesso
+            });
+          }
+        }
       }
     } catch (e) {
       print("caiu no catch");
@@ -1182,12 +1191,12 @@ class _TelaProduto extends State<TelaProduto> {
         if (resultado == true) {
           print("Este prato JÁ É um degustado!");
           setState(() {
-            _isFavorito = true;
+            _isDegustado = true;
           });
         } else {
           print("Este prato NÃO é um degustado.");
           setState(() {
-            _isFavorito = false;
+            _isDegustado = false;
           });
         }
       } catch (e) {
@@ -2347,14 +2356,11 @@ class _TelaAvaliar extends State<TelaAvaliar> {
   }
 
   // função que será chamada quando o botão "Cadastrar" for pressionado e definira as variaveis
-  void _salvarAvaliacao() async{
+  Future<void> _salvarAvaliacao() async{
     final String descricao = _descricaoController.text;
     
     //ai aqui ele chama outra funcao q manda as variaveis p banco de dado
     await ConexaoAPI.postAvaliar(widget.nome, estrelasSelecionadas, descricao, widget.token);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Adicionado aos degustados!')),
-    );
   }
 
   @override
@@ -2427,12 +2433,20 @@ class _TelaAvaliar extends State<TelaAvaliar> {
 
             // botao de salvar
             ElevatedButton(
-              onPressed: () {
-                _salvarAvaliacao();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => TelaInicial()),
-                );
+              onPressed: () async { // Mude para async
+                try {
+                  await _salvarAvaliacao(); // A função _salvarAvaliacao vai apenas registrar.
+                  
+                  // Se _salvarAvaliacao for bem-sucedida, voltamos para a tela anterior.
+                  // Usamos pop, e passamos um valor de volta (true) para indicar sucesso.
+                  Navigator.pop(context, true); 
+                  
+                } catch (e) {
+                  // Trate erros aqui ou dentro de _salvarAvaliacao
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Erro ao salvar: ${e.toString()}')),
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromRGBO(188, 192, 198, 1),
