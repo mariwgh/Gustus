@@ -143,7 +143,7 @@ app.post("/login", async (req, res) => {
 app.get("/produtos", verificarToken, async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM pratos');
-        res.json(result.rows);
+        res.send(JSON.stringify(result.rows));
     } catch (error) {
         console.error(error.message);
         res.status(500).json({ mensagem: "Erro interno no servidor." });
@@ -155,7 +155,7 @@ app.get("/produto", verificarToken, async (req, res) => {
     const { prato } = req.query;
     try {
         const result = await pool.query('SELECT * FROM pratos WHERE idPrato = $1', [`${prato}`]);
-        res.json(result.rows);
+        res.send(JSON.stringify(result.rows));
     } catch (error) {
         console.error(error.message);
         res.status(500).json({ mensagem: "Erro interno no servidor." });
@@ -175,7 +175,7 @@ app.get("/ver-favoritos", verificarToken, async (req, res) => {
         }
 
         const result = await pool.query('SELECT * FROM favoritos WHERE idUsuario = $1', [idUser]);
-        return res.json(result.rows);
+        return res.send(JSON.stringify(result.rows));
 
     } catch (erro) {
         console.log("Caiu no catch")
@@ -199,7 +199,7 @@ app.get("/favSN", verificarToken, async (req, res) => {
             return res.status(404).json({ mensagem: "Usuário não encontrado" });
         }
         const result = await pool.query("SELECT * FROM favoritos WHERE idUsuario = $1 AND idPrato = $2", [idUser, idPrato])
-        return res.json(result.rows);
+        return res.send(JSON.stringify(result.rows));
     }
     catch (erro) {
         console.log("Caiu no catch")
@@ -268,7 +268,7 @@ app.get("/ver-wishlist", verificarToken, async (req, res) => {
         }
 
         const result = await pool.query('SELECT * FROM wishlist WHERE idUsuario = $1', [idUser]);
-        return res.json(result.rows);
+        return res.send(JSON.stringify(result.rows));
     } catch (erro) {
         console.error(erro.message);
         return res.status(500).json({ mensagem: "Erro interno no servidor." });
@@ -290,7 +290,7 @@ app.get("/wishSN", verificarToken, async (req, res) => {
             return res.status(404).json({ mensagem: "Usuário não encontrado" });
         }
         const result = await pool.query("SELECT * FROM wishlist WHERE idUsuario = $1 AND idPrato = $2", [idUser, idPrato])
-        return res.json(result.rows);
+        return res.send(JSON.stringify(result.rows));
     }
     catch (erro) {
         console.log("Caiu no catch")
@@ -361,7 +361,7 @@ app.get("/ver-degustar", verificarToken, async (req, res) => {
         }
 
         const result = await pool.query('SELECT * FROM degustados WHERE idUsuario = $1', [idUser]);
-        return res.json(result.rows);
+        return res.send(JSON.stringify(result.rows));
     } catch (erro) {
         console.error(erro.message);
         return res.status(500).json({ mensagem: "Erro interno no servidor." });
@@ -383,7 +383,7 @@ app.get("/deguSN", verificarToken, async (req, res) => {
             return res.status(404).json({ mensagem: "Usuário não encontrado" });
         }
         const result = await pool.query("SELECT * FROM degustados WHERE idUsuario = $1 AND idPrato = $2", [idUser, idPrato])
-        return res.json(result.rows);
+        return res.send(JSON.stringify(result.rows));
     }
     catch (erro) {
         console.log("Caiu no catch")
@@ -421,7 +421,7 @@ app.get("/pesquisar", verificarToken, async (req, res) => {
     const { prato } = req.query;
     try {
         const result = await pool.query('SELECT * FROM pratos WHERE prato ILIKE $1', [`%${prato}%`]);
-        res.json(result.rows);
+        res.send(JSON.stringify(result.rows));
     } catch (error) {
         console.error(error.message);
         res.status(500).json({ mensagem: "Erro interno no servidor." });
@@ -437,7 +437,7 @@ app.get("/ver-receita", async (req, res) => {
             return res.status(400).json({ mensagem: "Nome da comida não informado" });
         }
         const result = await pool.query('SELECT linkReceita FROM pratos WHERE prato = $1', [comida]);
-        res.json(result.rows);
+        res.send(JSON.stringify(result.rows));
     }
     catch (erro) {
         console.error(erro.message);
