@@ -21,6 +21,8 @@ app.use((req, res, next) => {
   next();
 });
 
+pool.query("SET client_encoding TO 'UTF8';");
+
 
 // Configuração do Pool de conexões do PostgreSQL
 const pool = new Pool({
