@@ -15,6 +15,12 @@ app.use(cors({
 
 app.use(express.json());
 
+// Garante que todas as respostas sejam enviadas em UTF-8
+app.use((req, res, next) => {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  next();
+});
+
 
 // Configuração do Pool de conexões do PostgreSQL
 const pool = new Pool({

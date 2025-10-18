@@ -359,6 +359,8 @@ class _MostraProdutosState extends State<MostraProdutos> {
         final produto = widget
             .produtos[index]; // percorre cada elemento da lista o transformando em produto
 
+        print('Valor da String no item: "${produto.prato}"');
+
         //cada produto é clicável, e quando clica, vai para a tela de seu produto com mais informacoes
         return GestureDetector(
           onTap: () {

@@ -392,7 +392,8 @@ final Map<String, dynamic> responseData = json.decode(responseString);
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> jsonData = json.decode(response.body);
+        final String responseString = utf8.decode(response.bodyBytes);
+        final List<dynamic> jsonData = json.decode(responseString);
 
         final List<int> pratoIds = jsonData
             .map((e) => e['idprato'] as int)
@@ -409,7 +410,9 @@ final Map<String, dynamic> responseData = json.decode(responseString);
           );
 
           if (responsePrato.statusCode == 200) {
-            final List<dynamic> jsonList = json.decode(responsePrato.body);
+            final String responseString = utf8.decode(responsePrato.bodyBytes,); 
+            final List<dynamic> jsonList = json.decode(responseString);
+
             final Map<String, dynamic> jsonPrato = jsonList[0];
             return Prato.fromJson(jsonPrato);
           } else {
@@ -450,7 +453,8 @@ final Map<String, dynamic> responseData = json.decode(responseString);
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> responseData = json.decode(response.body);
+        final String responseString = utf8.decode(response.bodyBytes); // <-- CORREÇÃO
+        final List<dynamic> responseData = json.decode(responseString);
         // Se a lista retornada não estiver vazia, significa que o item é um favorito.
         return responseData.isNotEmpty;
       } else {
@@ -566,7 +570,9 @@ final Map<String, dynamic> responseData = json.decode(responseString);
           );
 
           if (responsePrato.statusCode == 200) {
-            final List<dynamic> jsonList = json.decode(responsePrato.body);
+            final String responseString = utf8.decode(responsePrato.bodyBytes);
+            final List<dynamic> jsonList = json.decode(responseString);
+
             final Map<String, dynamic> jsonPrato = jsonList[0];
             return Prato.fromJson(jsonPrato);
           } else {
@@ -607,7 +613,8 @@ final Map<String, dynamic> responseData = json.decode(responseString);
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> responseData = json.decode(response.body);
+        final String responseString = utf8.decode(response.bodyBytes); // <-- CORREÇÃO
+        final List<dynamic> responseData = json.decode(responseString);
         // Se a lista retornada não estiver vazia, significa que o item é um favorito.
         return responseData.isNotEmpty;
       } else {
