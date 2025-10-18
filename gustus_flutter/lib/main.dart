@@ -23,9 +23,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       // theme: ThemeData(
       //   // 'MinhaFonte' deve ser o mesmo nome usado em 'family' no pubspec.yaml
-      //   fontFamily: 'Counthills', 
+      //   fontFamily: 'Counthills',
       // ),
-      home: TelaBloqueio(), debugShowCheckedModeBanner: false);
+      home: TelaBloqueio(),
+      debugShowCheckedModeBanner: false,
+    );
   }
 }
 
@@ -337,11 +339,6 @@ class MostraProdutos extends StatefulWidget {
 }
 
 class _MostraProdutosState extends State<MostraProdutos> {
-  //_MostraProdutosState(this.produtos); // lista de 'maps' como parametro, ou seja cada elemento da lista tem um nome de tabela (string) com um dado (string), como no exemplo
-
-  // a lista sera dada como vazia se nada for passado
-  //_MostraProdutosState({Key? key, this.produtos = const []}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
@@ -1076,7 +1073,6 @@ class _TelaProduto extends State<TelaProduto> {
     }
   }
 
-
   bool _isWishlist = false;
 
   void _adicionarOuRemoverWishlist() async {
@@ -1095,16 +1091,16 @@ class _TelaProduto extends State<TelaProduto> {
       print(_isWishlist);
       if (_isWishlist) {
         await ConexaoAPI.deleteWishlist(widget.nome, token);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Removido da wishlist!')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Removido da wishlist!')));
       }
       // Se não for, chama a API para adicionar
       else {
         await ConexaoAPI.postWishlist(widget.nome, token);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Adicionado a wishlist!')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Adicionado a wishlist!')));
       }
 
       // Atualiza o estado da variável e redesenha a tela com o novo ícone
@@ -1147,7 +1143,6 @@ class _TelaProduto extends State<TelaProduto> {
     }
   }
 
-
   bool _isDegustado = false;
 
   void _adicionarDegustados() async {
@@ -1167,12 +1162,15 @@ class _TelaProduto extends State<TelaProduto> {
       if (_isDegustado) {
         // await ConexaoAPI.deleteFavorito(widget.nome, token);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Não é possível remover dos degustados!')),
+          const SnackBar(
+            content: Text('Não é possível remover dos degustados!'),
+          ),
         );
       }
       // Se não for, chama a tela
       else {
-        final result = await Navigator.push( // <--- AWAIT o resultado
+        final result = await Navigator.push(
+          // <--- AWAIT o resultado
           context,
           MaterialPageRoute(
             builder: (context) => TelaAvaliar(nome: widget.nome, token: token),
@@ -1229,7 +1227,6 @@ class _TelaProduto extends State<TelaProduto> {
     }
   }
 
-
   void abrirPaginaWeb(String url) async {
     final Uri uri = Uri.parse(url);
     try {
@@ -1245,7 +1242,6 @@ class _TelaProduto extends State<TelaProduto> {
       print('Erro ao tentar abrir o URL: $e'); // imprime o erro no console
     }
   }
-
 
   @override
   void initState() {
@@ -2094,28 +2090,30 @@ class _TelaFavoritosState extends State<TelaFavoritos> {
     }
 
     return BaseInicial(
-      child: Column(
-        children: [
-          Padding(
-            padding: EdgeInsetsGeometry.all(15),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text(
-                  "Favoritos",
-                  style: TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsetsGeometry.all(15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    "Favoritos",
+                    style: TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 25),
+            const SizedBox(height: 25),
 
-          MostraProdutos(produtos: _produtos),
-        ],
+            MostraProdutos(produtos: _produtos),
+          ],
+        ),
       ),
     );
   }
@@ -2219,28 +2217,30 @@ class _TelaWishlistState extends State<TelaWishlist> {
     }
 
     return BaseInicial(
-      child: Column(
-        children: [
-          Padding(
-            padding: EdgeInsetsGeometry.all(15),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text(
-                  "Wishlist",
-                  style: TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsetsGeometry.all(15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    "Wishlist",
+                    style: TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 25),
+            const SizedBox(height: 25),
 
-          MostraProdutos(produtos: _produtos),
-        ],
+            MostraProdutos(produtos: _produtos),
+          ],
+        ),
       ),
     );
   }
@@ -2323,29 +2323,50 @@ class _TelaDegustadosState extends State<TelaDegustados> {
       return Center(child: CircularProgressIndicator());
     }
 
-    return BaseInicial(
-      child: Column(
-        children: [
-          Padding(
-            padding: EdgeInsetsGeometry.all(15),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text(
-                  "Degustados",
-                  style: TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 25),
+    if (_errorMessage != null || _produtos.isEmpty) {
+      String message = _errorMessage ?? "A sua Wishlist está vazia.";
 
-          MostraProdutos(produtos: _produtos),
-        ],
+      // Verifica se a Wishlist está vazia (caso não tenha dado erro)
+      if (_produtos.isEmpty && _errorMessage == null) {
+        message = "Sua Wishlist está vazia.";
+      }
+
+      return BaseInicial(
+        child: Center(
+          child: Text(
+            message,
+            style: const TextStyle(color: Colors.white, fontSize: 18),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+
+    return BaseInicial(
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsetsGeometry.all(15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    "Degustados",
+                    style: TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 25),
+
+            MostraProdutos(produtos: _produtos),
+          ],
+        ),
       ),
     );
   }
@@ -2357,11 +2378,8 @@ class TelaAvaliar extends StatefulWidget {
   final String token;
 
   //construtor que pede os parametros
-  const TelaAvaliar({
-    Key? key,
-    required this.nome,
-    required this.token,
-  }) : super(key: key);
+  const TelaAvaliar({Key? key, required this.nome, required this.token})
+    : super(key: key);
 
   @override
   State<TelaAvaliar> createState() => _TelaAvaliar();
@@ -2380,11 +2398,16 @@ class _TelaAvaliar extends State<TelaAvaliar> {
   }
 
   // função que será chamada quando o botão "Cadastrar" for pressionado e definira as variaveis
-  Future<void> _salvarAvaliacao() async{
+  Future<void> _salvarAvaliacao() async {
     final String descricao = _descricaoController.text;
-    
+
     //ai aqui ele chama outra funcao q manda as variaveis p banco de dado
-    await ConexaoAPI.postAvaliar(widget.nome, estrelasSelecionadas, descricao, widget.token);
+    await ConexaoAPI.postAvaliar(
+      widget.nome,
+      estrelasSelecionadas,
+      descricao,
+      widget.token,
+    );
   }
 
   @override
@@ -2457,18 +2480,18 @@ class _TelaAvaliar extends State<TelaAvaliar> {
 
             // botao de salvar
             ElevatedButton(
-              onPressed: () async { // Mude para async
+              onPressed: () async {
+                // Mude para async
                 try {
                   await _salvarAvaliacao(); // A função _salvarAvaliacao vai apenas registrar.
-                  
+
                   // Se _salvarAvaliacao for bem-sucedida, voltamos para a tela anterior.
                   // Usamos pop, e passamos um valor de volta (true) para indicar sucesso.
-                  Navigator.pop(context, true); 
-                  
+                  Navigator.pop(context, true);
                 } catch (e) {
                   // Trate erros aqui ou dentro de _salvarAvaliacao
                   ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Erro ao salvar: ${e.toString()}')),
+                    SnackBar(content: Text('Erro ao salvar: ${e.toString()}')),
                   );
                 }
               },
