@@ -343,8 +343,7 @@ class _MostraProdutosState extends State<MostraProdutos> {
   Widget build(BuildContext context) {
     return GridView.builder(
       padding: const EdgeInsets.all(50),
-      shrinkWrap:
-          true, // importante quando está dentro de outra coluna, pois dimensiona-se para o tamanho mínimo sem brigas com outros elementos
+      shrinkWrap: true, // importante quando está dentro de outra coluna, pois dimensiona-se para o tamanho mínimo sem brigas com outros elementos
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2, // duas colunas
         mainAxisSpacing: 150, //espaco
@@ -354,10 +353,7 @@ class _MostraProdutosState extends State<MostraProdutos> {
       itemCount: widget.produtos.length, //quantos items terao na tabela
       itemBuilder: (context, index) {
         final produto = widget
-            .produtos[index]; // percorre cada elemento da lista o transformando em produto
-
-        print('Valor da String no item: "${produto.prato}"');
-        print('Valor da String no item: "${produto.descricao}"');
+          .produtos[index]; // percorre cada elemento da lista o transformando em produto
 
         //cada produto é clicável, e quando clica, vai para a tela de seu produto com mais informacoes
         return GestureDetector(
@@ -377,8 +373,7 @@ class _MostraProdutosState extends State<MostraProdutos> {
           },
           child: LayoutBuilder(
             builder: (context, constraints) {
-              final largura = constraints
-                  .maxWidth; //informa o tamanho máximo e mínimo de largura e altura que o widget pai permite para este LayoutBuilder
+              final largura = constraints.maxWidth; //informa o tamanho máximo e mínimo de largura e altura que o widget pai permite para este LayoutBuilder
               final altura = constraints.maxHeight;
 
               // a caixa que contem os dados de cada produto
@@ -409,8 +404,7 @@ class _MostraProdutosState extends State<MostraProdutos> {
                       ),
                     ),
                     Align(
-                      alignment:
-                          Alignment.bottomLeft, //alinha para baixo a esquerda
+                      alignment: Alignment.bottomLeft, //alinha para baixo a esquerda
                       child: Padding(
                         padding: EdgeInsets.all(
                           largura * 0.05,
