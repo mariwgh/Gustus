@@ -656,12 +656,10 @@ class _TelaCadastroState extends State<TelaCadastro> {
               ),
               suffixIcon: IconButton(
                 icon: Icon(
-                  // Alterna entre os ícones com base no estado de _senhaVisivel
                   _senhaVisivel ? Icons.visibility : Icons.visibility_off,
                   color: Colors.white,
                 ),
                 onPressed: () {
-                  // NOVO: Altera o estado da visibilidade da senha
                   setState(() {
                     _senhaVisivel = !_senhaVisivel;
                   });
@@ -735,7 +733,6 @@ class _TelaLoginState extends State<TelaLogin> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  // NOVO ESTADO: Variável para controlar a visibilidade da senha
   late bool _senhaVisivel = false;
 
   @override
@@ -816,10 +813,8 @@ class _TelaLoginState extends State<TelaLogin> {
           ),
           const SizedBox(height: 15),
 
-          // CAMPO DE SENHA ATUALIZADO
           TextField(
             controller: _passwordController,
-            // AQUI VOCÊ CONTROLA A VISIBILIDADE
             obscureText: !_senhaVisivel,
             decoration: InputDecoration(
               labelText: "Password",
@@ -830,15 +825,12 @@ class _TelaLoginState extends State<TelaLogin> {
               focusedBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.white),
               ),
-              // NOVO: Adiciona o ícone no final do campo
               suffixIcon: IconButton(
                 icon: Icon(
-                  // Alterna entre os ícones com base no estado de _senhaVisivel
                   _senhaVisivel ? Icons.visibility : Icons.visibility_off,
                   color: Colors.white,
                 ),
                 onPressed: () {
-                  // NOVO: Altera o estado da visibilidade da senha
                   setState(() {
                     _senhaVisivel = !_senhaVisivel;
                   });
@@ -915,9 +907,7 @@ class _TelaInicialState extends State<TelaInicial> {
     _checkTokenAndFetch();
   }
 
-  // Novo método: Verifica o token antes de tentar buscar dados
   Future<void> _checkTokenAndFetch() async {
-    // Tenta pegar o token global estático.
     try {
       final token = ConexaoAPI.getToken();
       if (token == null) {
@@ -941,10 +931,8 @@ class _TelaInicialState extends State<TelaInicial> {
 
   Future<void> _fetchProdutos() async {
     try {
-      // O resultado é do tipo ConexaoAPI<Prato>
       final apiResponse = await ConexaoAPI.getProdutos();
 
-      // Verifica se o widget ainda está montado antes de chamar setState
       if (mounted) {
         setState(() {
           // Acesse a lista de Prato corretamente no campo 'data'
@@ -1011,7 +999,6 @@ class _TelaProduto extends State<TelaProduto> {
     }
 
     try {
-      // Se o item já é um favorito, chama a API para remover
       print(_isFavorito);
       if (_isFavorito) {
         await ConexaoAPI.deleteFavorito(widget.nome, token);
@@ -1019,7 +1006,6 @@ class _TelaProduto extends State<TelaProduto> {
           const SnackBar(content: Text('Removido dos favoritos!')),
         );
       }
-      // Se não for, chama a API para adicionar
       else {
         await ConexaoAPI.postFavorito(widget.nome, token);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1027,11 +1013,10 @@ class _TelaProduto extends State<TelaProduto> {
         );
       }
 
-      // Atualiza o estado da variável e redesenha a tela com o novo ícone
       if (mounted) {
         setState(() {
           _isFavorito =
-              !_isFavorito; // Inverte o valor (true vira false e vice-versa)
+              !_isFavorito; 
         });
       }
     } catch (e) {
@@ -1240,7 +1225,6 @@ class _TelaProduto extends State<TelaProduto> {
   @override
   void initState() {
     super.initState();
-    // Assim que a tela carrega, verifica se o prato já é um favorito
     _verificarStatusFavorito();
     _verificarStatusWishlist();
     _verificarStatusDegustados();
@@ -1448,7 +1432,6 @@ class _TelaPesquisarState extends State<TelaPesquisar> {
     _checkTokenAndFetch();
   }
 
-  // Novo método: Verifica o token antes de tentar buscar dados
   Future<void> _checkTokenAndFetch() async {
     // Tenta pegar o token global estático.
     try {
@@ -1738,6 +1721,8 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  late bool _senhaVisivel = false;
+
   // limpa os controladores quando a tela é chamada
   @override
   void dispose() {
@@ -1873,6 +1858,7 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
 
             TextField(
               controller: _passwordController,
+              obscureText: !_senhaVisivel,
               decoration: InputDecoration(
                 labelText: "Password",
                 labelStyle: TextStyle(color: Colors.white),
@@ -1882,7 +1868,21 @@ class _TelaConfiguracoes extends State<TelaConfiguracoes> {
                 focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.white),
                 ),
+                suffixIcon: IconButton(
+                icon: Icon(
+                  // Alterna entre os ícones com base no estado de _senhaVisivel
+                  _senhaVisivel ? Icons.visibility : Icons.visibility_off,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  // NOVO: Altera o estado da visibilidade da senha
+                  setState(() {
+                    _senhaVisivel = !_senhaVisivel;
+                  });
+                },
               ),
+              ),
+        
               style: TextStyle(color: Colors.white),
             ),
             const SizedBox(height: 25),
@@ -2007,7 +2007,6 @@ class _TelaFavoritosState extends State<TelaFavoritos> {
     _checkTokenAndFetch();
   }
 
-  // Novo método: Verifica o token antes de tentar buscar dados
   Future<void> _checkTokenAndFetch() async {
     // Tenta pegar o token global estático.
     try {
@@ -2134,9 +2133,7 @@ class _TelaWishlistState extends State<TelaWishlist> {
     _checkTokenAndFetch();
   }
 
-  // Novo método: Verifica o token antes de tentar buscar dados
   Future<void> _checkTokenAndFetch() async {
-    // Tenta pegar o token global estático.
     try {
       final token = ConexaoAPI.getToken();
 
@@ -2261,7 +2258,6 @@ class _TelaDegustadosState extends State<TelaDegustados> {
     _checkTokenAndFetch();
   }
 
-  // Novo método: Verifica o token antes de tentar buscar dados
   Future<void> _checkTokenAndFetch() async {
     // Tenta pegar o token global estático.
     try {
@@ -2313,7 +2309,6 @@ class _TelaDegustadosState extends State<TelaDegustados> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      // Mostra um indicador de carregamento enquanto espera
       return Center(child: CircularProgressIndicator());
     }
 

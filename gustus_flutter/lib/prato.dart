@@ -1,16 +1,15 @@
+// String _corrigirCodificacao(String textoCorrompido) {
+//   // Isso resolve os problemas de Latin-1/ISO quebrando em UTF-8 (CamarÆo -> Camarão, A‡aí -> Açaí)
+//   String corrigido = textoCorrompido
+//       .replaceAll('Æ', 'ã')
+//       .replaceAll('‡', 'ç')
+//       .replaceAll('¡', 'í')
+//       .replaceAll('…', 'à')
+//       .replaceAll('ä', 'õ')
+//       .replaceAll('ˆ', 'ê');
 
-String _corrigirCodificacao(String textoCorrompido) {
-  // Isso resolve os problemas de Latin-1/ISO quebrando em UTF-8 (CamarÆo -> Camarão, A‡aí -> Açaí)
-  String corrigido = textoCorrompido
-      .replaceAll('Æ', 'ã')
-      .replaceAll('‡', 'ç') 
-      .replaceAll('¡', 'í')
-      .replaceAll('…', 'à')
-      .replaceAll('ä', 'õ')
-      .replaceAll('ˆ', 'ê');
-
-  return corrigido;
-}
+//   return corrigido;
+// }
 
 class Prato {
   final int idPrato;    
@@ -28,13 +27,12 @@ class Prato {
   });
 
   factory Prato.fromJson(Map<String, dynamic> json) {
-    String nomeCorrigido = _corrigirCodificacao(json['prato'] as String);
 
     return Prato(
       idPrato: json['idprato'],
-      prato: _corrigirCodificacao(json['prato'] as String),
+      prato:(json['prato'] as String),
       foto: json['foto'],
-      descricao: _corrigirCodificacao(json['descricao'] as String),
+      descricao: (json['descricao'] as String),
       linkReceita: json['linkreceita'] ?? '',
     );
   }

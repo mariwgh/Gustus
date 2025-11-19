@@ -330,7 +330,7 @@ class ConexaoAPI<T> {
         return;
       } else {
         final String responseString = utf8.decode(response.bodyBytes);
-final Map<String, dynamic> responseData = json.decode(responseString);
+        final Map<String, dynamic> responseData = json.decode(responseString);
         final String mensagem =
             responseData['mensagem'] ??
             'Erro desconhecido ao adicionar favorito.';
